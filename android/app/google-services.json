@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "526212275810",
+    "project_id": "lifeshare-3f016",
+    "storage_bucket": "lifeshare-3f016.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:526212275810:android:74be4088b8478e75f67b3b",
+        "android_client_info": {
+          "package_name": "com.lifeshare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyPoXAPk8qPdzaesc55LDCeKARTerA70c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
