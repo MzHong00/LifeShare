@@ -1,8 +1,18 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
-    // Firebase 
+// Firebase (App Distribution)
 apply plugin: "com.google.gms.google-services"
+// React Native Config
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+
+// React Native Config
+project.ext.envConfigFiles = [
+    developdebug: ".env.dev",
+    developrelease: ".env.dev",
+    productdebug: ".env.prd",
+    productrelease: ".env.prd",
+]
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -113,6 +123,13 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+    flavorDimensions "version"
+    productFlavors {
+        develop {
+        }
+        product {
         }
     }
 }
