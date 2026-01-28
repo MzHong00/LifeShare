@@ -1,8 +1,9 @@
+import type { ReactNode } from 'react';
 import { StyleSheet, ViewProps } from 'react-native';
 import { SafeAreaView, Edge } from 'react-native-safe-area-context';
 
 interface AppSafeAreaViewProps extends ViewProps {
-  children: React.ReactNode;
+  children: ReactNode;
   edges?: Edge[]; // 추가할 엣지 (예: ['top', 'bottom'])
 }
 

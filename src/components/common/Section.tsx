@@ -1,10 +1,11 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+
 import { SPACING, TYPOGRAPHY } from '@/constants/theme';
 
 interface SectionProps {
   title?: string;
-  children: React.ReactNode;
+  children: ReactNode;
   style?: ViewStyle;
 }
 

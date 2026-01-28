@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,10 +14,10 @@ import { useModalStore } from '@/stores/useModalStore';
 
 const CustomModal = () => {
   const { isVisible, options, hideModal } = useModalStore();
-  const [fadeAnim] = React.useState(new Animated.Value(0));
-  const [slideAnim] = React.useState(new Animated.Value(20));
+  const [fadeAnim] = useState(new Animated.Value(0));
+  const [slideAnim] = useState(new Animated.Value(20));
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isVisible) {
       Animated.parallel([
         Animated.timing(fadeAnim, {

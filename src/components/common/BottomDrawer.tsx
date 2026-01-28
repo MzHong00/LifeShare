@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { type ReactNode, useRef } from 'react';
 import {
   StyleSheet,
   Animated,
@@ -13,7 +13,7 @@ import { COLORS } from '@/constants/theme';
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface BottomDrawerProps {
-  children: React.ReactNode;
+  children: ReactNode;
   /** 바텀시트의 스냅 포인트들 (위쪽부터 순서대로 비율 0~1) */
   snapPoints: number[];
   /** 초기 시작 인덱스 (snapPoints의 인덱스) */

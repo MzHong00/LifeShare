@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { View, StyleSheet } from 'react-native';
 import { MessageCircle, Home, MapPin, Calendar } from 'lucide-react-native';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';

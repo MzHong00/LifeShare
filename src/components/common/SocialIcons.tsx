@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Svg, { Path, G, Circle } from 'react-native-svg';
 
 export const GoogleIcon = ({ size = 24 }: { size?: number }) => (
