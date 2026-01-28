@@ -1,0 +1,95 @@
+# LifeShare Project Identity & Rules
+
+이 파일은 LifeShare 프로젝트의 핵심 가이드라인과 개발 규칙을 담고 있습니다. Antigravity(AI 코딩 어시스턴트)는 모든 개발 과정에서 이 문서를 최우선으로 참조합니다.
+
+---
+
+## 🚀 프로젝트 개요
+
+- **이름**: LifeShare
+- **목표**: 파트너(연인, 가족 등)와 일상, 일정, 추억을 공유하는 프리미엄 커플 앱
+- **핵심 디자인 키워드**: Toss-style, Minimalist, Premium, Blue (#3182F6)
+
+---
+
+## 🛠 테크 스택
+
+- **Core**: React Native (TypeScript)
+- **Navigation**: React Navigation (Bottom Tabs + Stack)
+- **State Management**: Zustand (App logic, Autolinking)
+- **Icons**: Lucide-react-native
+- **Backend/Services**: Firebase (Analytics, App Distribution, Auth)
+- **Styling**: Vanilla StyleSheet (Predefined `COLORS` tokens)
+
+---
+
+## 📂 주요 디렉토리 구조
+
+- `src/assets`: 이미지, 아이콘, 폰트 등 정적 리소스 관리
+- `src/businesses`: 특정 비즈니스 로직의 훅(hook.ts)과 함수(service.ts)로 구성
+- `src/components`: UI 컴포넌트
+- `src/constants`: `theme.ts` (컬러, 폰트), `navigation.ts` 등 앱 전역 상수
+- `src/hooks`: 재사용 가능한 공통 커스텀 훅
+- `src/lib`: Axios, Firebase 등 외부 라이브러리 설정 및 인스턴스
+- `src/navigations`: `AppNavigator` 및 단위별 네비게이터 체계
+- `src/screens`: 각 페이지 스크린 컴포넌트
+- `src/services`: API 통신 로직 (index, queries, mutations 순으로 구성)
+- `src/stores`: Zustand를 활용한 전역 상태 관리 (Auth, Workspace 등)
+- `src/types`: 전역 TypeScript 인터페이스 및 타입 정의
+- `src/utils`: 포맷팅, 유효성 검사 등 공통 유틸리티 함수
+
+---
+
+## 🎨 코딩 및 디자인 규칙
+
+### 1. 디자인 스타일 (The LifeShare Way)
+
+- **Primary Color**: `#3182F6`를 메인 포인트로 사용.
+- **Background**: 깨끗한 화이트 배경과 아주 연한 그레이/블루 계열의 레이어 구분.
+- **Typography**: 기본 폰트 두께와 크기를 명확히 구분하여 가독성 확보.
+- **Interaction**: 버튼 클릭 시 미세한 피드백, 부드러운 화면 전환 강조.
+
+### 2. 코드 구조 및 작성 규칙
+
+- **Functional Components**: 모든 컴포넌트는 화살표 함수(`const App = () => { ... }`) 형식을 사용.
+- **Modular Navigation**: `AppNavigator`가 너무 무거워지지 않도록 단위별(Auth, Main) 네비게이터를 분리하여 관리.
+- **Consistency**:
+  - 색상은 항상 `COLORS` 객체(`@/constants/theme`)에서 가져와 사용.
+  - 내비게이션 등록 및 이동 시에는 반드시 `NAV_ROUTES` 상수(`@/constants/navigation`)를 사용한다.
+  - import 시에는 `@/` 접두사를 사용하는 절대 경로를 우선적으로 사용 (예: `@/components/Button`).
+  - **Import Structure & Order**:
+    1. 외부 라이브러리 (`react`, `react-native`, 그 외 npm 패키지)
+    2. (한 줄 개행)
+    3. 내부 파일 (@/ 접두사) - 아래 순서 권장:
+       - `@/types` (데이터 타입)
+       - `@/lib` (라이브러리 설정)
+       - `@/constants` (테마 및 설정)
+       - `@/services` (데이터 처리 index.ts, queries.ts, mutations.ts 순)
+       - `@/stores` (데이터 및 상태)
+       - `@/utils` (공통 유틸리티)
+       - `@/hooks` (공통 커스텀 훅)
+       - `@/businesses` (비즈니스 로직에 대한 훅스와 함수)
+       - `@/components` (공통 컴포넌트)
+       - `@/screens` (페이지 스크린)
+       - `@/navigations` (네비게이터)
+    4. (한 줄 개행)
+    5. 본문 레벨 코드 작성
+  - 컴포넌트 내부 스타일은 파일 하단 `StyleSheet.create`로 분리.
+- **Clean Code**:
+  - 파일 하나당 하나의 책임만 가질 수 있도록 리팩토링 권장.
+  - 타입 정의(`interface`, `type`)는 최대한 명확하게 기술.
+  - 도메인 모델이나 공유 타입은 반드시 `@/types` 폴더에서 관리하고 재사용한다.
+  - TypeScript의 `any` 타입 사용을 지양하고, 최대한 명확한 타입을 정의하여 사용한다.
+  - TypeScript의 타입을 가져올 때는 `import type` 키워드를 사용한다.
+
+---
+
+## 🤖 AI 어시스턴트 지침
+
+- 모든 코드 생성 시 위 규칙을 준수한다.
+- UI 작업 시 '토스 스타일'의 간단하고 직관적인 디자인을 추구한다.
+- 주석이나 에러 메세지 같은 것은 한국어로 상세히 작성한다. (필요시 영어 사용 가능)
+
+---
+
+_최종 업데이트: 2026-01-19_

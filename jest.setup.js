@@ -7,8 +7,58 @@ import 'react-native-gesture-handler/jestSetup';
  * 따라서 해당 기능들을 호출했을 때 에러가 나지 않도록 '가짜'로 만들어주는 과정입니다.
  */
 
-// 1. Async Storage 가짜로 만들기
-// 로컬 저장소 기능을 메모리 상의 가짜 저장소로 대체합니다.
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
+
+jest.mock('react-native-config', () => ({
+  GOOGLE_CLIENT_ID_IOS: 'mock-ios-client-id',
+  GOOGLE_CLIENT_ID_ANDROID: 'mock-android-client-id',
+}));
+
+jest.mock('@react-native-google-signin/google-signin', () => ({
+  GoogleSignin: {
+    hasPlayServices: jest.fn().mockResolvedValue(true),
+    configure: jest.fn().mockResolvedValue(undefined),
+    signIn: jest.fn().mockResolvedValue({
+      idToken: 'mock-id-token',
+      user: {
+        id: 'mock-user-id',
+        email: 'mock@email.com',
+        name: 'Mock User',
+        photo: 'mock-photo-url',
+      },
+    }),
+    signOut: jest.fn().mockResolvedValue(undefined),
+    revokeAccess: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+
+jest.mock('react-native-maps', () => {
+  const MapView = props => {
+    const { children, ...rest } = props;
+    return <div {...rest}>{children}</div>;
+  };
+  const Marker = props => <div {...props} />;
+  return {
+    __esModule: true,
+    default: MapView,
+    Marker,
+    PROVIDER_GOOGLE: 'google',
+  };
+});
+
+jest.mock('react-native-geolocation-service', () => ({
+  getCurrentPosition: jest
+    .fn()
+    .mockImplementation((success, error, options) => {
+      success({
+        coords: {
+          latitude: 37.5665,
+          longitude: 126.978,
+          accuracy: 100,
+        },
+        timestamp: Date.now(),
+      });
+    }),
+}));

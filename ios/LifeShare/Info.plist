@@ -48,7 +48,15 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>KR</string>
+	<string>내 위치를 지도에 표시하고 파트너와 공유하기 위해 위치 정보가 필요합니다.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>내 위치를 지도에 표시하고 파트너와 공유하기 위해 위치 정보가 필요합니다.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>내 위치를 지도에 표시하고 파트너와 공유하기 위해 위치 정보가 필요합니다.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>추억에 남길 사진을 찍기 위해 카메라 권한이 필요합니다.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>추억에 남길 사진을 선택하기 위해 갤러리 접근 권한이 필요합니다.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
