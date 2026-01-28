@@ -1,15 +1,23 @@
-import React from 'react';
+
 import { View, Text, StyleSheet } from 'react-native';
-import { Heart } from 'lucide-react-native';
 import { COLORS, TYPOGRAPHY } from '@/constants/theme';
+import { ProfileAvatar } from '@/components/common/ProfileAvatar';
 
 interface MessageBubbleProps {
   text: string;
   sender: 'me' | 'partner';
   time: string;
+  avatar?: string;
+  name?: string;
 }
 
-export const MessageBubble = ({ text, sender, time }: MessageBubbleProps) => {
+export const MessageBubble = ({
+  text,
+  sender,
+  time,
+  avatar,
+  name,
+}: MessageBubbleProps) => {
   const isMe = sender === 'me';
 
   return (
@@ -21,7 +29,7 @@ export const MessageBubble = ({ text, sender, time }: MessageBubbleProps) => {
     >
       {!isMe && (
         <View style={styles.partnerAvatar}>
-          <Heart size={16} color={COLORS.primary} fill={COLORS.primary} />
+          <ProfileAvatar size={32} uri={avatar} name={name || '파트너'} />
         </View>
       )}
       <View
@@ -56,12 +64,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   partnerAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 12,
-    backgroundColor: COLORS.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
     marginRight: 8,
   },
   bubble: {

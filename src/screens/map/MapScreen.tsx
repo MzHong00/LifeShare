@@ -1,361 +1,452 @@
-import React from 'react';
+import { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Dimensions,
+  Platform,
+  ActivityIndicator,
+  Linking,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  MapPin,
-  Navigation,
-  Battery,
-  Zap,
-  Clock,
-  Star,
-} from 'lucide-react-native';
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { Zap, Video, MapPin, Square, Route } from 'lucide-react-native';
+import MapView from 'react-native-maps';
+import { MainMap } from '@/components/map/MainMap';
 
-const { width } = Dimensions.get('window');
+import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import { BottomDrawer } from '@/components/common/BottomDrawer';
+import { ProfileAvatar } from '@/components/common/ProfileAvatar';
+import { MapMemoryInfo } from '@/components/map/MapMemoryInfo';
+import { MapPartnerInfo } from '@/components/map/MapPartnerInfo';
+import { useGeolocation } from '@/businesses/geolocation/useGeolocation';
+import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { useMemoryStore } from '@/stores/useMemoryStore';
+import { useModalStore } from '@/stores/useModalStore';
 
 const MapScreen = () => {
+  const mapRef = useRef<MapView>(null);
+  const currentDeltaRef = useRef({
+    latitudeDelta: 0.001,
+    longitudeDelta: 0.001,
+  });
+  const { loading: myLocationLoading, location: myLocation } = useGeolocation();
+  const { currentWorkspace } = useWorkspaceStore();
+
+  const {
+    isRecording,
+    recordingPath,
+    startRecording,
+    stopRecording,
+    saveMemory,
+    memories,
+    selectedMemoryId,
+    setSelectedMemoryId,
+  } = useMemoryStore();
+  const [showHistory, setShowHistory] = useState(false);
+
+  // 현재 바텀시트에서 보여줄 선택된 유저 ID
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+
+  // 워크스페이스 멤버들에게 가상의 위치 데이터 부여
+  const membersWithLocation = (currentWorkspace?.members || []).map(member => ({
+    ...member,
+    // 나(민수)인 경우 실제 위치 사용, 아닐 경우 고정된 가상 위치 사용
+    location:
+      member.id === 'user-1'
+        ? {
+            latitude: myLocation?.latitude || 37.4979,
+            longitude: myLocation?.longitude || 127.0276,
+          }
+        : member.id === 'user-2'
+        ? { latitude: 37.5, longitude: 127.03 }
+        : { latitude: 37.512, longitude: 127.04 }, // user-3, 4 등
+  }));
+
+  // 선택된 유저 데이터
+  const selectedUser =
+    membersWithLocation.find(m => m.id === selectedUserId) ||
+    membersWithLocation[0];
+
   const recentPlaces = [
     { id: '1', name: '명동 성당 카페', date: '어제 오후 2:00', type: 'cafe' },
     { id: '2', name: '남산 타워', date: '3일 전', type: 'park' },
-    { id: '3', name: '강남구청역 이자카야', date: '지난 주말', type: 'food' },
+    { id: '3', name: '강남구청 역 이자카야', date: '지난 주말', type: 'food' },
   ];
+
+  // 외부(예: 추억 탭)에서 추억을 선택하고 넘어왔을 때 지도 이동 처리
+  useEffect(() => {
+    if (selectedMemoryId) {
+      const memory = memories.find(m => m.id === selectedMemoryId);
+      if (memory && memory.path.length > 0) {
+        const { latitude, longitude } = memory.path[0];
+        setSelectedUserId(null); // 유저 정보 창 닫기
+        mapRef.current?.animateToRegion(
+          {
+            latitude,
+            longitude,
+            ...currentDeltaRef.current,
+          },
+          500,
+        );
+      }
+    }
+  }, [selectedMemoryId, memories]);
+
+  const moveToUser = (id: string, lat: number, lng: number) => {
+    setSelectedUserId(id);
+    setSelectedMemoryId(null); // 유저 선택 시 메모리 선택 해제
+    mapRef.current?.animateToRegion(
+      {
+        latitude: lat,
+        longitude: lng,
+        ...currentDeltaRef.current,
+      },
+      500,
+    );
+  };
+
+  const { showAlert, showChoice } = useModalStore();
+
+  const openDirections = async () => {
+    const partner = membersWithLocation.find(m => m.id === 'user-2');
+    if (!partner) return;
+
+    const { latitude, longitude } = partner.location;
+
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving`;
+
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        showAlert('에러', '구글 지도 앱을 열 수 없습니다.');
+      }
+    } catch {
+      showAlert('에러', '길찾기 실행 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleToggleRecording = () => {
+    if (isRecording) {
+      if (recordingPath.length === 0) {
+        stopRecording();
+        return;
+      }
+      showChoice(
+        '추억 기록 중단',
+        '지금까지의 경로를 추억으로 저장할까요?',
+        () => {
+          saveMemory({
+            id: Date.now().toString(),
+            title: `${new Date().toLocaleTimeString()}의 기록`,
+            userId: 'user-1',
+            workspaceId: currentWorkspace?.id || 'ws-1',
+          });
+          showAlert('저장 완료', '추억 탭에서 확인할 수 있습니다.');
+        },
+        () => stopRecording(),
+        undefined,
+        '저장',
+        '기록 삭제',
+        '취소',
+      );
+    } else {
+      startRecording();
+    }
+  };
+
+  if (myLocationLoading || !myLocation) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text style={styles.loadingText}>위치 정보를 불러오는 중...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {/* Mock Map Background */}
-      <View style={styles.mockMap}>
-        <View style={styles.mapCircle} />
-        <View
-          style={[styles.mapCircle, { width: 400, height: 400, opacity: 0.1 }]}
-        />
+      <MainMap
+        mapRef={mapRef}
+        myLocation={myLocation}
+        currentDelta={currentDeltaRef.current}
+        isRecording={isRecording}
+        recordingPath={recordingPath}
+        showHistory={showHistory}
+        memories={memories}
+        selectedMemoryId={selectedMemoryId}
+        membersWithLocation={membersWithLocation}
+        onMarkerPress={moveToUser}
+        onPolylinePress={id => {
+          setSelectedMemoryId(id);
+          setSelectedUserId(null);
+        }}
+        onRegionChangeComplete={region => {
+          currentDeltaRef.current = {
+            latitudeDelta: region.latitudeDelta,
+            longitudeDelta: region.longitudeDelta,
+          };
+        }}
+      />
 
-        {/* Partner Marker */}
-        <View style={styles.markerContainer}>
-          <View style={styles.pulseEffect} />
-          <View style={styles.avatarMarker}>
-            <Text style={styles.avatarInitial}>❤️</Text>
-          </View>
-          <View style={styles.markerLabel}>
-            <Text style={styles.markerText}>사랑하는 파트너</Text>
-          </View>
-        </View>
-
-        {/* My Marker */}
-        <View style={[styles.markerContainer, { top: '60%', left: '40%' }]}>
-          <View
-            style={[styles.avatarMarker, { backgroundColor: COLORS.primary }]}
-          >
-            <Text style={styles.avatarInitial}>나</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Floating Header */}
-      <SafeAreaView style={styles.floatingHeader} edges={['top']}>
+      {/* Floating Header UI */}
+      <AppSafeAreaView style={styles.floatingHeader} edges={['top']}>
         <View style={styles.headerContent}>
-          <Text style={styles.headerTitle}>실시간 위치</Text>
-          <View style={styles.statusBadge}>
-            <Zap size={14} color={COLORS.success} fill={COLORS.success} />
-            <Text style={styles.statusBadgeText}>실시간 업데이트 중</Text>
-          </View>
-        </View>
-      </SafeAreaView>
-
-      {/* Bottom Sheet Style Content */}
-      <View style={styles.bottomSheet}>
-        <View style={styles.sheetHandle} />
-
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {/* Partner Status Card */}
-          <View style={styles.partnerStatusCard}>
-            <View style={styles.partnerInfo}>
-              <Text style={TYPOGRAPHY.header2}>사랑하는 파트너</Text>
-              <View style={styles.batteryInfo}>
-                <Battery size={16} color={COLORS.textTertiary} />
-                <Text style={styles.batteryText}>85%</Text>
-              </View>
-            </View>
-            <View style={styles.locationDetail}>
-              <MapPin size={20} color={COLORS.primary} />
-              <Text style={styles.addressText}>서울 특별시 강남구 역삼동</Text>
-            </View>
-            <View style={styles.timeInfo}>
-              <Clock size={16} color={COLORS.textTertiary} />
-              <Text style={styles.timeText}>10분 전 확인됨</Text>
+          <View style={styles.headerTopRow}>
+            <View style={styles.statusBadge}>
+              <Zap size={10} color={COLORS.success} fill={COLORS.success} />
+              <Text style={styles.statusBadgeText}>실시간 업데이트 중</Text>
             </View>
           </View>
 
-          {/* Quick Actions */}
-          <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.actionButton}>
-              <Navigation size={20} color={COLORS.primary} />
-              <Text style={styles.actionButtonText}>경로 찾기</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <Star size={20} color="#FFAD13" />
-              <Text style={styles.actionButtonText}>안심 장소</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Recent Date Spots */}
-          <View style={styles.recentSection}>
-            <Text style={styles.sectionTitle}>최근 함께한 장소</Text>
-            {recentPlaces.map(place => (
-              <TouchableOpacity key={place.id} style={styles.placeItem}>
-                <View style={styles.placeIcon}>
-                  <MapPin size={20} color={COLORS.textSecondary} />
-                </View>
-                <View style={styles.placeInfo}>
-                  <Text style={TYPOGRAPHY.body1}>{place.name}</Text>
-                  <Text style={TYPOGRAPHY.caption}>{place.date}</Text>
-                </View>
-                <ChevronRight size={18} color={COLORS.textTertiary} />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.userListScroll}
+          >
+            {membersWithLocation.map(member => (
+              <TouchableOpacity
+                key={member.id}
+                style={styles.userItem}
+                onPress={() =>
+                  moveToUser(
+                    member.id,
+                    member.location.latitude,
+                    member.location.longitude,
+                  )
+                }
+              >
+                <ProfileAvatar
+                  uri={member.avatar}
+                  name={member.name}
+                  size={44}
+                />
+                <Text style={styles.userNameText}>{member.name}</Text>
               </TouchableOpacity>
             ))}
+          </ScrollView>
+
+          {/* Action Buttons Integrated in Header */}
+          <View style={styles.headerActionBar}>
+            <TouchableOpacity
+              style={[
+                styles.headerActionPill,
+                showHistory && { backgroundColor: COLORS.primary },
+              ]}
+              onPress={() => setShowHistory(!showHistory)}
+            >
+              <Route
+                size={14}
+                color={showHistory ? COLORS.white : COLORS.textPrimary}
+              />
+              <Text
+                style={[
+                  styles.headerActionText,
+                  showHistory && { color: COLORS.white },
+                ]}
+              >
+                우리의 추억보기
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.headerActionPill,
+                isRecording && { backgroundColor: COLORS.error },
+              ]}
+              onPress={handleToggleRecording}
+            >
+              {isRecording ? (
+                <Square size={12} color={COLORS.white} fill={COLORS.white} />
+              ) : (
+                <Video size={14} color={COLORS.textPrimary} />
+              )}
+              <Text
+                style={[
+                  styles.headerActionText,
+                  isRecording && { color: COLORS.white },
+                ]}
+              >
+                {isRecording ? '위치 기록 중' : '추억 만들기'}
+              </Text>
+            </TouchableOpacity>
           </View>
+        </View>
+      </AppSafeAreaView>
+
+      <BottomDrawer snapPoints={[0.15, 0.55, 0.87]}>
+        <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+          {selectedMemoryId ? (
+            (() => {
+              const memory = memories.find(m => m.id === selectedMemoryId);
+              if (!memory) return null;
+              return <MapMemoryInfo memory={memory} />;
+            })()
+          ) : selectedUserId && selectedUser ? (
+            <MapPartnerInfo
+              selectedUser={selectedUser}
+              onOpenDirections={openDirections}
+              recentPlaces={recentPlaces}
+            />
+          ) : (
+            <View style={styles.emptyDrawerContent}>
+              <View style={styles.emptyInfoCard}>
+                <MapPin size={24} color={COLORS.textTertiary} />
+                <Text style={styles.emptyInfoText}>
+                  위의 멤버 아이콘이나 경로를 눌러{'\n'}상세 정보를 확인해보세요
+                </Text>
+              </View>
+            </View>
+          )}
         </ScrollView>
-      </View>
+      </BottomDrawer>
     </View>
   );
 };
 
-const ChevronRight = ({ size, color }: { size: number; color: string }) => (
-  <View
-    style={{
-      width: size,
-      height: size,
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}
-  >
-    <View
-      style={{
-        width: size / 2,
-        height: size / 2,
-        borderRightWidth: 2,
-        borderTopWidth: 2,
-        borderColor: color,
-        transform: [{ rotate: '45deg' }],
-      }}
-    />
-  </View>
-);
-
 const styles = StyleSheet.create({
-  container: {
+  container: { flex: 1, backgroundColor: COLORS.background },
+  loadingContainer: {
     flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  mockMap: {
-    flex: 1,
-    backgroundColor: '#E8F3FF',
-    alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  mapCircle: {
-    position: 'absolute',
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-    opacity: 0.2,
-  },
-  markerContainer: {
-    position: 'absolute',
-    top: '30%',
-    left: '50%',
     alignItems: 'center',
-  },
-  pulseEffect: {
-    position: 'absolute',
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: COLORS.primary,
-    opacity: 0.2,
-    top: -12,
-  },
-  avatarMarker: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
     backgroundColor: COLORS.white,
-    borderWidth: 3,
-    borderColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
   },
-  avatarInitial: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  markerLabel: {
-    marginTop: 8,
-    backgroundColor: COLORS.white,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    elevation: 3,
-  },
-  markerText: {
-    ...TYPOGRAPHY.caption,
-    color: COLORS.textPrimary,
-    fontWeight: '700',
+  loadingText: {
+    marginTop: 12,
+    ...TYPOGRAPHY.body2,
   },
   floatingHeader: {
     position: 'absolute',
-    top: 0,
+    top: 10,
     left: 0,
     right: 0,
     zIndex: 10,
   },
   headerContent: {
-    paddingHorizontal: SPACING.layout,
-    paddingVertical: SPACING.md,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  headerTitle: {
-    ...TYPOGRAPHY.header2,
-    color: COLORS.textPrimary,
-  },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginHorizontal: SPACING.layout,
+    paddingVertical: SPACING.sm,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 24,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+      },
+      android: { elevation: 6 },
+    }),
   },
-  statusBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: COLORS.success,
-    marginLeft: 4,
+  headerTopRow: {
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    marginBottom: 4,
   },
-  bottomSheet: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: '45%',
-    backgroundColor: COLORS.white,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    paddingTop: 12,
-    elevation: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -5 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-  },
-  sheetHandle: {
-    width: 40,
-    height: 4,
-    backgroundColor: COLORS.border,
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginBottom: 20,
-  },
-  partnerStatusCard: {
-    paddingHorizontal: SPACING.layout,
-    marginBottom: SPACING.xl,
-  },
-  partnerInfo: {
+  headerActionBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  batteryInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  batteryText: {
-    ...TYPOGRAPHY.caption,
-    color: COLORS.textTertiary,
-  },
-  locationDetail: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     gap: 8,
-    marginBottom: 6,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.background,
+    marginTop: 4,
   },
-  addressText: {
-    ...TYPOGRAPHY.body1,
-    color: COLORS.textPrimary,
-  },
-  timeInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  timeText: {
-    ...TYPOGRAPHY.caption,
-    color: COLORS.textTertiary,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    paddingHorizontal: SPACING.layout,
-    gap: 12,
-    marginBottom: SPACING.xl,
-  },
-  actionButton: {
+  headerActionPill: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.background,
-    paddingVertical: 14,
+    paddingVertical: 8,
     borderRadius: 12,
-    gap: 8,
+    gap: 6,
   },
-  actionButtonText: {
-    ...TYPOGRAPHY.body2,
-    fontWeight: '700',
+  headerActionText: {
+    fontSize: 12,
+    fontWeight: '600',
     color: COLORS.textPrimary,
   },
-  recentSection: {
-    paddingHorizontal: SPACING.layout,
-    paddingBottom: 40,
-  },
-  sectionTitle: {
-    ...TYPOGRAPHY.body1,
-    fontWeight: '700',
-    marginBottom: SPACING.lg,
-  },
-  placeItem: {
+  statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SPACING.lg,
-  },
-  placeIcon: {
-    width: 44,
-    height: 44,
+    alignSelf: 'flex-start',
+    backgroundColor: COLORS.skeleton,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: 12,
+  },
+  statusBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: COLORS.success,
+    marginLeft: 3,
+  },
+  userListScroll: {
+    paddingHorizontal: 12,
+    gap: 16,
+    paddingBottom: 4,
+  },
+  userItem: {
+    alignItems: 'center',
+    width: 60,
+  },
+  userAvatarContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: COLORS.skeleton,
+    marginBottom: 4,
+    padding: 2,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  userAvatar: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 22,
+  },
+  userAvatarFallback: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: COLORS.skeleton,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: SPACING.md,
   },
-  placeInfo: {
-    flex: 1,
+  userInitialText: {
+    ...TYPOGRAPHY.caption,
+    fontWeight: '700',
+    color: COLORS.textSecondary,
+  },
+  userNameText: {
+    marginTop: 4,
+    fontSize: 12,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+  },
+  markerAvatarImg: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 22,
+  },
+  emptyDrawerContent: {
+    padding: SPACING.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 200,
+  },
+  emptyInfoCard: {
+    alignItems: 'center',
+    gap: 12,
+  },
+  emptyInfoText: {
+    ...TYPOGRAPHY.body2,
+    color: COLORS.textTertiary,
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });
 

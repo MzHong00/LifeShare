@@ -1,4 +1,4 @@
-import React from 'react';
+
 import {
   ScrollView,
   StyleSheet,
@@ -6,34 +6,46 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import {
+  User,
   Calendar,
   CheckSquare,
   Heart,
   ChevronRight,
 } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { NAV_ROUTES } from '@/constants/navigation';
+import { MOCK_DATA } from '@/constants/mockData';
+import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { Section } from '@/components/common/Section';
 import { Card } from '@/components/common/Card';
+import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { DDayHero } from '@/components/home/DDayHero';
 import { FeatureCard } from '@/components/home/FeatureCard';
 
 type RootStackParamList = {
-  MainTabs: undefined;
-  Calendar: undefined;
-  Todo: undefined;
-  Memories: undefined;
+  [NAV_ROUTES.MAIN_TABS.NAME]: undefined;
+  [NAV_ROUTES.CALENDAR.NAME]: undefined;
+  [NAV_ROUTES.TODO.NAME]: undefined;
+  [NAV_ROUTES.MEMORIES.NAME]: undefined;
+  [NAV_ROUTES.PROFILE.NAME]: undefined;
+  [NAV_ROUTES.WORKSPACE_SETUP.NAME]: undefined;
+  [NAV_ROUTES.PRO_UPGRADE.NAME]: undefined;
+  [NAV_ROUTES.CHAT.NAME]: undefined;
 };
 
 const HomeScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
+
+  // currentWorkspace는 AppNavigator에서 보장됨
+  if (!currentWorkspace) return null;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <AppSafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -41,28 +53,33 @@ const HomeScreen = () => {
         {/* Header Section */}
         <View style={styles.header}>
           <View>
-            <Text style={TYPOGRAPHY.header1}>우리만의 공간,</Text>
-            <Text style={TYPOGRAPHY.header1}>LifeShare 👋</Text>
+            <Text style={TYPOGRAPHY.header1}>{currentWorkspace.name}</Text>
+            <Text style={[TYPOGRAPHY.body2, { color: COLORS.textSecondary }]}>
+              함께 기록을 시작한 지 1250일
+            </Text>
           </View>
-          <TouchableOpacity style={styles.profileButton}>
+          <TouchableOpacity
+            style={styles.profileButton}
+            onPress={() => navigation.navigate(NAV_ROUTES.PROFILE.NAME)}
+          >
             <View style={styles.avatarPlaceholder}>
-              <Text style={styles.avatarText}>우리</Text>
+              <User size={24} color={COLORS.primary} />
             </View>
           </TouchableOpacity>
         </View>
 
         {/* D-Day Section */}
         <DDayHero
-          partnerName="지민"
-          myName="민수"
-          days={1248}
-          nextEventTitle="1300일 기념일까지"
-          nextDDay={52}
-          onPress={() => navigation.navigate('Memories')}
+          partnerName={currentWorkspace.partnerName || MOCK_DATA.partner.name}
+          myName={MOCK_DATA.user.name}
+          days={MOCK_DATA.workspace.dDay}
+          nextEventTitle={MOCK_DATA.workspace.nextEvent.title}
+          nextDDay={MOCK_DATA.workspace.nextEvent.remainingDays}
+          onPress={() => navigation.navigate(NAV_ROUTES.MEMORIES.NAME)}
         />
 
         {/* Partner Status */}
-        <Section>
+        <Section title="">
           <Card onPress={() => {}}>
             <View style={styles.partnerHeader}>
               <Text style={TYPOGRAPHY.body1}>사랑하는 파트너</Text>
@@ -70,7 +87,7 @@ const HomeScreen = () => {
             </View>
             <View style={styles.partnerStatus}>
               <View style={styles.statusDot} />
-              <Text style={styles.statusText}>현재 내 위치 근처에 있어요</Text>
+              <Text style={styles.statusText}>{MOCK_DATA.partner.status}</Text>
             </View>
           </Card>
         </Section>
@@ -78,39 +95,47 @@ const HomeScreen = () => {
         {/* Main Features */}
         <Section title="함께하는 일상">
           <FeatureCard
-            title="공유 캘린더"
-            description="우리의 소중한 일정을 관리해보세요"
+            title={NAV_ROUTES.CALENDAR.TITLE}
+            description={`다음 일정: ${MOCK_DATA.calendar[0].title}`}
             icon={<Calendar size={24} color={COLORS.textPrimary} />}
             iconBgColor="#F0F0F0"
-            onPress={() => navigation.navigate('Calendar')}
+            onPress={() => navigation.navigate(NAV_ROUTES.CALENDAR.NAME)}
           />
           <FeatureCard
-            title="공유 할 일"
-            description="오늘 할 일이 3개 남았어요"
+            title={NAV_ROUTES.TODO.TITLE}
+            description={`오늘 할 일이 ${
+              MOCK_DATA.todos.filter(t => !t.completed).length
+            }개 남았어요`}
             icon={<CheckSquare size={24} color={COLORS.primary} />}
             iconBgColor="#EBF4FF"
-            onPress={() => navigation.navigate('Todo')}
+            onPress={() => navigation.navigate(NAV_ROUTES.TODO.NAME)}
           />
           <FeatureCard
-            title="우리의 추억"
-            description="소중한 순간들을 기록하고 꺼내보세요"
+            title={NAV_ROUTES.MEMORIES.TITLE}
+            description={`최근 추억: ${MOCK_DATA.memories[0].title}`}
             icon={<Heart size={24} color="#F04452" />}
             iconBgColor="#FFEBF0"
-            onPress={() => navigation.navigate('Memories')}
+            onPress={() => navigation.navigate(NAV_ROUTES.MEMORIES.NAME)}
           />
         </Section>
 
         {/* Banner */}
         <Section>
-          <Card style={styles.banner} activeOpacity={0.8}>
+          <Card
+            style={styles.banner}
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate(NAV_ROUTES.PRO_UPGRADE.NAME)}
+          >
             <Text style={styles.bannerText}>
               가족, 친구와도 추억을 나누고 싶나요? ✨
             </Text>
-            <Text style={styles.bannerSubText}>내 공간 확장하기 (준비 중)</Text>
+            <Text style={[styles.bannerSubText, { color: COLORS.primary }]}>
+              Pro 플랜으로 업그레이드
+            </Text>
           </Card>
         </Section>
       </ScrollView>
-    </SafeAreaView>
+    </AppSafeAreaView>
   );
 };
 
@@ -190,6 +215,37 @@ const styles = StyleSheet.create({
   bannerSubText: {
     color: COLORS.textTertiary,
     fontSize: 12,
+  },
+  setupCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: SPACING.lg,
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    borderStyle: 'dashed',
+  },
+  setupIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    backgroundColor: COLORS.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: SPACING.md,
+  },
+  setupTextContainer: {
+    flex: 1,
+  },
+  setupTitle: {
+    ...TYPOGRAPHY.body1,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+    marginBottom: 2,
+  },
+  setupDescription: {
+    ...TYPOGRAPHY.caption,
+    color: COLORS.textSecondary,
   },
 });
 

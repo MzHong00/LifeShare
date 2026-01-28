@@ -1,11 +1,12 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 
 interface FeatureCardProps {
   title: string;
   description: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   iconBgColor: string;
   onPress: () => void;
 }

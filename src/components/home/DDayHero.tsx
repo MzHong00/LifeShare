@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { View, Text, StyleSheet } from 'react-native';
 import { Heart } from 'lucide-react-native';
 import { Card } from '@/components/common/Card';
