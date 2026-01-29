@@ -1,4 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
 import {
   View,
   Text,
@@ -8,15 +13,20 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   Image,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { Check, Users, Calendar as CalendarIcon } from 'lucide-react-native';
+import {
+  Check,
+  Users,
+  Calendar as CalendarIcon,
+  Trash2,
+} from 'lucide-react-native';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { useTodoStore } from '@/stores/useTodoStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { useModalStore } from '@/stores/useModalStore';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
 type TodoCreateRouteProp = RouteProp<
@@ -31,6 +41,7 @@ const TodoCreateScreen = () => {
 
   const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
   const { todos, addTodo, updateTodo, removeTodo } = useTodoStore();
+  const { showAlert, showConfirm } = useModalStore();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -49,16 +60,40 @@ const TodoCreateScreen = () => {
     }
   }, [todoId, todos]);
 
+  const handleDelete = useCallback(() => {
+    showConfirm('할 일 삭제', '이 할 일을 삭제하시겠습니까?', () => {
+      if (todoId) {
+        removeTodo(todoId);
+        navigation.goBack();
+      }
+    });
+  }, [todoId, removeTodo, navigation, showConfirm]);
+
+  useLayoutEffect(() => {
+    if (todoId) {
+      navigation.setOptions({
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={handleDelete}
+            style={{ marginRight: SPACING.md }}
+          >
+            <Trash2 size={24} color={COLORS.error} />
+          </TouchableOpacity>
+        ),
+      });
+    }
+  }, [navigation, todoId, handleDelete]);
+
   const members = currentWorkspace?.members || [];
 
   const handleCreateOrUpdate = () => {
     if (!title.trim()) {
-      Alert.alert('알림', '할 일 제목을 입력해주세요.');
+      showAlert('알림', '할 일 제목을 입력해주세요.');
       return;
     }
 
     if (!currentWorkspace) {
-      Alert.alert('알림', '워크스페이스 정보가 없습니다.');
+      showAlert('알림', '워크스페이스 정보가 없습니다.');
       return;
     }
 
@@ -73,32 +108,16 @@ const TodoCreateScreen = () => {
 
     if (todoId) {
       updateTodo(todoId, todoData);
-      Alert.alert('알림', '할 일이 수정되었습니다.');
+      showAlert('알림', '할 일이 수정되었습니다.');
     } else {
       addTodo({
         ...todoData,
         isCompleted: false,
       });
-      Alert.alert('알림', '새로운 할 일이 추가되었습니다.');
+      showAlert('알림', '새로운 할 일이 추가되었습니다.');
     }
 
     navigation.goBack();
-  };
-
-  const handleDelete = () => {
-    Alert.alert('할 일 삭제', '이 할 일을 삭제하시겠습니까?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '삭제',
-        style: 'destructive',
-        onPress: () => {
-          if (todoId) {
-            removeTodo(todoId);
-            navigation.goBack();
-          }
-        },
-      },
-    ]);
   };
 
   return (

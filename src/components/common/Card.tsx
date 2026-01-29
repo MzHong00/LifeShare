@@ -1,11 +1,17 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View, ViewStyle, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  ViewStyle,
+  StyleProp,
+  TouchableOpacity,
+} from 'react-native';
 
 import { COLORS } from '@/constants/theme';
 
 interface CardProps {
   children: ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   onPress?: () => void;
   activeOpacity?: number;
 }

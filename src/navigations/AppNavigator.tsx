@@ -24,6 +24,7 @@ import ProUpgradeScreen from '@/screens/upgrade/ProUpgradeScreen';
 import PlanManagementScreen from '@/screens/profile/PlanManagementScreen';
 import MemoryEditScreen from '@/screens/memories/MemoryEditScreen';
 import MemoryDetailScreen from '@/screens/memories/MemoryDetailScreen';
+import AnniversaryScreen from '@/screens/home/AnniversaryScreen';
 
 const Stack = createStackNavigator();
 
@@ -132,6 +133,14 @@ const AppNavigator = () => {
                   name={NAV_ROUTES.MEMORY_DETAIL.NAME}
                   component={MemoryDetailScreen}
                   options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name={NAV_ROUTES.ANNIVERSARY.NAME}
+                  component={AnniversaryScreen}
+                  options={{
+                    ...COMMON_HEADER_OPTIONS,
+                    title: NAV_ROUTES.ANNIVERSARY.TITLE,
+                  }}
                 />
               </>
             )}

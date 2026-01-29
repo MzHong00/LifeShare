@@ -39,6 +39,10 @@ export const NAV_ROUTES = {
     NAME: 'Calendar',
     TITLE: '캘린더',
   },
+  ANNIVERSARY: {
+    NAME: 'Anniversary',
+    TITLE: '기념일',
+  },
   EVENT_CREATE: {
     NAME: 'EventCreate',
     TITLE: '일정 생성',

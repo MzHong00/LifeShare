@@ -2,6 +2,8 @@ export interface Workspace {
   id: string;
   name: string;
   type: 'couple' | 'group';
+  startDate?: string;
+  backgroundImage?: string;
   partnerName?: string;
   members?: {
     id: string;

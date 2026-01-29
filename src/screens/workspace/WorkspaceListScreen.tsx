@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Alert,
   Modal,
   TextInput,
   Image,
@@ -28,6 +27,7 @@ import { NAV_ROUTES } from '@/constants/navigation';
 import { APP_WORKSPACE } from '@/constants/config';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { useModalStore } from '@/stores/useModalStore';
+import { calculateDDay, formatDate } from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
 type RootStackParamList = {
@@ -53,7 +53,7 @@ const WorkspaceListScreen = () => {
   const updateMemberProfile = useWorkspaceStore(
     state => state.updateMemberProfile,
   );
-  const showConfirm = useModalStore(state => state.showConfirm);
+  const { showAlert, showConfirm } = useModalStore();
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingWorkspace, setEditingWorkspace] = useState<any>(null);
@@ -108,7 +108,7 @@ const WorkspaceListScreen = () => {
 
   const saveName = () => {
     if (!newName.trim()) {
-      Alert.alert('알림', '공간 이름을 입력해주세요.');
+      showAlert('알림', '공간 이름을 입력해주세요.');
       return;
     }
     updateWorkspaceName(editingWorkspace.id, newName.trim());
@@ -124,12 +124,12 @@ const WorkspaceListScreen = () => {
 
   const sendDirectInvite = () => {
     if (!inviteEmail.trim()) {
-      Alert.alert('알림', '초대할 파트너의 이메일을 입력해주세요.');
+      showAlert('알림', '초대할 파트너의 이메일을 입력해주세요.');
       return;
     }
 
     if (!userEmail) {
-      Alert.alert('알림', '로그인 정보가 없습니다.');
+      showAlert('알림', '로그인 정보가 없습니다.');
       return;
     }
 
@@ -140,7 +140,7 @@ const WorkspaceListScreen = () => {
       inviteEmail.trim(),
     );
 
-    Alert.alert('알림', '초대가 전송되었습니다.');
+    showAlert('알림', '초대가 전송되었습니다.');
     setInviteModalVisible(false);
     setInvitingWorkspace(null);
   };
@@ -161,7 +161,7 @@ const WorkspaceListScreen = () => {
 
   const saveProfile = () => {
     if (!profileName.trim()) {
-      Alert.alert('알림', '이름을 입력해주세요.');
+      showAlert('알림', '이름을 입력해주세요.');
       return;
     }
     updateMemberProfile(editingProfileWorkspace.id, 'user-1', {
@@ -169,7 +169,7 @@ const WorkspaceListScreen = () => {
     });
     setProfileModalVisible(false);
     setEditingProfileWorkspace(null);
-    Alert.alert('알림', '활동명이 변경되었습니다.');
+    showAlert('알림', '활동명이 변경되었습니다.');
   };
 
   return (
@@ -181,7 +181,7 @@ const WorkspaceListScreen = () => {
             <TouchableOpacity
               onPress={() => {
                 useWorkspaceStore.getState().initMockData();
-                Alert.alert('알림', '목업 데이터로 초기화되었습니다.');
+                showAlert('알림', '목업 데이터로 초기화되었습니다.');
               }}
             >
               <Text style={styles.resetText}>목업 초기화</Text>
@@ -215,11 +215,28 @@ const WorkspaceListScreen = () => {
                 </View>
                 <View style={styles.wsInfo}>
                   <Text style={styles.wsName}>{ws.name}</Text>
-                  <Text style={styles.wsType}>
-                    {ws.type === 'couple' ? '커플' : '단체'} 라이프룸
-                  </Text>
+                  <View style={styles.wsSubInfo}>
+                    <Text style={styles.wsType}>
+                      {ws.type === 'couple' ? '커플' : '단체'} 라이프룸
+                    </Text>
+                    {ws.startDate && (
+                      <>
+                        <View style={styles.dot} />
+                        <Text style={styles.wsDate}>
+                          {formatDate(ws.startDate)}~
+                        </Text>
+                      </>
+                    )}
+                  </View>
                 </View>
-                {currentWorkspace?.id === ws.id && (
+                {ws.type === 'couple' && ws.startDate && (
+                  <View style={styles.ddayBadge}>
+                    <Text style={styles.ddayText}>
+                      D+{calculateDDay(ws.startDate)}
+                    </Text>
+                  </View>
+                )}
+                {currentWorkspace?.id === ws.id && ws.type !== 'couple' && (
                   <View style={styles.activeBadge}>
                     <Text style={styles.activeBadgeText}>사용 중</Text>
                   </View>
@@ -681,6 +698,33 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: COLORS.white,
+  },
+  wsSubInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  dot: {
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: COLORS.textTertiary,
+    marginHorizontal: 6,
+  },
+  wsDate: {
+    ...TYPOGRAPHY.caption,
+    color: COLORS.textTertiary,
+  },
+  ddayBadge: {
+    backgroundColor: COLORS.primaryLight,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  ddayText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: COLORS.primary,
   },
   cardActions: {
     flexDirection: 'row',

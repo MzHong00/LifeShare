@@ -48,6 +48,7 @@ export const MOCK_DATA = {
       id: 'ws-2',
       name: '우리 가족 여행 👨‍👩‍👧‍👦',
       type: 'group' as const,
+      startDate: '2024-01-01',
       members: [
         {
           id: 'user-1',
@@ -79,6 +80,7 @@ export const MOCK_DATA = {
       id: 'ws-3',
       name: '대학 동기 모임 🎓',
       type: 'group' as const,
+      startDate: '2023-12-25',
       members: [
         {
           id: 'user-1',

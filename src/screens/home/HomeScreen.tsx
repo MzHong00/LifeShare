@@ -1,4 +1,3 @@
-
 import {
   ScrollView,
   StyleSheet,
@@ -8,23 +7,20 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import {
-  User,
-  Calendar,
-  CheckSquare,
-  Heart,
-  ChevronRight,
-} from 'lucide-react-native';
+import { User, Calendar, CheckSquare, Heart } from 'lucide-react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { MOCK_DATA } from '@/constants/mockData';
+import { calculateDDay } from '@/utils/date';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { useModalStore } from '@/stores/useModalStore';
 import { Section } from '@/components/common/Section';
 import { Card } from '@/components/common/Card';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { DDayHero } from '@/components/home/DDayHero';
-import { FeatureCard } from '@/components/home/FeatureCard';
+import { MenuButton } from '@/components/home/MenuButton';
 
 type RootStackParamList = {
   [NAV_ROUTES.MAIN_TABS.NAME]: undefined;
@@ -35,11 +31,16 @@ type RootStackParamList = {
   [NAV_ROUTES.WORKSPACE_SETUP.NAME]: undefined;
   [NAV_ROUTES.PRO_UPGRADE.NAME]: undefined;
   [NAV_ROUTES.CHAT.NAME]: undefined;
+  [NAV_ROUTES.ANNIVERSARY.NAME]: undefined;
 };
 
 const HomeScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
+  const updateWorkspaceBackground = useWorkspaceStore(
+    state => state.updateWorkspaceBackground,
+  );
+  const { showConfirm, showAlert } = useModalStore();
 
   // currentWorkspace는 AppNavigator에서 보장됨
   if (!currentWorkspace) return null;
@@ -55,7 +56,11 @@ const HomeScreen = () => {
           <View>
             <Text style={TYPOGRAPHY.header1}>{currentWorkspace.name}</Text>
             <Text style={[TYPOGRAPHY.body2, { color: COLORS.textSecondary }]}>
-              함께 기록을 시작한 지 1250일
+              {currentWorkspace.startDate
+                ? `함께 기록을 시작한 지 ${calculateDDay(
+                    currentWorkspace.startDate,
+                  )}일`
+                : '소중한 일상을 기록해보세요'}
             </Text>
           </View>
           <TouchableOpacity
@@ -72,51 +77,67 @@ const HomeScreen = () => {
         <DDayHero
           partnerName={currentWorkspace.partnerName || MOCK_DATA.partner.name}
           myName={MOCK_DATA.user.name}
-          days={MOCK_DATA.workspace.dDay}
+          days={
+            currentWorkspace.startDate
+              ? calculateDDay(currentWorkspace.startDate)
+              : 0
+          }
           nextEventTitle={MOCK_DATA.workspace.nextEvent.title}
           nextDDay={MOCK_DATA.workspace.nextEvent.remainingDays}
-          onPress={() => navigation.navigate(NAV_ROUTES.MEMORIES.NAME)}
+          backgroundImage={currentWorkspace.backgroundImage}
+          onPress={() =>
+            showConfirm(
+              '배경 변경',
+              '앨범에서 사진을 선택하여 배경을 변경하시겠습니까?',
+              async () => {
+                const result = await launchImageLibrary({
+                  mediaType: 'photo',
+                  quality: 0.8,
+                });
+
+                if (result.assets && result.assets[0].uri) {
+                  updateWorkspaceBackground(
+                    currentWorkspace.id,
+                    result.assets[0].uri,
+                  );
+                  showAlert('알림', '배경 이미지가 변경되었습니다.');
+                }
+              },
+              undefined,
+              '앨범에서 선택',
+              '취소',
+            )
+          }
+          onPressNextEvent={() =>
+            navigation.navigate(NAV_ROUTES.ANNIVERSARY.NAME)
+          }
         />
 
-        {/* Partner Status */}
-        <Section title="">
-          <Card onPress={() => {}}>
-            <View style={styles.partnerHeader}>
-              <Text style={TYPOGRAPHY.body1}>사랑하는 파트너</Text>
-              <ChevronRight size={20} color={COLORS.textTertiary} />
-            </View>
-            <View style={styles.partnerStatus}>
-              <View style={styles.statusDot} />
-              <Text style={styles.statusText}>{MOCK_DATA.partner.status}</Text>
-            </View>
-          </Card>
-        </Section>
-
         {/* Main Features */}
-        <Section title="함께하는 일상">
-          <FeatureCard
-            title={NAV_ROUTES.CALENDAR.TITLE}
-            description={`다음 일정: ${MOCK_DATA.calendar[0].title}`}
-            icon={<Calendar size={24} color={COLORS.textPrimary} />}
-            iconBgColor="#F0F0F0"
-            onPress={() => navigation.navigate(NAV_ROUTES.CALENDAR.NAME)}
-          />
-          <FeatureCard
-            title={NAV_ROUTES.TODO.TITLE}
-            description={`오늘 할 일이 ${
-              MOCK_DATA.todos.filter(t => !t.completed).length
-            }개 남았어요`}
-            icon={<CheckSquare size={24} color={COLORS.primary} />}
-            iconBgColor="#EBF4FF"
-            onPress={() => navigation.navigate(NAV_ROUTES.TODO.NAME)}
-          />
-          <FeatureCard
-            title={NAV_ROUTES.MEMORIES.TITLE}
-            description={`최근 추억: ${MOCK_DATA.memories[0].title}`}
-            icon={<Heart size={24} color="#F04452" />}
-            iconBgColor="#FFEBF0"
-            onPress={() => navigation.navigate(NAV_ROUTES.MEMORIES.NAME)}
-          />
+        <Section>
+          <View style={styles.menuGrid}>
+            <View style={styles.menuHeader}>
+              <Text style={styles.menuTitle}>우리의 일상</Text>
+            </View>
+            <MenuButton
+              title={NAV_ROUTES.CALENDAR.TITLE}
+              icon={<Calendar size={18} color={COLORS.textPrimary} />}
+              iconBgColor="#F2F4F6"
+              onPress={() => navigation.navigate(NAV_ROUTES.CALENDAR.NAME)}
+            />
+            <MenuButton
+              title={NAV_ROUTES.TODO.TITLE}
+              icon={<CheckSquare size={18} color={COLORS.primary} />}
+              iconBgColor="#EBF4FF"
+              onPress={() => navigation.navigate(NAV_ROUTES.TODO.NAME)}
+            />
+            <MenuButton
+              title={NAV_ROUTES.MEMORIES.TITLE}
+              icon={<Heart size={18} color="#F04452" />}
+              iconBgColor="#FFEBF0"
+              onPress={() => navigation.navigate(NAV_ROUTES.MEMORIES.NAME)}
+            />
+          </View>
         </Section>
 
         {/* Banner */}
@@ -146,6 +167,24 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 40,
+  },
+  menuGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    backgroundColor: COLORS.white,
+    borderRadius: 24,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.md,
+  },
+  menuHeader: {
+    width: '100%',
+    paddingHorizontal: SPACING.lg,
+    marginBottom: SPACING.sm,
+  },
+  menuTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
   },
   header: {
     flexDirection: 'row',
@@ -180,27 +219,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     fontWeight: '700',
   },
-  partnerHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SPACING.sm,
-  },
-  partnerStatus: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.success,
-    marginRight: 8,
-  },
-  statusText: {
-    ...TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
-  },
+
   banner: {
     backgroundColor: '#191F28',
     alignItems: 'center',

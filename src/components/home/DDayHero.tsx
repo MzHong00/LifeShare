@@ -1,6 +1,11 @@
-
-import { View, Text, StyleSheet } from 'react-native';
-import { Heart } from 'lucide-react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  TouchableOpacity,
+} from 'react-native';
+import { Image as ImageIcon } from 'lucide-react-native';
 import { Card } from '@/components/common/Card';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 
@@ -10,7 +15,9 @@ interface DDayHeroProps {
   days: number;
   nextEventTitle: string;
   nextDDay: number;
+  backgroundImage?: string;
   onPress?: () => void;
+  onPressNextEvent?: () => void;
 }
 
 export const DDayHero = ({
@@ -19,27 +26,85 @@ export const DDayHero = ({
   days,
   nextEventTitle,
   nextDDay,
+  backgroundImage,
   onPress,
+  onPressNextEvent,
 }: DDayHeroProps) => {
+  const content = (
+    <View style={styles.contentContainer}>
+      <View style={styles.topRow}>
+        <Text style={[styles.names, backgroundImage && styles.whiteText]}>
+          {partnerName} · {myName}
+        </Text>
+        <TouchableOpacity
+          onPress={onPress}
+          activeOpacity={0.7}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={[
+            styles.editIconWrapper,
+            backgroundImage && styles.whiteIconWrapper,
+          ]}
+        >
+          <ImageIcon
+            size={18}
+            color={backgroundImage ? COLORS.white : COLORS.textTertiary}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.main}>
+        <View style={styles.daysContainer}>
+          <Text style={[styles.days, backgroundImage && styles.whiteText]}>
+            {days}
+          </Text>
+          <Text style={[styles.suffix, backgroundImage && styles.whiteText]}>
+            일
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.footer}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={onPressNextEvent}
+          style={[
+            styles.nextEventBadge,
+            backgroundImage && styles.whiteBadgeWrapper,
+          ]}
+        >
+          <Text
+            style={[styles.nextEventText, backgroundImage && styles.whiteText]}
+          >
+            {nextEventTitle}{' '}
+            <Text
+              style={[
+                styles.dDayHighlight,
+                backgroundImage && styles.whiteText,
+              ]}
+            >
+              D-{nextDDay}
+            </Text>
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      <Card style={styles.card} onPress={onPress}>
-        <View style={styles.header}>
-          <Text style={styles.names}>{partnerName}</Text>
-          <Heart size={20} color={COLORS.error} fill={COLORS.error} />
-          <Text style={styles.names}>{myName}</Text>
-        </View>
-        <View style={styles.main}>
-          <Text style={styles.days}>{days}</Text>
-          <Text style={styles.suffix}>일째</Text>
-        </View>
-        <View style={styles.divider} />
-        <View style={styles.footer}>
-          <Text style={styles.nextEvent}>{nextEventTitle}</Text>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>D-{nextDDay}</Text>
-          </View>
-        </View>
+      <Card style={styles.card}>
+        {backgroundImage ? (
+          <ImageBackground
+            source={{ uri: backgroundImage }}
+            style={styles.imageBackground}
+            imageStyle={styles.imageStyle}
+          >
+            <View style={styles.overlay} />
+            {content}
+          </ImageBackground>
+        ) : (
+          content
+        )}
       </Card>
     </View>
   );
@@ -51,60 +116,104 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   card: {
-    padding: SPACING.xl,
+    padding: 0, // 이미지 배경을 위해 패딩 제거
+    elevation: 0,
+    shadowOpacity: 0,
+    backgroundColor: COLORS.white,
+    borderRadius: 24, // 20에서 24로 살짝 확대
+    minHeight: 240,
+    overflow: 'hidden',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-    marginBottom: SPACING.md,
+  imageBackground: {
+    width: '100%',
+    minHeight: 240,
   },
-  names: {
-    ...TYPOGRAPHY.body1,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
-  main: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    marginBottom: SPACING.md,
+  imageStyle: {
+    borderRadius: 24,
   },
-  days: {
-    fontSize: 48,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-    letterSpacing: -1,
+  contentContainer: {
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: 20,
+    justifyContent: 'space-between',
+    minHeight: 240,
   },
-  suffix: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginLeft: 4,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: COLORS.border,
-    marginBottom: SPACING.md,
-    opacity: 0.5,
-  },
-  footer: {
+  topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  nextEvent: {
-    ...TYPOGRAPHY.body2,
-    color: COLORS.textSecondary,
+  editIconWrapper: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0.8,
   },
-  badge: {
-    backgroundColor: COLORS.primaryLight,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  badgeText: {
-    fontSize: 13,
+  names: {
+    fontSize: 16,
     fontWeight: '700',
+    color: COLORS.textPrimary,
+    letterSpacing: -0.5,
+  },
+  main: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+    marginTop: -10, // 이름과 너무 멀어지지 않게 조정
+  },
+  daysContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+  },
+  days: {
+    fontSize: 38,
+    fontWeight: '800',
     color: COLORS.primary,
+    letterSpacing: -1,
+  },
+  suffix: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+    marginLeft: 2,
+    marginBottom: 4,
+  },
+  footer: {
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  nextEventBadge: {
+    backgroundColor: COLORS.background,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    width: '100%',
+    alignItems: 'center',
+  },
+  nextEventText: {
+    ...TYPOGRAPHY.body2,
+    fontWeight: '600',
+    color: COLORS.textSecondary,
+    fontSize: 13,
+  },
+  dDayHighlight: {
+    color: COLORS.primary,
+    fontWeight: '800',
+    marginLeft: 4,
+  },
+  whiteText: {
+    color: COLORS.white,
+  },
+  whiteIconWrapper: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  whiteBadgeWrapper: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
 });

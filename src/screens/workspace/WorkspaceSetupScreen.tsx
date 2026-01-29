@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  Alert,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -15,6 +14,8 @@ import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { APP_WORKSPACE } from '@/constants/config';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { useModalStore } from '@/stores/useModalStore';
+import { getTodayDateString } from '@/utils/date';
 import Checkbox from '@/components/common/Checkbox';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
@@ -49,6 +50,7 @@ const WorkspaceSetupScreen = () => {
   const [isMain, setIsMain] = useState(true);
   const [roomType, setRoomType] = useState<'couple' | 'group'>('couple');
   const [createSubStep, setCreateSubStep] = useState<'type' | 'name'>('type');
+  const [startDate, setStartDate] = useState(getTodayDateString());
 
   const userEmail = 'user@example.com'; // 임시: 이메일 정보 위치 확인 필요
   const workspaces = useWorkspaceStore(state => state.workspaces);
@@ -56,21 +58,27 @@ const WorkspaceSetupScreen = () => {
     state => state.createNewWorkspace,
   );
   const sendInvitation = useWorkspaceStore(state => state.sendInvitation);
+  const { showAlert } = useModalStore();
 
   const completeSetup = () => {
     if (!workspaceName.trim()) {
-      Alert.alert('알림', `${APP_WORKSPACE.KR} 이름을 입력해주세요.`);
+      showAlert('알림', `${APP_WORKSPACE.KR} 이름을 입력해주세요.`);
       return;
     }
 
-    const workspaceId = createNewWorkspace(workspaceName, roomType, isMain);
+    const workspaceId = createNewWorkspace(
+      workspaceName,
+      roomType,
+      isMain,
+      startDate,
+    );
     setCreatedWorkspaceId(workspaceId);
     setStep('invite');
   };
 
   const handleSendInvite = () => {
     if (!inviteeEmail.trim()) {
-      Alert.alert('알림', '초대할 파트너의 이메일을 입력해주세요.');
+      showAlert('알림', '초대할 파트너의 이메일을 입력해주세요.');
       return;
     }
 
@@ -81,12 +89,9 @@ const WorkspaceSetupScreen = () => {
         userEmail,
         inviteeEmail.trim(),
       );
-      Alert.alert('알림', '초대가 전송되었습니다.', [
-        {
-          text: '확인',
-          onPress: () => navigation.navigate(NAV_ROUTES.MAIN_TABS.NAME),
-        },
-      ]);
+      showAlert('알림', '초대가 전송되었습니다.', () =>
+        navigation.navigate(NAV_ROUTES.MAIN_TABS.NAME),
+      );
     }
   };
 
@@ -204,6 +209,18 @@ const WorkspaceSetupScreen = () => {
               onChangeText={setWorkspaceName}
               placeholderTextColor={COLORS.textTertiary}
               autoFocus
+            />
+
+            <Text style={[styles.inputLabel, styles.labelMarginTop]}>
+              {roomType === 'couple' ? '만난 날짜' : '시작일'}
+            </Text>
+            <TextInput
+              style={styles.input}
+              placeholder="YYYY-MM-DD"
+              value={startDate}
+              onChangeText={setStartDate}
+              placeholderTextColor={COLORS.textTertiary}
+              keyboardType="numeric"
             />
 
             <Checkbox
@@ -381,6 +398,16 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     textAlign: 'left',
     marginBottom: 12,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLORS.textSecondary,
+    marginBottom: 8,
+    marginLeft: 4,
+  },
+  labelMarginTop: {
+    marginTop: 24,
   },
   disabledButton: {
     backgroundColor: COLORS.textTertiary,

@@ -16,6 +16,7 @@ interface WorkspaceState {
     name: string,
     type: 'couple' | 'group',
     isMain: boolean,
+    startDate?: string,
   ) => string;
   sendInvitation: (
     workspaceId: string,
@@ -34,6 +35,7 @@ interface WorkspaceState {
     memberId: string,
     profile: { name: string; avatar?: string },
   ) => void;
+  updateWorkspaceBackground: (workspaceId: string, uri: string) => void;
   initMockData: () => void;
   clearData: () => void;
 }
@@ -50,12 +52,13 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         set(state => ({
           workspaces: [...state.workspaces, workspace],
         })),
-      createNewWorkspace: (name, type, isMain) => {
+      createNewWorkspace: (name, type, isMain, startDate) => {
         const id = `ws-${Date.now()}`;
         const newWorkspace: Workspace = {
           id,
           name,
           type,
+          startDate,
           members: [
             {
               id: 'user-1', // Default to current user's mock ID
@@ -170,13 +173,31 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           };
         });
       },
+      updateWorkspaceBackground: (workspaceId, uri) => {
+        set(state => {
+          const nextWorkspaces = state.workspaces.map(ws =>
+            ws.id === workspaceId ? { ...ws, backgroundImage: uri } : ws,
+          );
+          const isCurrent = state.currentWorkspace?.id === workspaceId;
+          const nextCurrent = isCurrent
+            ? { ...state.currentWorkspace!, backgroundImage: uri }
+            : state.currentWorkspace;
+
+          return {
+            workspaces: nextWorkspaces,
+            currentWorkspace: nextCurrent,
+          };
+        });
+      },
       initMockData: () => {
+        const workspaceWithBg = {
+          ...MOCK_DATA.workspace,
+          backgroundImage:
+            'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=800',
+        };
         set({
-          currentWorkspace: MOCK_DATA.workspace,
-          workspaces: [
-            MOCK_DATA.workspace,
-            ...(MOCK_DATA as any).extraWorkspaces,
-          ],
+          currentWorkspace: workspaceWithBg,
+          workspaces: [workspaceWithBg, ...(MOCK_DATA as any).extraWorkspaces],
           invitations: [],
         });
       },

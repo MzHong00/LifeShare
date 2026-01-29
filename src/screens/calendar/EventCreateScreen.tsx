@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
 import {
   View,
   Text,
@@ -8,16 +14,16 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   Modal,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { Calendar } from 'react-native-calendars';
-import { Calendar as CalendarIcon } from 'lucide-react-native';
+import { Calendar as CalendarIcon, Trash2 } from 'lucide-react-native';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { useCalendarStore } from '@/stores/useCalendarStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { useModalStore } from '@/stores/useModalStore';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
 type EventCreateRouteProp = RouteProp<
@@ -42,6 +48,7 @@ const EventCreateScreen = () => {
 
   const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
   const { events, addEvent, updateEvent, removeEvent } = useCalendarStore();
+  const { showAlert, showConfirm } = useModalStore();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -66,6 +73,30 @@ const EventCreateScreen = () => {
       }
     }
   }, [eventId, events]);
+
+  const handleDelete = useCallback(() => {
+    showConfirm('일정 삭제', '이 일정을 삭제하시겠습니까?', () => {
+      if (eventId) {
+        removeEvent(eventId);
+        navigation.goBack();
+      }
+    });
+  }, [eventId, removeEvent, navigation, showConfirm]);
+
+  useLayoutEffect(() => {
+    if (eventId) {
+      navigation.setOptions({
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={handleDelete}
+            style={{ marginRight: SPACING.md }}
+          >
+            <Trash2 size={24} color={COLORS.error} />
+          </TouchableOpacity>
+        ),
+      });
+    }
+  }, [navigation, eventId, handleDelete]);
 
   const handleDayPress = (day: any) => {
     if (startDate && !endDate) {
@@ -114,17 +145,17 @@ const EventCreateScreen = () => {
 
   const handleSave = () => {
     if (!title.trim()) {
-      Alert.alert('알림', '일정 제목을 입력해주세요.');
+      showAlert('알림', '일정 제목을 입력해주세요.');
       return;
     }
 
     if (!startDate || !endDate) {
-      Alert.alert('알림', '기간을 선택해주세요.');
+      showAlert('알림', '기간을 선택해주세요.');
       return;
     }
 
     if (!currentWorkspace) {
-      Alert.alert('알림', '워크스페이스 정보가 없습니다.');
+      showAlert('알림', '워크스페이스 정보가 없습니다.');
       return;
     }
 
@@ -140,29 +171,13 @@ const EventCreateScreen = () => {
 
     if (eventId) {
       updateEvent(eventId, eventData);
-      Alert.alert('알림', '일정이 수정되었습니다.');
+      showAlert('알림', '일정이 수정되었습니다.');
     } else {
       addEvent(eventData);
-      Alert.alert('알림', '새로운 일정이 추가되었습니다.');
+      showAlert('알림', '새로운 일정이 추가되었습니다.');
     }
 
     navigation.goBack();
-  };
-
-  const handleDelete = () => {
-    Alert.alert('일정 삭제', '이 일정을 삭제하시겠습니까?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '삭제',
-        style: 'destructive',
-        onPress: () => {
-          if (eventId) {
-            removeEvent(eventId);
-            navigation.goBack();
-          }
-        },
-      },
-    ]);
   };
 
   return (
