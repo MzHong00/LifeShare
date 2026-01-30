@@ -18,6 +18,7 @@ import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { useModalStore } from '@/stores/useModalStore';
 import { useMemoryStore } from '@/stores/useMemoryStore';
+import { getTodayDateString, formatDate } from '@/utils/date';
 
 type MemoryEditRouteProp = RouteProp<
   { params: { memoryId: string } },
@@ -29,13 +30,13 @@ const MemoryEditScreen = () => {
   const route = useRoute<MemoryEditRouteProp>();
   const { memoryId } = route.params; // 이제 항상 memoryId가 있다고 가정함
 
-  const { showAlert, showChoice } = useModalStore();
+  const { showModal } = useModalStore();
   const { memories, updateMemory, deleteMemory, setSelectedMemoryId } =
     useMemoryStore();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [date, setDate] = useState(new Date().toLocaleDateString());
+  const [date, setDate] = useState(getTodayDateString());
   const [location] = useState('현재 위치');
   const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>(
     undefined,
@@ -47,69 +48,81 @@ const MemoryEditScreen = () => {
     if (memory) {
       setTitle(memory.title);
       setDescription(memory.description || '');
-      setDate(new Date(memory.date).toLocaleDateString());
+      setDate(formatDate(memory.date));
       setThumbnailUrl(memory.thumbnailUrl);
     } else {
       // 해당 추억을 찾을 수 없는 경우
-      showAlert('에러', '추억 정보를 불러올 수 없습니다.', () => {
-        navigation.goBack();
+      showModal({
+        type: 'alert',
+        title: '에러',
+        message: '추억 정보를 불러올 수 없습니다.',
+        onConfirm: () => navigation.goBack(),
       });
     }
-  }, [memoryId, memories, navigation, showAlert]);
+  }, [memoryId, memories, navigation, showModal]);
 
   const handleSave = () => {
     if (!title.trim()) {
-      showAlert('알림', '추억의 제목을 입력해주세요.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '추억의 제목을 입력해주세요.',
+      });
       return;
     }
 
     updateMemory(memoryId, { title, description, thumbnailUrl });
-    showAlert('성공', '추억이 수정되었습니다.', () => {
-      navigation.goBack();
+    showModal({
+      type: 'alert',
+      title: '성공',
+      message: '추억이 수정되었습니다.',
+      onConfirm: () => navigation.goBack(),
     });
   };
 
   const handleDelete = () => {
-    showChoice(
-      '추억 삭제',
-      '정말로 이 추억을 삭제하시겠습니까? 삭제된 추억은 복구할 수 없습니다.',
-      () => {
+    showModal({
+      type: 'confirm',
+      title: '추억 삭제',
+      message:
+        '정말로 이 추억을 삭제하시겠습니까? 삭제된 추억은 복구할 수 없습니다.',
+      confirmText: '삭제',
+      cancelText: '취소',
+      onConfirm: () => {
         deleteMemory(memoryId);
-        setSelectedMemoryId(null); // 지도에서 선택 해제
-        showAlert('완료', '추억이 삭제되었습니다.', () => {
-          navigation.goBack();
+        setSelectedMemoryId(null);
+        showModal({
+          type: 'alert',
+          title: '완료',
+          message: '추억이 삭제되었습니다.',
+          onConfirm: () => navigation.goBack(),
         });
       },
-      () => {},
-      undefined,
-      '삭제',
-      '취소',
-    );
+    });
   };
   const handleSelectImage = () => {
-    showChoice(
-      '사진 추가',
-      '사진을 가져올 방법을 선택해주세요.',
-      () => {
-        // 카메라 선택 시
+    showModal({
+      type: 'choice',
+      title: '사진 추가',
+      message: '사진을 가져올 방법을 선택해주세요.',
+      confirmText: '카메라',
+      destructiveText: '갤러리',
+      cancelText: '취소',
+      onConfirm: () => {
         launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
           if (response.assets && response.assets[0].uri) {
             setThumbnailUrl(response.assets[0].uri);
           }
         });
       },
-      () => {
-        // 갤러리 선택 시
+      onDestructive: () => {
         launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
           if (response.assets && response.assets[0].uri) {
             setThumbnailUrl(response.assets[0].uri);
           }
         });
       },
-      undefined,
-      '카메라',
-      '갤러리',
-    );
+    });
   };
 
   return (

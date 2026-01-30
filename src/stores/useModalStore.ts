@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 
+export type ModalType = 'alert' | 'confirm' | 'choice';
+
 interface ModalOptions {
+  type: ModalType;
   title: string;
   message: string;
   confirmText?: string;
@@ -9,94 +12,37 @@ interface ModalOptions {
   onConfirm?: () => void;
   onCancel?: () => void;
   onDestructive?: () => void;
-  type?: 'alert' | 'confirm' | 'choice';
 }
 
 interface ModalState {
   isVisible: boolean;
   options: ModalOptions;
-  showAlert: (title: string, message: string, onConfirm?: () => void) => void;
-  showConfirm: (
-    title: string,
-    message: string,
-    onConfirm: () => void,
-    onCancel?: () => void,
-    confirmText?: string,
-    cancelText?: string,
-  ) => void;
-  showChoice: (
-    title: string,
-    message: string,
-    onConfirm: () => void,
-    onDestructive: () => void,
-    onCancel?: () => void,
-    confirmText?: string,
-    destructiveText?: string,
-    cancelText?: string,
-  ) => void;
+  /**
+   * 모달을 표시합니다. 유일한 모달 호출 창구입니다.
+   * @param options type('alert' | 'confirm' | 'choice'), title, message 등을 포함한 객체
+   */
+  showModal: (options: ModalOptions) => void;
   hideModal: () => void;
 }
 
 const defaultOptions: ModalOptions = {
+  type: 'alert',
   title: '',
   message: '',
   confirmText: '확인',
   cancelText: '취소',
-  type: 'alert',
+  destructiveText: '삭제',
 };
 
 export const useModalStore = create<ModalState>(set => ({
   isVisible: false,
   options: defaultOptions,
-  showAlert: (title, message, onConfirm) =>
+
+  showModal: options =>
     set({
       isVisible: true,
-      options: {
-        ...defaultOptions,
-        title,
-        message,
-        onConfirm,
-        type: 'alert',
-      },
+      options: { ...defaultOptions, ...options },
     }),
-  showConfirm: (title, message, onConfirm, onCancel, confirmText, cancelText) =>
-    set({
-      isVisible: true,
-      options: {
-        ...defaultOptions,
-        title,
-        message,
-        onConfirm,
-        onCancel,
-        confirmText: confirmText || '확인',
-        cancelText: cancelText || '취소',
-        type: 'confirm',
-      },
-    }),
-  showChoice: (
-    title,
-    message,
-    onConfirm,
-    onDestructive,
-    onCancel,
-    confirmText,
-    destructiveText,
-    cancelText,
-  ) =>
-    set({
-      isVisible: true,
-      options: {
-        ...defaultOptions,
-        title,
-        message,
-        onConfirm,
-        onDestructive,
-        onCancel,
-        confirmText: confirmText || '확인',
-        destructiveText: destructiveText || '삭제',
-        cancelText: cancelText || '취소',
-        type: 'choice',
-      },
-    }),
+
   hideModal: () => set({ isVisible: false }),
 }));

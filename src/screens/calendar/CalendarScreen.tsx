@@ -8,78 +8,25 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { Calendar } from 'react-native-calendars';
 import { Plus } from 'lucide-react-native';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { useCalendarStore } from '@/stores/useCalendarStore';
+import {
+  getTodayDateString,
+  getIntermediateDates,
+  formatDate,
+} from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
-
-// Set Korean Locale for Calendar
-LocaleConfig.locales.ko = {
-  monthNames: [
-    '1월',
-    '2월',
-    '3월',
-    '4월',
-    '5월',
-    '6월',
-    '7월',
-    '8월',
-    '9월',
-    '10월',
-    '11월',
-    '12월',
-  ],
-  monthNamesShort: [
-    '1월',
-    '2월',
-    '3월',
-    '4월',
-    '5월',
-    '6월',
-    '7월',
-    '8월',
-    '9월',
-    '10월',
-    '11월',
-    '12월',
-  ],
-  dayNames: [
-    '일요일',
-    '월요일',
-    '화요일',
-    '수요일',
-    '목요일',
-    '금요일',
-    '토요일',
-  ],
-  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-  today: '오늘',
-};
-LocaleConfig.defaultLocale = 'ko';
 
 const CalendarScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
-  const [selected, setSelected] = useState(
-    new Date().toISOString().split('T')[0],
-  );
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selected, setSelected] = useState(getTodayDateString());
+  const [currentMonth, setCurrentMonth] = useState(getTodayDateString());
 
   const events = useCalendarStore(state => state.events);
-
-  // Helper to get all dates between two dates
-  const getDatesInRange = (startDate: string, endDate: string) => {
-    const dates = [];
-    let curr = new Date(startDate);
-    const end = new Date(endDate);
-    while (curr <= end) {
-      dates.push(curr.toISOString().split('T')[0]);
-      curr.setDate(curr.getDate() + 1);
-    }
-    return dates;
-  };
 
   // Generate markedDates based on store events
   const markedDates = useMemo(() => {
@@ -93,8 +40,16 @@ const CalendarScreen = () => {
     };
 
     events.forEach(event => {
-      const range = getDatesInRange(event.startDate, event.endDate);
-      range.forEach(date => {
+      // Get full range including start and end
+      const range = [
+        event.startDate,
+        ...getIntermediateDates(event.startDate, event.endDate),
+        event.endDate,
+      ];
+      // Filter out duplicates if startDate equals endDate
+      const uniqueRange = [...new Set(range)];
+
+      uniqueRange.forEach(date => {
         if (marks[date]) {
           marks[date].marked = true;
           marks[date].dotColor = event.color || COLORS.primary;
@@ -118,8 +73,8 @@ const CalendarScreen = () => {
     });
   }, [events]);
 
-  const formatHeaderDate = (date: Date) => {
-    return `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
+  const formatHeaderDate = (dateStr: string) => {
+    return formatDate(dateStr, 'YYYY년 M월');
   };
 
   const handleAddEvent = () => {
@@ -154,7 +109,7 @@ const CalendarScreen = () => {
             current={selected}
             onDayPress={day => setSelected(day.dateString)}
             onMonthChange={month => {
-              setCurrentMonth(new Date(month.dateString));
+              setCurrentMonth(month.dateString);
             }}
             markedDates={markedDates}
             renderHeader={() => null}

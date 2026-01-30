@@ -53,7 +53,7 @@ const WorkspaceListScreen = () => {
   const updateMemberProfile = useWorkspaceStore(
     state => state.updateMemberProfile,
   );
-  const { showAlert, showConfirm } = useModalStore();
+  const { showModal } = useModalStore();
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingWorkspace, setEditingWorkspace] = useState<any>(null);
@@ -93,11 +93,12 @@ const WorkspaceListScreen = () => {
   };
 
   const handleRemove = (workspace: any) => {
-    showConfirm(
-      '연결 해지',
-      `'${workspace.name}' ${APP_WORKSPACE.KR}과의 연결을 해지하시겠습니까?\n데이터는 삭제되지 않지만 목록에서 제거됩니다.`,
-      () => removeWorkspace(workspace.id),
-    );
+    showModal({
+      type: 'confirm',
+      title: '연결 해지',
+      message: `'${workspace.name}' ${APP_WORKSPACE.KR}과의 연결을 해지하시겠습니까?\n데이터는 삭제되지 않지만 목록에서 제거됩니다.`,
+      onConfirm: () => removeWorkspace(workspace.id),
+    });
   };
 
   const handleEditName = (workspace: any) => {
@@ -108,7 +109,11 @@ const WorkspaceListScreen = () => {
 
   const saveName = () => {
     if (!newName.trim()) {
-      showAlert('알림', '공간 이름을 입력해주세요.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '공간 이름을 입력해주세요.',
+      });
       return;
     }
     updateWorkspaceName(editingWorkspace.id, newName.trim());
@@ -124,12 +129,20 @@ const WorkspaceListScreen = () => {
 
   const sendDirectInvite = () => {
     if (!inviteEmail.trim()) {
-      showAlert('알림', '초대할 파트너의 이메일을 입력해주세요.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '초대할 파트너의 이메일을 입력해주세요.',
+      });
       return;
     }
 
     if (!userEmail) {
-      showAlert('알림', '로그인 정보가 없습니다.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '로그인 정보가 없습니다.',
+      });
       return;
     }
 
@@ -140,7 +153,11 @@ const WorkspaceListScreen = () => {
       inviteEmail.trim(),
     );
 
-    showAlert('알림', '초대가 전송되었습니다.');
+    showModal({
+      type: 'alert',
+      title: '알림',
+      message: '초대가 전송되었습니다.',
+    });
     setInviteModalVisible(false);
     setInvitingWorkspace(null);
   };
@@ -161,7 +178,11 @@ const WorkspaceListScreen = () => {
 
   const saveProfile = () => {
     if (!profileName.trim()) {
-      showAlert('알림', '이름을 입력해주세요.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '이름을 입력해주세요.',
+      });
       return;
     }
     updateMemberProfile(editingProfileWorkspace.id, 'user-1', {
@@ -169,7 +190,11 @@ const WorkspaceListScreen = () => {
     });
     setProfileModalVisible(false);
     setEditingProfileWorkspace(null);
-    showAlert('알림', '활동명이 변경되었습니다.');
+    showModal({
+      type: 'alert',
+      title: '알림',
+      message: '활동명이 변경되었습니다.',
+    });
   };
 
   return (
@@ -181,7 +206,11 @@ const WorkspaceListScreen = () => {
             <TouchableOpacity
               onPress={() => {
                 useWorkspaceStore.getState().initMockData();
-                showAlert('알림', '목업 데이터로 초기화되었습니다.');
+                showModal({
+                  type: 'alert',
+                  title: '알림',
+                  message: '목업 데이터로 초기화되었습니다.',
+                });
               }}
             >
               <Text style={styles.resetText}>목업 초기화</Text>

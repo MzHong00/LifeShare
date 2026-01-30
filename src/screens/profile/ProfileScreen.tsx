@@ -60,7 +60,7 @@ const ProfileScreen = () => {
   const respondToInvitation = useWorkspaceStore(
     state => state.respondToInvitation,
   );
-  const showConfirm = useModalStore(state => state.showConfirm);
+  const { showModal } = useModalStore();
 
   const pendingInvitations = invitations.filter(
     inv => inv.inviteeEmail === userEmail && inv.status === 'pending',
@@ -72,22 +72,24 @@ const ProfileScreen = () => {
     name: string,
   ) => {
     const action = status === 'accepted' ? '수락' : '거절';
-    showConfirm(
-      '초대 확인',
-      `'${name}' 라이프룸 초대를 ${action}하시겠습니까?`,
-      () => respondToInvitation(id, status),
-    );
+    showModal({
+      type: 'confirm',
+      title: '초대 확인',
+      message: `'${name}' 라이프룸 초대를 ${action}하시겠습니까?`,
+      onConfirm: () => respondToInvitation(id, status),
+    });
   };
 
   const handleLogout = () => {
-    showConfirm(
-      '로그아웃',
-      '정말 로그아웃 하시겠어요?\n데이터가 초기화될 수 있습니다.',
-      () => {
+    showModal({
+      type: 'confirm',
+      title: '로그아웃',
+      message: '정말 로그아웃 하시겠어요?\n데이터가 초기화될 수 있습니다.',
+      onConfirm: () => {
         clearTokens();
         clearData();
       },
-    );
+    });
   };
 
   const displayUserName = user?.name || userEmail?.split('@')[0] || '사용자';

@@ -1,4 +1,4 @@
-import React, {
+import {
   useState,
   useEffect,
   useMemo,
@@ -24,6 +24,7 @@ import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { useCalendarStore } from '@/stores/useCalendarStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { useModalStore } from '@/stores/useModalStore';
+import { getTodayDateString } from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
 type EventCreateRouteProp = RouteProp<
@@ -40,6 +41,22 @@ const EVENT_COLORS = [
   '#FF2D55', // Pink
 ];
 
+const HeaderDeleteButton = () => {
+  const route = useRoute<any>();
+  const handleDelete = route.params?.handleDelete;
+
+  if (!route.params?.eventId) return null;
+
+  return (
+    <TouchableOpacity
+      onPress={() => handleDelete?.()}
+      style={{ marginRight: SPACING.md }}
+    >
+      <Trash2 size={24} color={COLORS.error} />
+    </TouchableOpacity>
+  );
+};
+
 const EventCreateScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<EventCreateRouteProp>();
@@ -48,16 +65,14 @@ const EventCreateScreen = () => {
 
   const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
   const { events, addEvent, updateEvent, removeEvent } = useCalendarStore();
-  const { showAlert, showConfirm } = useModalStore();
+  const { showModal } = useModalStore();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState(
-    initialDate || new Date().toISOString().split('T')[0],
+    initialDate || getTodayDateString(),
   );
-  const [endDate, setEndDate] = useState(
-    initialDate || new Date().toISOString().split('T')[0],
-  );
+  const [endDate, setEndDate] = useState(initialDate || getTodayDateString());
   const [selectedColor, setSelectedColor] = useState(EVENT_COLORS[0]);
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
 
@@ -75,28 +90,31 @@ const EventCreateScreen = () => {
   }, [eventId, events]);
 
   const handleDelete = useCallback(() => {
-    showConfirm('일정 삭제', '이 일정을 삭제하시겠습니까?', () => {
-      if (eventId) {
-        removeEvent(eventId);
-        navigation.goBack();
-      }
+    showModal({
+      type: 'confirm',
+      title: '일정 삭제',
+      message: '이 일정을 삭제하시겠습니까?',
+      onConfirm: () => {
+        if (eventId) {
+          removeEvent(eventId);
+          navigation.goBack();
+        }
+      },
     });
-  }, [eventId, removeEvent, navigation, showConfirm]);
+  }, [eventId, removeEvent, navigation, showModal]);
+
+  // handleDelete 함수와 eventId를 네비게이션 파라미터에 등록
+  useEffect(() => {
+    navigation.setParams({ handleDelete, eventId } as any);
+  }, [navigation, handleDelete, eventId]);
 
   useLayoutEffect(() => {
     if (eventId) {
       navigation.setOptions({
-        headerRight: () => (
-          <TouchableOpacity
-            onPress={handleDelete}
-            style={{ marginRight: SPACING.md }}
-          >
-            <Trash2 size={24} color={COLORS.error} />
-          </TouchableOpacity>
-        ),
+        headerRight: HeaderDeleteButton,
       });
     }
-  }, [navigation, eventId, handleDelete]);
+  }, [navigation, eventId]);
 
   const handleDayPress = (day: any) => {
     if (startDate && !endDate) {
@@ -145,17 +163,29 @@ const EventCreateScreen = () => {
 
   const handleSave = () => {
     if (!title.trim()) {
-      showAlert('알림', '일정 제목을 입력해주세요.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '일정 제목을 입력해주세요.',
+      });
       return;
     }
 
     if (!startDate || !endDate) {
-      showAlert('알림', '기간을 선택해주세요.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '기간을 선택해주세요.',
+      });
       return;
     }
 
     if (!currentWorkspace) {
-      showAlert('알림', '워크스페이스 정보가 없습니다.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '워크스페이스 정보가 없습니다.',
+      });
       return;
     }
 
@@ -171,10 +201,18 @@ const EventCreateScreen = () => {
 
     if (eventId) {
       updateEvent(eventId, eventData);
-      showAlert('알림', '일정이 수정되었습니다.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '일정이 수정되었습니다.',
+      });
     } else {
       addEvent(eventData);
-      showAlert('알림', '새로운 일정이 추가되었습니다.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '새로운 일정이 추가되었습니다.',
+      });
     }
 
     navigation.goBack();

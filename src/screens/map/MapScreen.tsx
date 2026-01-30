@@ -23,6 +23,7 @@ import { useGeolocation } from '@/businesses/geolocation/useGeolocation';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { useMemoryStore } from '@/stores/useMemoryStore';
 import { useModalStore } from '@/stores/useModalStore';
+import { getCurrentTimeString } from '@/utils/date';
 
 const MapScreen = () => {
   const mapRef = useRef<MapView>(null);
@@ -106,7 +107,7 @@ const MapScreen = () => {
     );
   };
 
-  const { showAlert, showChoice } = useModalStore();
+  const { showModal } = useModalStore();
 
   const openDirections = async () => {
     const partner = membersWithLocation.find(m => m.id === 'user-2');
@@ -121,10 +122,18 @@ const MapScreen = () => {
       if (supported) {
         await Linking.openURL(url);
       } else {
-        showAlert('에러', '구글 지도 앱을 열 수 없습니다.');
+        showModal({
+          type: 'alert',
+          title: '에러',
+          message: '구글 지도 앱을 열 수 없습니다.',
+        });
       }
     } catch {
-      showAlert('에러', '길찾기 실행 중 오류가 발생했습니다.');
+      showModal({
+        type: 'alert',
+        title: '에러',
+        message: '길찾기 실행 중 오류가 발생했습니다.',
+      });
     }
   };
 
@@ -134,24 +143,28 @@ const MapScreen = () => {
         stopRecording();
         return;
       }
-      showChoice(
-        '추억 기록 중단',
-        '지금까지의 경로를 추억으로 저장할까요?',
-        () => {
+      showModal({
+        type: 'choice',
+        title: '추억 기록 중단',
+        message: '지금까지의 경로를 추억으로 저장할까요?',
+        confirmText: '저장',
+        destructiveText: '기록 삭제',
+        cancelText: '취소',
+        onConfirm: () => {
           saveMemory({
             id: Date.now().toString(),
-            title: `${new Date().toLocaleTimeString()}의 기록`,
+            title: `${getCurrentTimeString()}의 기록`,
             userId: 'user-1',
             workspaceId: currentWorkspace?.id || 'ws-1',
           });
-          showAlert('저장 완료', '추억 탭에서 확인할 수 있습니다.');
+          showModal({
+            type: 'alert',
+            title: '저장 완료',
+            message: '추억 탭에서 확인할 수 있습니다.',
+          });
         },
-        () => stopRecording(),
-        undefined,
-        '저장',
-        '기록 삭제',
-        '취소',
-      );
+        onDestructive: () => stopRecording(),
+      });
     } else {
       startRecording();
     }

@@ -18,6 +18,7 @@ import { MessageBubble } from '@/components/chat/MessageBubble';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { ProfileAvatar } from '@/components/common/ProfileAvatar';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { formatChatTime } from '@/utils/date';
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState<Message[]>([
@@ -58,10 +59,7 @@ const ChatScreen = () => {
       id: Date.now().toString(),
       text: inputText,
       sender: 'me',
-      time: new Date().toLocaleTimeString('ko-KR', {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
+      time: formatChatTime(),
     };
 
     setMessages([...messages, newMessage]);

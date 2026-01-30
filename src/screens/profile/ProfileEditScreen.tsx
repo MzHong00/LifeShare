@@ -43,7 +43,7 @@ const HeaderSaveButton = () => {
 const ProfileEditScreen = () => {
   const navigation = useNavigation();
   const { user: userProfile, updateUser: updateProfile } = useUserStore();
-  const { showAlert, showChoice } = useModalStore();
+  const { showModal } = useModalStore();
 
   const [name, setName] = useState(userProfile?.name || '');
   const [profileImage, setProfileImage] = useState(
@@ -51,41 +51,43 @@ const ProfileEditScreen = () => {
   );
 
   const handleSelectImage = () => {
-    showChoice(
-      '프로필 사진 수정',
-      '사진을 가져올 방법을 선택하세요.',
-      () => {
-        // 카메라 선택 시
+    showModal({
+      type: 'choice',
+      title: '프로필 사진 수정',
+      message: '사진을 가져올 방법을 선택하세요.',
+      confirmText: '카메라',
+      destructiveText: '갤러리',
+      cancelText: '취소',
+      onConfirm: () => {
         launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
           if (response.assets && response.assets[0].uri) {
             setProfileImage(response.assets[0].uri);
           }
         });
       },
-      () => {
-        // 갤러리 선택 시
+      onDestructive: () => {
         launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
           if (response.assets && response.assets[0].uri) {
             setProfileImage(response.assets[0].uri);
           }
         });
       },
-      () => {},
-      '카메라',
-      '갤러리',
-      '취소',
-    );
+    });
   };
 
   const handleSave = useCallback(() => {
     if (!name.trim()) {
-      showAlert('알림', '이름을 입력해주세요.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '이름을 입력해주세요.',
+      });
       return;
     }
 
     updateProfile({ name: name.trim(), profileImage });
     navigation.goBack();
-  }, [name, profileImage, updateProfile, navigation, showAlert]);
+  }, [name, profileImage, updateProfile, navigation, showModal]);
 
   // handleSave 함수를 네비게이션 파라미터에 등록
   useEffect(() => {

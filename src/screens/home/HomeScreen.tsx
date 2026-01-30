@@ -40,7 +40,7 @@ const HomeScreen = () => {
   const updateWorkspaceBackground = useWorkspaceStore(
     state => state.updateWorkspaceBackground,
   );
-  const { showConfirm, showAlert } = useModalStore();
+  const { showModal } = useModalStore();
 
   // currentWorkspace는 AppNavigator에서 보장됨
   if (!currentWorkspace) return null;
@@ -86,10 +86,13 @@ const HomeScreen = () => {
           nextDDay={MOCK_DATA.workspace.nextEvent.remainingDays}
           backgroundImage={currentWorkspace.backgroundImage}
           onPress={() =>
-            showConfirm(
-              '배경 변경',
-              '앨범에서 사진을 선택하여 배경을 변경하시겠습니까?',
-              async () => {
+            showModal({
+              type: 'confirm',
+              title: '배경 변경',
+              message: '앨범에서 사진을 선택하여 배경을 변경하시겠습니까?',
+              confirmText: '앨범에서 선택',
+              cancelText: '취소',
+              onConfirm: async () => {
                 const result = await launchImageLibrary({
                   mediaType: 'photo',
                   quality: 0.8,
@@ -100,13 +103,14 @@ const HomeScreen = () => {
                     currentWorkspace.id,
                     result.assets[0].uri,
                   );
-                  showAlert('알림', '배경 이미지가 변경되었습니다.');
+                  showModal({
+                    type: 'alert',
+                    title: '알림',
+                    message: '배경 이미지가 변경되었습니다.',
+                  });
                 }
               },
-              undefined,
-              '앨범에서 선택',
-              '취소',
-            )
+            })
           }
           onPressNextEvent={() =>
             navigation.navigate(NAV_ROUTES.ANNIVERSARY.NAME)
