@@ -25,6 +25,8 @@
 
 ## 📂 주요 디렉토리 구조
 
+- `src/App.tsx`: 앱 메인 진입점 컴포넌트
+- `src/api`: API 통신 로직 (index, queries, mutations 순으로 구성)
 - `src/assets`: 이미지, 아이콘, 폰트 등 정적 리소스 관리
 - `src/businesses`: 특정 비즈니스 로직의 훅(hook.ts)과 함수(service.ts)로 구성
 - `src/components`: UI 컴포넌트
@@ -33,7 +35,6 @@
 - `src/lib`: Axios, Firebase 등 외부 라이브러리 설정 및 인스턴스
 - `src/navigations`: `AppNavigator` 및 단위별 네비게이터 체계
 - `src/screens`: 각 페이지 스크린 컴포넌트
-- `src/services`: API 통신 로직 (index, queries, mutations 순으로 구성)
 - `src/stores`: Zustand를 활용한 전역 상태 관리 (Auth, Workspace 등)
 - `src/types`: 전역 TypeScript 인터페이스 및 타입 정의
 - `src/utils`: 포맷팅, 유효성 검사 등 공통 유틸리티 함수
@@ -57,6 +58,7 @@
   - 색상은 항상 `COLORS` 객체(`@/constants/theme`)에서 가져와 사용.
   - 내비게이션 등록 및 이동 시에는 반드시 `NAV_ROUTES` 상수(`@/constants/navigation`)를 사용한다.
   - import 시에는 `@/` 접두사를 사용하는 절대 경로를 우선적으로 사용 (예: `@/components/Button`).
+  - **Date Handling**: `dayjs` 또는 `new Date()`를 컴포넌트 내부에서 직접 사용하지 않고, 반드시 `@/utils/date`에 정의된 공통 유틸리티 함수를 사용한다.
   - **Import Structure & Order**:
     1. 외부 라이브러리 (`react`, `react-native`, 그 외 npm 패키지)
     2. (한 줄 개행)
@@ -64,7 +66,7 @@
        - `@/types` (데이터 타입)
        - `@/lib` (라이브러리 설정)
        - `@/constants` (테마 및 설정)
-       - `@/services` (데이터 처리 index.ts, queries.ts, mutations.ts 순)
+       - `@/api` (데이터 처리 index.ts, queries.ts, mutations.ts 순)
        - `@/stores` (데이터 및 상태)
        - `@/utils` (공통 유틸리티)
        - `@/hooks` (공통 커스텀 훅)
@@ -80,6 +82,7 @@
   - 파일 하나당 하나의 책임만 가질 수 있도록 리팩토링 권장.
   - 타입 정의(`interface`, `type`)는 최대한 명확하게 기술.
   - 도메인 모델이나 공유 타입은 반드시 `@/types` 폴더에서 관리하고 재사용한다.
+  - 컴포넌트 내부에 또 다른 컴포넌트를 정의(Nested Component)하지 않는다. 필요 시 별도의 파일로 분리하거나, 파일 내 최상위 수준(Top-level)에서 정의한다.
   - TypeScript의 `any` 타입 사용을 지양하고, 최대한 명확한 타입을 정의하여 사용한다.
   - TypeScript의 타입을 가져올 때는 `import type` 키워드를 사용한다.
 
@@ -96,4 +99,4 @@
 
 ---
 
-_최종 업데이트: 2026-01-28_
+_최종 업데이트: 2026-01-30_

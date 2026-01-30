@@ -103,7 +103,6 @@ const AppNavigator = () => {
                   component={TodoScreen}
                   options={{
                     ...COMMON_HEADER_OPTIONS,
-                    title: NAV_ROUTES.TODO.TITLE,
                   }}
                 />
                 <Stack.Screen
