@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Todo } from '@/types/todo';
+import { getISOTimestamp } from '@/utils/date';
 
 interface TodoState {
   todos: Todo[];
@@ -20,7 +21,7 @@ export const useTodoStore = create<TodoState>()(
         const newTodo: Todo = {
           ...todoData,
           id: `todo-${Date.now()}`,
-          createdAt: new Date().toISOString(),
+          createdAt: getISOTimestamp(),
         };
         set(state => ({
           todos: [newTodo, ...state.todos],

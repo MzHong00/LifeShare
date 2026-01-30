@@ -1,17 +1,16 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  FlatList,
   Modal,
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { Calendar } from 'react-native-calendars';
 import {
   Plus,
   CheckCircle2,
@@ -19,6 +18,7 @@ import {
   Calendar as CalendarIcon,
   Users,
   ChevronRight,
+  ChevronDown,
 } from 'lucide-react-native';
 
 import { Todo } from '@/types/todo';
@@ -26,374 +26,193 @@ import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { useTodoStore } from '@/stores/useTodoStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import {
+  getTodayDateString,
+  isPastDate,
+  getRelativeDateLabel,
+  formatDate,
+} from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
-LocaleConfig.locales.ko = {
-  monthNames: [
-    '1월',
-    '2월',
-    '3월',
-    '4월',
-    '5월',
-    '6월',
-    '7월',
-    '8월',
-    '9월',
-    '10월',
-    '11월',
-    '12월',
-  ],
-  monthNamesShort: [
-    '1월',
-    '2월',
-    '3월',
-    '4월',
-    '5월',
-    '6월',
-    '7월',
-    '8월',
-    '9월',
-    '10월',
-    '11월',
-    '12월',
-  ],
-  dayNames: [
-    '일요일',
-    '월요일',
-    '화요일',
-    '수요일',
-    '목요일',
-    '금요일',
-    '토요일',
-  ],
-  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-  today: '오늘',
+interface TodoItemProps {
+  item: Todo;
+  currentWorkspace: any;
+  onToggle: (id: string) => void;
+  onPress: (id: string) => void;
+}
+
+const TodoItem = ({
+  item,
+  currentWorkspace,
+  onToggle,
+  onPress,
+}: TodoItemProps) => {
+  const assignee = currentWorkspace?.members?.find(
+    (m: any) => m.id === item.assigneeId,
+  );
+
+  return (
+    <TouchableOpacity
+      style={styles.todoItem}
+      onPress={() => onPress(item.id)}
+      activeOpacity={0.7}
+    >
+      <TouchableOpacity
+        style={styles.checkboxArea}
+        onPress={() => onToggle(item.id)}
+      >
+        {item.isCompleted ? (
+          <CheckCircle2
+            size={24}
+            color={COLORS.primary}
+            fill={COLORS.primaryLight}
+          />
+        ) : (
+          <Circle size={24} color={COLORS.border} />
+        )}
+      </TouchableOpacity>
+
+      <View style={styles.todoTextContainer}>
+        <Text
+          style={[styles.todoTitle, item.isCompleted && styles.completedText]}
+          numberOfLines={2}
+        >
+          {item.title}
+        </Text>
+        <View style={styles.todoFooter}>
+          {item.assigneeId && assignee ? (
+            <View style={styles.metaItem}>
+              {assignee.avatar ? (
+                <Image
+                  source={{ uri: assignee.avatar }}
+                  style={styles.miniAvatar}
+                />
+              ) : (
+                <View style={styles.initialAvatar}>
+                  <Text style={styles.initialText}>
+                    {assignee.name.charAt(0)}
+                  </Text>
+                </View>
+              )}
+              <Text style={styles.assigneeName}>{assignee.name}</Text>
+            </View>
+          ) : (
+            <View style={styles.metaItem}>
+              <Users size={12} color={COLORS.textTertiary} />
+              <Text style={styles.assigneeName}>공통</Text>
+            </View>
+          )}
+
+          {item.dueDate && <Text style={styles.separator}>·</Text>}
+
+          {item.dueDate && (
+            <View
+              style={[
+                styles.metaItem,
+                !item.isCompleted &&
+                  isPastDate(item.dueDate) &&
+                  styles.overdueBadgeSubtle,
+              ]}
+            >
+              <CalendarIcon
+                size={12}
+                color={
+                  !item.isCompleted && isPastDate(item.dueDate)
+                    ? COLORS.error
+                    : COLORS.textTertiary
+                }
+              />
+              <Text
+                style={[
+                  styles.dueDateText,
+                  !item.isCompleted &&
+                    isPastDate(item.dueDate) &&
+                    styles.overdueText,
+                ]}
+              >
+                {getRelativeDateLabel(item.dueDate)}
+              </Text>
+            </View>
+          )}
+        </View>
+      </View>
+      <ChevronRight size={16} color={COLORS.border} />
+    </TouchableOpacity>
+  );
 };
-LocaleConfig.defaultLocale = 'ko';
 
 const TodoScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
   const [showMineOnly, setShowMineOnly] = useState(false);
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
-  const [selectedRange, setSelectedRange] = useState<{
-    start: string | null;
-    end: string | null;
-  }>({
-    start: new Date().toISOString().split('T')[0],
-    end: null,
-  });
+  const [selectedDate, setSelectedDate] = useState<string>(
+    getTodayDateString(),
+  );
 
   const todos = useTodoStore(state => state.todos);
   const toggleTodo = useTodoStore(state => state.toggleTodo);
   const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
 
   // Generate dates from 14 days ago to 14 days ahead
-  const dateList = useMemo(() => {
-    const list = Array.from({ length: 29 }).map((_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() - 14 + i);
-      return {
-        date: d.toISOString().split('T')[0],
-        day: d.toLocaleDateString('ko-KR', { weekday: 'short' }),
-        dateNum: d.getDate(),
-      };
-    });
-    // Prepend 'All' option
-    return [{ date: 'all', day: '기록', dateNum: '전체' }, ...list];
-  }, []);
 
   const filteredTodos = useMemo(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayDateString();
     return todos.filter(todo => {
       if (todo.workspaceId !== currentWorkspace?.id) return false;
       if (showMineOnly && todo.assigneeId !== 'user-1') return false;
 
-      // Range filtering
-      if (selectedRange.start && selectedRange.end) {
-        if (!todo.dueDate) return false;
-        return (
-          todo.dueDate >= selectedRange.start &&
-          todo.dueDate <= selectedRange.end
-        );
-      }
+      if (selectedDate === 'all') return true;
 
-      // Single day filtering (legacy/default mode)
-      if (selectedRange.start === 'all') return true;
       if (todo.dueDate) {
-        if (
-          selectedRange.start === today &&
-          !todo.isCompleted &&
-          todo.dueDate < today
-        )
+        if (selectedDate === today && !todo.isCompleted && todo.dueDate < today)
           return true;
-        return todo.dueDate === selectedRange.start;
+        return todo.dueDate === selectedDate;
       }
-      return selectedRange.start === today || selectedRange.start === 'all';
+      return selectedDate === today;
     });
-  }, [todos, currentWorkspace?.id, showMineOnly, selectedRange]);
+  }, [todos, currentWorkspace?.id, showMineOnly, selectedDate]);
 
   const activeTodos = filteredTodos.filter(t => !t.isCompleted);
   const completedTodos = filteredTodos.filter(t => t.isCompleted);
 
-  const getRelativeDateLabel = (dateStr: string) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const target = new Date(dateStr);
-    target.setHours(0, 0, 0, 0);
-
-    const diffTime = target.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) return '오늘까지';
-    if (diffDays === 1) return '내일까지';
-    if (diffDays === -1) return '어제까지';
-    if (diffDays < 0) return `${Math.abs(diffDays)}일 지연`;
-
-    return `${dateStr.split('-').slice(1).join('/')}까지`;
-  };
-
-  const renderTodoItem = (item: Todo) => {
-    const assignee = currentWorkspace?.members?.find(
-      m => m.id === item.assigneeId,
-    );
-
-    return (
-      <TouchableOpacity
-        key={item.id}
-        style={styles.todoItem}
-        onPress={() =>
-          navigation.navigate(NAV_ROUTES.TODO_CREATE.NAME, { todoId: item.id })
-        }
-        activeOpacity={0.7}
-      >
-        <TouchableOpacity
-          style={styles.checkboxArea}
-          onPress={() => toggleTodo(item.id)}
-        >
-          {item.isCompleted ? (
-            <CheckCircle2
-              size={24}
-              color={COLORS.primary}
-              fill={COLORS.primaryLight}
-            />
-          ) : (
-            <Circle size={24} color={COLORS.border} />
-          )}
-        </TouchableOpacity>
-
-        <View style={styles.todoTextContainer}>
-          <Text
-            style={[styles.todoTitle, item.isCompleted && styles.completedText]}
-            numberOfLines={2}
-          >
-            {item.title}
-          </Text>
-          <View style={styles.todoFooter}>
-            {/* Assignee Group */}
-            {item.assigneeId && assignee ? (
-              <View style={styles.metaItem}>
-                {assignee.avatar ? (
-                  <Image
-                    source={{ uri: assignee.avatar }}
-                    style={styles.miniAvatar}
-                  />
-                ) : (
-                  <View style={styles.initialAvatar}>
-                    <Text style={styles.initialText}>
-                      {assignee.name.charAt(0)}
-                    </Text>
-                  </View>
-                )}
-                <Text style={styles.assigneeName}>{assignee.name}</Text>
-              </View>
-            ) : (
-              <View style={styles.metaItem}>
-                <Users size={12} color={COLORS.textTertiary} />
-                <Text style={styles.assigneeName}>공통</Text>
-              </View>
-            )}
-
-            {/* Separator Bullet */}
-            {item.dueDate && <Text style={styles.separator}>·</Text>}
-
-            {/* Due Date Group */}
-            {item.dueDate && (
-              <View
-                style={[
-                  styles.metaItem,
-                  !item.isCompleted &&
-                    new Date(item.dueDate) <
-                      new Date(new Date().toISOString().split('T')[0]) &&
-                    styles.overdueBadgeSubtle,
-                ]}
-              >
-                <CalendarIcon
-                  size={12}
-                  color={
-                    !item.isCompleted &&
-                    new Date(item.dueDate) <
-                      new Date(new Date().toISOString().split('T')[0])
-                      ? COLORS.error
-                      : COLORS.textTertiary
-                  }
-                />
-                <Text
-                  style={[
-                    styles.dueDateText,
-                    !item.isCompleted &&
-                      new Date(item.dueDate) <
-                        new Date(new Date().toISOString().split('T')[0]) &&
-                      styles.overdueText,
-                  ]}
-                >
-                  {getRelativeDateLabel(item.dueDate)}
-                </Text>
-              </View>
-            )}
-          </View>
-        </View>
-        <ChevronRight size={16} color={COLORS.border} />
-      </TouchableOpacity>
-    );
-  };
-
   const handleDayPress = (day: any) => {
-    if (!selectedRange.start || (selectedRange.start && selectedRange.end)) {
-      setSelectedRange({ start: day.dateString, end: null });
-    } else {
-      if (day.dateString < selectedRange.start) {
-        setSelectedRange({ start: day.dateString, end: selectedRange.start });
-      } else {
-        setSelectedRange({ start: selectedRange.start, end: day.dateString });
-      }
-      setIsCalendarVisible(false); // Close on range select
-    }
+    setSelectedDate(day.dateString);
+    setIsCalendarVisible(false);
   };
 
   const markedDates = useMemo(() => {
-    const marks: any = {};
-    if (selectedRange.start) {
-      marks[selectedRange.start] = {
+    if (selectedDate === 'all') return {};
+    return {
+      [selectedDate]: {
         selected: true,
-        startingDay: true,
-        color: COLORS.primary,
-      };
-    }
-    if (selectedRange.end) {
-      marks[selectedRange.end] = {
-        selected: true,
-        endingDay: true,
-        color: COLORS.primary,
-      };
-
-      // Fill range
-      let current = new Date(selectedRange.start!);
-      const last = new Date(selectedRange.end);
-      while (current < last) {
-        current.setDate(current.getDate() + 1);
-        const iso = current.toISOString().split('T')[0];
-        if (iso !== selectedRange.end) {
-          marks[iso] = {
-            selected: true,
-            color: COLORS.primaryLight,
-            textColor: COLORS.primary,
-          };
-        }
-      }
-    }
-    return marks;
-  }, [selectedRange]);
+        selectedColor: COLORS.primary,
+        selectedTextColor: COLORS.white,
+      },
+    };
+  }, [selectedDate]);
 
   return (
     <AppSafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={dateList.filter(d => d.date !== 'all')}
-          keyExtractor={item => item.date}
-          contentContainerStyle={styles.dateFilterContent}
-          style={styles.dateFilter}
-          initialScrollIndex={14}
-          getItemLayout={(_, index) => ({
-            length: 44 + 12,
-            offset: (44 + 12) * index,
-            index,
-          })}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={[
-                styles.dateItem,
-                selectedRange.start === item.date &&
-                  !selectedRange.end &&
-                  styles.dateItemActive,
-              ]}
-              onPress={() =>
-                setSelectedRange({ start: item.date as string, end: null })
-              }
-            >
-              <Text
-                style={[
-                  styles.dateDay,
-                  selectedRange.start === item.date &&
-                    !selectedRange.end &&
-                    styles.dateTextActive,
-                ]}
-              >
-                {item.day}
-              </Text>
-              <Text
-                style={[
-                  styles.dateNum,
-                  selectedRange.start === item.date &&
-                    !selectedRange.end &&
-                    styles.dateTextActive,
-                ]}
-              >
-                {item.dateNum}
-              </Text>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
       <View style={styles.headerTop}>
+        <TouchableOpacity
+          style={styles.headerDateSelector}
+          onPress={() => setIsCalendarVisible(true)}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.screenTitle}>
+            {selectedDate === 'all'
+              ? '전체'
+              : formatDate(selectedDate, 'M월 D일')}
+            {' 일정'}
+          </Text>
+          <ChevronDown
+            size={20}
+            color={COLORS.textPrimary}
+            style={styles.chevronDown}
+          />
+        </TouchableOpacity>
+
         <View style={styles.filterRow}>
-          <TouchableOpacity
-            style={[
-              styles.filterChip,
-              (selectedRange.end || selectedRange.start === 'all') &&
-                styles.filterChipActive,
-            ]}
-            onPress={() => setIsCalendarVisible(true)}
-          >
-            <CalendarIcon
-              size={14}
-              color={
-                selectedRange.end || selectedRange.start === 'all'
-                  ? COLORS.white
-                  : COLORS.textSecondary
-              }
-            />
-            <Text
-              style={[
-                styles.filterChipText,
-                (selectedRange.end || selectedRange.start === 'all') &&
-                  styles.filterChipTextActive,
-              ]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-            >
-              {selectedRange.start === 'all'
-                ? '전체 기간'
-                : selectedRange.start && selectedRange.end
-                ? `${selectedRange.start
-                    .slice(5)
-                    .replace(/-/g, '.')} ~ ${selectedRange.end
-                    .slice(5)
-                    .replace(/-/g, '.')}`
-                : selectedRange.start?.slice(5).replace(/-/g, '.')}
-            </Text>
-          </TouchableOpacity>
           <TouchableOpacity
             style={[styles.filterChip, showMineOnly && styles.filterChipActive]}
             onPress={() => setShowMineOnly(!showMineOnly)}
@@ -426,7 +245,6 @@ const TodoScreen = () => {
             <Calendar
               onDayPress={handleDayPress}
               markedDates={markedDates}
-              markingType={'period'}
               theme={{
                 selectedDayBackgroundColor: COLORS.primary,
                 todayTextColor: COLORS.primary,
@@ -438,7 +256,7 @@ const TodoScreen = () => {
               <TouchableOpacity
                 style={styles.resetBtn}
                 onPress={() => {
-                  setSelectedRange({ start: 'all', end: null });
+                  setSelectedDate('all');
                   setIsCalendarVisible(false);
                 }}
               >
@@ -455,10 +273,20 @@ const TodoScreen = () => {
       >
         {activeTodos.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>
-              하는 중 {activeTodos.length}
-            </Text>
-            {activeTodos.map(renderTodoItem)}
+            <Text style={styles.sectionTitle}>할 일 {activeTodos.length}</Text>
+            {activeTodos.map(todo => (
+              <TodoItem
+                key={todo.id}
+                item={todo}
+                currentWorkspace={currentWorkspace}
+                onToggle={toggleTodo}
+                onPress={id =>
+                  navigation.navigate(NAV_ROUTES.TODO_CREATE.NAME, {
+                    todoId: id,
+                  })
+                }
+              />
+            ))}
           </View>
         )}
 
@@ -467,7 +295,19 @@ const TodoScreen = () => {
             <Text style={styles.sectionTitle}>
               완료됨 {completedTodos.length}
             </Text>
-            {completedTodos.map(renderTodoItem)}
+            {completedTodos.map(todo => (
+              <TodoItem
+                key={todo.id}
+                item={todo}
+                currentWorkspace={currentWorkspace}
+                onToggle={toggleTodo}
+                onPress={id =>
+                  navigation.navigate(NAV_ROUTES.TODO_CREATE.NAME, {
+                    todoId: id,
+                  })
+                }
+              />
+            ))}
           </View>
         )}
 
@@ -501,29 +341,28 @@ const styles = StyleSheet.create({
   flex1: {
     flex: 1,
   },
-  header: {
-    backgroundColor: COLORS.white,
-    paddingTop: SPACING.xl,
-    paddingBottom: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
   headerTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: SPACING.layout,
-    marginTop: 10,
+    paddingBottom: 4,
   },
   screenTitle: {
     ...TYPOGRAPHY.header1,
     color: COLORS.textPrimary,
   },
+  headerDateSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+  },
+  chevronDown: {
+    marginLeft: 4,
+    marginTop: 2,
+  },
   filterRow: {
     flexDirection: 'row',
     gap: 8,
-    flexShrink: 1,
-    justifyContent: 'flex-end',
+    marginTop: 16,
+    justifyContent: 'flex-start',
   },
   filterChip: {
     flexDirection: 'row',
@@ -549,36 +388,7 @@ const styles = StyleSheet.create({
   filterChipTextActive: {
     color: COLORS.white,
   },
-  dateFilter: {
-    paddingLeft: SPACING.layout,
-  },
-  dateFilterContent: {
-    paddingRight: SPACING.layout,
-    gap: 12,
-  },
-  dateItem: {
-    width: 44,
-    height: 60,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  dateItemActive: {
-    backgroundColor: COLORS.primaryLight,
-  },
-  dateDay: {
-    fontSize: 11,
-    color: COLORS.textTertiary,
-    marginBottom: 4,
-  },
-  dateNum: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-  },
-  dateTextActive: {
-    color: COLORS.primary,
-  },
+
   filterCheckbox: {
     marginBottom: 20,
     marginLeft: 4,
@@ -676,9 +486,7 @@ const styles = StyleSheet.create({
     color: COLORS.error,
     fontWeight: '700',
   },
-  allDateText: {
-    fontSize: 13,
-  },
+
   emptyContainer: {
     marginTop: 80,
     alignItems: 'center',

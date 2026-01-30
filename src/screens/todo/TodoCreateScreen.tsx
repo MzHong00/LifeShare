@@ -14,8 +14,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  Modal,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { Calendar } from 'react-native-calendars';
 import {
   Check,
   Users,
@@ -23,11 +25,33 @@ import {
   Trash2,
 } from 'lucide-react-native';
 
+import '@/lib/reactNativeCalendars';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { useTodoStore } from '@/stores/useTodoStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { useModalStore } from '@/stores/useModalStore';
+import {
+  getTodayDateString,
+  getDateWithOffset,
+  formatDate,
+} from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+
+const HeaderDeleteButton = () => {
+  const route = useRoute<any>();
+  const handleDelete = route.params?.handleDelete;
+
+  if (!route.params?.todoId) return null;
+
+  return (
+    <TouchableOpacity
+      onPress={() => handleDelete?.()}
+      style={{ marginRight: SPACING.md }}
+    >
+      <Trash2 size={24} color={COLORS.error} />
+    </TouchableOpacity>
+  );
+};
 
 type TodoCreateRouteProp = RouteProp<
   { TodoCreate: { todoId?: string } },
@@ -41,12 +65,13 @@ const TodoCreateScreen = () => {
 
   const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
   const { todos, addTodo, updateTodo, removeTodo } = useTodoStore();
-  const { showAlert, showConfirm } = useModalStore();
+  const { showModal } = useModalStore();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [assigneeId, setAssigneeId] = useState<string | undefined>(undefined);
-  const [dueDate, setDueDate] = useState(''); // YYYY-MM-DD
+  const [dueDate, setDueDate] = useState(getTodayDateString()); // YYYY-MM-DD
+  const [isCalendarVisible, setIsCalendarVisible] = useState(false);
 
   useEffect(() => {
     if (todoId) {
@@ -55,45 +80,65 @@ const TodoCreateScreen = () => {
         setTitle(todo.title);
         setDescription(todo.description || '');
         setAssigneeId(todo.assigneeId);
-        setDueDate(todo.dueDate || '');
+        setDueDate(todo.dueDate || getTodayDateString());
       }
     }
   }, [todoId, todos]);
 
   const handleDelete = useCallback(() => {
-    showConfirm('할 일 삭제', '이 할 일을 삭제하시겠습니까?', () => {
-      if (todoId) {
-        removeTodo(todoId);
-        navigation.goBack();
-      }
+    showModal({
+      type: 'confirm',
+      title: '할 일 삭제',
+      message: '이 할 일을 삭제하시겠습니까?',
+      onConfirm: () => {
+        if (todoId) {
+          removeTodo(todoId);
+          navigation.goBack();
+        }
+      },
     });
-  }, [todoId, removeTodo, navigation, showConfirm]);
+  }, [todoId, removeTodo, navigation, showModal]);
+
+  // handleDelete 함수와 todoId를 네비게이션 파라미터에 등록
+  useEffect(() => {
+    navigation.setParams({ handleDelete, todoId } as any);
+  }, [navigation, handleDelete, todoId]);
 
   useLayoutEffect(() => {
     if (todoId) {
       navigation.setOptions({
-        headerRight: () => (
-          <TouchableOpacity
-            onPress={handleDelete}
-            style={{ marginRight: SPACING.md }}
-          >
-            <Trash2 size={24} color={COLORS.error} />
-          </TouchableOpacity>
-        ),
+        headerRight: HeaderDeleteButton,
       });
     }
-  }, [navigation, todoId, handleDelete]);
+  }, [navigation, todoId]);
 
   const members = currentWorkspace?.members || [];
 
   const handleCreateOrUpdate = () => {
     if (!title.trim()) {
-      showAlert('알림', '할 일 제목을 입력해주세요.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '할 일 제목을 입력해주세요.',
+      });
       return;
     }
 
     if (!currentWorkspace) {
-      showAlert('알림', '워크스페이스 정보가 없습니다.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '워크스페이스 정보가 없습니다.',
+      });
+      return;
+    }
+
+    if (!dueDate.trim()) {
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '마감 기한을 선택해주세요.',
+      });
       return;
     }
 
@@ -103,18 +148,26 @@ const TodoCreateScreen = () => {
       description: description.trim(),
       isCompleted: false,
       assigneeId,
-      dueDate: dueDate.trim() || undefined,
+      dueDate: dueDate.trim(),
     };
 
     if (todoId) {
       updateTodo(todoId, todoData);
-      showAlert('알림', '할 일이 수정되었습니다.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '할 일이 수정되었습니다.',
+      });
     } else {
       addTodo({
         ...todoData,
         isCompleted: false,
       });
-      showAlert('알림', '새로운 할 일이 추가되었습니다.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '새로운 할 일이 추가되었습니다.',
+      });
     }
 
     navigation.goBack();
@@ -156,22 +209,24 @@ const TodoCreateScreen = () => {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.label}>마감 기한 (선택)</Text>
+            <Text style={styles.label}>마감 기한</Text>
             <View style={styles.dateInputWrapper}>
-              <CalendarIcon
-                size={20}
-                color={COLORS.textSecondary}
-                style={styles.dateIcon}
-              />
-              <TextInput
-                style={styles.dateInput}
-                placeholder="YYYY-MM-DD (예: 2026-01-20)"
-                value={dueDate}
-                onChangeText={setDueDate}
-                placeholderTextColor={COLORS.textTertiary}
-                keyboardType="numeric"
-                maxLength={10}
-              />
+              <TouchableOpacity
+                style={styles.dateTouchArea}
+                onPress={() => setIsCalendarVisible(true)}
+                activeOpacity={0.7}
+              >
+                <CalendarIcon
+                  size={20}
+                  color={COLORS.textSecondary}
+                  style={styles.dateIcon}
+                />
+                <View style={styles.dateInput}>
+                  <Text style={styles.dateInputText}>
+                    {dueDate || formatDate(getTodayDateString(), 'YYYY-MM-DD')}
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
             <View style={styles.quickDateRow}>
               {['오늘', '내일', '다음주'].map(label => (
@@ -179,21 +234,15 @@ const TodoCreateScreen = () => {
                   key={label}
                   style={styles.quickDateBtn}
                   onPress={() => {
-                    const d = new Date();
-                    if (label === '내일') d.setDate(d.getDate() + 1);
-                    if (label === '다음주') d.setDate(d.getDate() + 7);
-                    setDueDate(d.toISOString().split('T')[0]);
+                    let date = getTodayDateString();
+                    if (label === '내일') date = getDateWithOffset(1);
+                    if (label === '다음주') date = getDateWithOffset(7);
+                    setDueDate(date);
                   }}
                 >
                   <Text style={styles.quickDateText}>{label}</Text>
                 </TouchableOpacity>
               ))}
-              <TouchableOpacity
-                style={styles.quickDateBtn}
-                onPress={() => setDueDate('')}
-              >
-                <Text style={styles.quickDateText}>삭제</Text>
-              </TouchableOpacity>
             </View>
           </View>
 
@@ -297,6 +346,51 @@ const TodoCreateScreen = () => {
           </Text>
         </TouchableOpacity>
       </View>
+      <Modal
+        visible={isCalendarVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsCalendarVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setIsCalendarVisible(false)}
+        >
+          <View style={styles.calendarContainer}>
+            <View style={styles.calendarHeader}>
+              <Text style={styles.calendarTitle}>마감 기한 선택</Text>
+              <TouchableOpacity onPress={() => setIsCalendarVisible(false)}>
+                <Text style={styles.closeText}>닫기</Text>
+              </TouchableOpacity>
+            </View>
+            <Calendar
+              current={dueDate || getTodayDateString()}
+              onDayPress={day => {
+                setDueDate(day.dateString);
+                setIsCalendarVisible(false);
+              }}
+              markedDates={
+                dueDate
+                  ? {
+                      [dueDate]: {
+                        selected: true,
+                        selectedColor: COLORS.primary,
+                        selectedTextColor: COLORS.white,
+                      },
+                    }
+                  : {}
+              }
+              theme={{
+                selectedDayBackgroundColor: COLORS.primary,
+                todayTextColor: COLORS.primary,
+                arrowColor: COLORS.primary,
+                dotColor: COLORS.primary,
+              }}
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </AppSafeAreaView>
   );
 };
@@ -304,6 +398,7 @@ const TodoCreateScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: SPACING.layout,
   },
   flex1: {
     flex: 1,
@@ -341,15 +436,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     height: 56,
   },
+  dateTouchArea: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: '100%',
+  },
   dateIcon: {
     marginRight: 10,
   },
   dateInput: {
     flex: 1,
-    fontSize: 16,
-    color: COLORS.textPrimary,
-    fontWeight: '500',
     height: '100%',
+    justifyContent: 'center',
+  },
+  dateInputText: {
+    ...TYPOGRAPHY.body2,
+    color: COLORS.textPrimary,
+  },
+  clearDateBtn: {
+    padding: 4,
+    marginLeft: 4,
   },
   quickDateRow: {
     flexDirection: 'row',
@@ -443,6 +550,34 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: COLORS.white,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  calendarContainer: {
+    backgroundColor: COLORS.white,
+    borderRadius: 24,
+    width: '100%',
+    padding: 16,
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingHorizontal: 8,
+  },
+  calendarTitle: {
+    ...TYPOGRAPHY.header2,
+    color: COLORS.textPrimary,
+  },
+  closeText: {
+    color: COLORS.textSecondary,
+    fontWeight: '600',
   },
 });
 
