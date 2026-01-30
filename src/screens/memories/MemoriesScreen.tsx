@@ -22,6 +22,87 @@ import type { Memory } from '@/types';
 const { width } = Dimensions.get('window');
 const columnWidth = (width - SPACING.layout * 2 - SPACING.md) / 2;
 
+interface MemoryItemProps {
+  item: Memory;
+  onPress: (id: string) => void;
+}
+
+const MemoryItem = ({ item, onPress }: MemoryItemProps) => (
+  <TouchableOpacity style={styles.memoryCard} onPress={() => onPress(item.id)}>
+    <View style={styles.imagePlaceholder}>
+      {item.thumbnailUrl ? (
+        <Image
+          source={{ uri: item.thumbnailUrl }}
+          style={styles.cardImage}
+          resizeMode="cover"
+        />
+      ) : (
+        <Heart
+          size={32}
+          color={COLORS.border}
+          fill={parseInt(item.id, 10) % 3 === 0 ? '#FFEBF0' : 'transparent'}
+        />
+      )}
+    </View>
+    <View style={styles.memoryInfo}>
+      <Text style={styles.memoryTitle} numberOfLines={2}>
+        {item.title}
+      </Text>
+      <Text style={styles.memoryDate}>
+        {new Date(item.date).toLocaleDateString()}
+      </Text>
+    </View>
+  </TouchableOpacity>
+);
+
+const MemoriesHeader = ({ memoryCount }: { memoryCount: number }) => (
+  <>
+    <View style={styles.header}>
+      <View>
+        <Text style={TYPOGRAPHY.header1}>추억</Text>
+        <Text style={styles.subtitle}>우리의 소중한 순간들</Text>
+      </View>
+    </View>
+
+    <View style={styles.statsCard}>
+      <View style={styles.statItem}>
+        <Text style={styles.statValue}>128</Text>
+        <Text style={styles.statLabel}>함께한 날</Text>
+      </View>
+      <View style={styles.statDivider} />
+      <View style={styles.statItem}>
+        <Text style={styles.statValue}>{memoryCount}</Text>
+        <Text style={styles.statLabel}>기록된 추억</Text>
+      </View>
+      <View style={styles.statDivider} />
+      <View style={styles.statItem}>
+        <Text style={styles.statValue}>15</Text>
+        <Text style={styles.statLabel}>방문한 장소</Text>
+      </View>
+    </View>
+
+    <View style={styles.filterBar}>
+      <TouchableOpacity style={styles.filterItem}>
+        <Calendar size={18} color={COLORS.textSecondary} />
+        <Text style={styles.filterText}>날짜순</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.filterItem}>
+        <Filter size={18} color={COLORS.textSecondary} />
+        <Text style={styles.filterText}>카테고리</Text>
+      </TouchableOpacity>
+    </View>
+  </>
+);
+
+const MemoriesFooter = ({ loading }: { loading: boolean }) => {
+  if (!loading) return <View style={styles.footerSpacer} />;
+  return (
+    <View style={styles.loaderContainer}>
+      <ActivityIndicator size="small" color={COLORS.primary} />
+    </View>
+  );
+};
+
 const MemoriesScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
   const memories = useMemoryStore(state => state.memories);
@@ -33,101 +114,25 @@ const MemoriesScreen = () => {
     // 향후 실제 API 연동 시 페이징 처리 가능
   }, []);
 
-  const renderHeader = () => (
-    <>
-      <View style={styles.header}>
-        <View>
-          <Text style={TYPOGRAPHY.header1}>추억</Text>
-          <Text style={styles.subtitle}>우리의 소중한 순간들</Text>
-        </View>
-      </View>
-
-      {/* Stats Summary */}
-      <View style={styles.statsCard}>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>128</Text>
-          <Text style={styles.statLabel}>함께한 날</Text>
-        </View>
-        <View style={styles.statDivider} />
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{memories.length}</Text>
-          <Text style={styles.statLabel}>기록된 추억</Text>
-        </View>
-        <View style={styles.statDivider} />
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>15</Text>
-          <Text style={styles.statLabel}>방문한 장소</Text>
-        </View>
-      </View>
-
-      {/* Filter Bar */}
-      <View style={styles.filterBar}>
-        <TouchableOpacity style={styles.filterItem}>
-          <Calendar size={18} color={COLORS.textSecondary} />
-          <Text style={styles.filterText}>날짜순</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.filterItem}>
-          <Filter size={18} color={COLORS.textSecondary} />
-          <Text style={styles.filterText}>카테고리</Text>
-        </TouchableOpacity>
-      </View>
-    </>
-  );
-
-  const renderItem = ({ item }: { item: Memory }) => (
-    <TouchableOpacity
-      style={styles.memoryCard}
-      onPress={() => {
-        navigation.navigate(NAV_ROUTES.MEMORY_DETAIL.NAME, {
-          memoryId: item.id,
-        });
-      }}
-    >
-      <View style={styles.imagePlaceholder}>
-        {item.thumbnailUrl ? (
-          <Image
-            source={{ uri: item.thumbnailUrl }}
-            style={styles.cardImage}
-            resizeMode="cover"
-          />
-        ) : (
-          <Heart
-            size={32}
-            color={COLORS.border}
-            fill={parseInt(item.id, 10) % 3 === 0 ? '#FFEBF0' : 'transparent'}
-          />
-        )}
-      </View>
-      <View style={styles.memoryInfo}>
-        <Text style={styles.memoryTitle} numberOfLines={2}>
-          {item.title}
-        </Text>
-        <Text style={styles.memoryDate}>
-          {new Date(item.date).toLocaleDateString()}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderFooter = () => {
-    if (!loading) return <View style={styles.footerSpacer} />;
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="small" color={COLORS.primary} />
-      </View>
-    );
-  };
-
   return (
     <AppSafeAreaView style={styles.container}>
       <FlatList
         data={memories}
-        renderItem={renderItem}
+        renderItem={({ item }) => (
+          <MemoryItem
+            item={item}
+            onPress={id =>
+              navigation.navigate(NAV_ROUTES.MEMORY_DETAIL.NAME, {
+                memoryId: id,
+              })
+            }
+          />
+        )}
         keyExtractor={item => item.id}
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}
-        ListHeaderComponent={renderHeader}
-        ListFooterComponent={renderFooter}
+        ListHeaderComponent={<MemoriesHeader memoryCount={memories.length} />}
+        ListFooterComponent={<MemoriesFooter loading={loading} />}
         onEndReached={loadMoreMemories}
         onEndReachedThreshold={0.5}
         showsVerticalScrollIndicator={false}

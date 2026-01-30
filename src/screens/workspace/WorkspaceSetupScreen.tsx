@@ -34,6 +34,235 @@ type WorkspaceSetupRouteProp = RouteProp<
   typeof NAV_ROUTES.WORKSPACE_SETUP.NAME
 >;
 
+interface InitialStageProps {
+  onNext: () => void;
+}
+
+const InitialStage = ({ onNext }: InitialStageProps) => (
+  <View style={styles.content}>
+    <View style={styles.mainBody}>
+      <View style={styles.iconCircle}>
+        <Users size={40} color={COLORS.primary} strokeWidth={2.5} />
+      </View>
+      <Text style={styles.title}>{APP_WORKSPACE.KR} 만들기</Text>
+      <Text style={styles.description}>
+        우리만의 새로운 {APP_WORKSPACE.KR}을 만들고{'\n'}파트너를 초대하여
+        일상과 기록을 공유하세요.
+      </Text>
+    </View>
+
+    <View style={styles.footer}>
+      <TouchableOpacity style={styles.mainButton} onPress={onNext}>
+        <Plus size={20} color={COLORS.white} style={styles.buttonIcon} />
+        <Text style={styles.mainButtonText}>
+          새로운 {APP_WORKSPACE.KR} 만들기
+        </Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+);
+
+interface CreateStageProps {
+  createSubStep: 'type' | 'name';
+  roomType: 'couple' | 'group';
+  workspaceName: string;
+  startDate: string;
+  isFirst: boolean;
+  isMain: boolean;
+  setRoomType: (type: 'couple' | 'group') => void;
+  setWorkspaceName: (name: string) => void;
+  setStartDate: (date: string) => void;
+  setIsMain: (isMain: boolean) => void;
+  onNext: () => void;
+  onBack: () => void;
+  onComplete: () => void;
+}
+
+const CreateStage = ({
+  createSubStep,
+  roomType,
+  workspaceName,
+  startDate,
+  isFirst,
+  isMain,
+  setRoomType,
+  setWorkspaceName,
+  setStartDate,
+  setIsMain,
+  onNext,
+  onBack,
+  onComplete,
+}: CreateStageProps) => (
+  <View style={styles.content}>
+    <View style={styles.mainBody}>
+      {createSubStep === 'type' ? (
+        <>
+          <Text style={styles.title}>유형 선택</Text>
+          <Text style={styles.description}>
+            누구와 함께하는 {APP_WORKSPACE.KR}인가요?{'\n'}나중에 변경할 수
+            없으니 신중히 골라주세요.
+          </Text>
+
+          <View style={styles.typeSelector}>
+            <TouchableOpacity
+              style={[
+                styles.typeButton,
+                roomType === 'couple' && styles.typeButtonActive,
+                styles.typeButtonFirst,
+              ]}
+              onPress={() => setRoomType('couple')}
+              activeOpacity={0.8}
+            >
+              <Heart
+                size={24}
+                color={
+                  roomType === 'couple' ? COLORS.primary : COLORS.textTertiary
+                }
+                fill={roomType === 'couple' ? COLORS.primary : 'transparent'}
+              />
+              <Text
+                style={[
+                  styles.typeButtonText,
+                  roomType === 'couple' && styles.typeButtonTextActive,
+                ]}
+              >
+                커플 라이프룸
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.typeButton,
+                roomType === 'group' && styles.typeButtonActive,
+              ]}
+              onPress={() => setRoomType('group')}
+              activeOpacity={0.8}
+            >
+              <Users
+                size={24}
+                color={
+                  roomType === 'group' ? COLORS.primary : COLORS.textTertiary
+                }
+              />
+              <Text
+                style={[
+                  styles.typeButtonText,
+                  roomType === 'group' && styles.typeButtonTextActive,
+                ]}
+              >
+                단체 라이프룸
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : (
+        <>
+          <Text style={styles.title}>이름 설정</Text>
+          <Text style={styles.description}>
+            우리만의 특별한 {APP_WORKSPACE.KR} 이름을{'\n'}지어주세요.
+          </Text>
+
+          <TextInput
+            style={styles.input}
+            placeholder={`${APP_WORKSPACE.KR} 이름을 입력하세요`}
+            value={workspaceName}
+            onChangeText={setWorkspaceName}
+            placeholderTextColor={COLORS.textTertiary}
+            autoFocus
+          />
+
+          <Text style={[styles.inputLabel, styles.labelMarginTop]}>
+            {roomType === 'couple' ? '만난 날짜' : '시작일'}
+          </Text>
+          <TextInput
+            style={styles.input}
+            placeholder="YYYY-MM-DD"
+            value={startDate}
+            onChangeText={setStartDate}
+            placeholderTextColor={COLORS.textTertiary}
+            keyboardType="numeric"
+          />
+
+          <Checkbox
+            label={`메인 ${APP_WORKSPACE.KR}으로 설정`}
+            checked={isFirst || isMain}
+            onPress={() => !isFirst && setIsMain(!isMain)}
+            disabled={isFirst}
+            style={styles.checkboxSpace}
+          />
+        </>
+      )}
+    </View>
+
+    <View style={styles.footer}>
+      <TouchableOpacity
+        style={styles.mainButton}
+        onPress={createSubStep === 'type' ? onNext : onComplete}
+      >
+        <Text style={styles.mainButtonText}>
+          {createSubStep === 'type' ? '다음' : '시작하기'}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.backButton} onPress={onBack}>
+        <Text style={styles.backButtonText}>이전으로</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+);
+
+interface InviteStageProps {
+  workspaceName: string;
+  inviteeEmail: string;
+  setInviteeEmail: (email: string) => void;
+  onSendInvite: () => void;
+  onLater: () => void;
+}
+
+const InviteStage = ({
+  workspaceName,
+  inviteeEmail,
+  setInviteeEmail,
+  onSendInvite,
+  onLater,
+}: InviteStageProps) => (
+  <View style={styles.content}>
+    <View style={styles.mainBody}>
+      <View style={styles.iconCircle}>
+        <UserPlus size={40} color={COLORS.primary} strokeWidth={2.5} />
+      </View>
+      <Text style={styles.title}>파트너 초대하기</Text>
+      <Text style={styles.description}>
+        {workspaceName}이(가) 생성되었습니다!{'\n'}파트너의 이메일을 입력하여
+        초대를 보내보세요.
+      </Text>
+
+      <View style={styles.inputWrapper}>
+        <Mail size={20} color={COLORS.textTertiary} style={styles.inputIcon} />
+        <TextInput
+          style={styles.emailInput}
+          placeholder="파트너의 이메일 주소"
+          value={inviteeEmail}
+          onChangeText={setInviteeEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          placeholderTextColor={COLORS.textTertiary}
+        />
+      </View>
+    </View>
+
+    <View style={styles.footer}>
+      <TouchableOpacity style={styles.mainButton} onPress={onSendInvite}>
+        <Send size={20} color={COLORS.white} style={styles.buttonIcon} />
+        <Text style={styles.mainButtonText}>초대 이메일 보내기</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.backButton} onPress={onLater}>
+        <Text style={styles.backButtonText}>나중에 하기</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+);
+
 const WorkspaceSetupScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const route = useRoute<WorkspaceSetupRouteProp>();
@@ -58,11 +287,15 @@ const WorkspaceSetupScreen = () => {
     state => state.createNewWorkspace,
   );
   const sendInvitation = useWorkspaceStore(state => state.sendInvitation);
-  const { showAlert } = useModalStore();
+  const { showModal } = useModalStore();
 
   const completeSetup = () => {
     if (!workspaceName.trim()) {
-      showAlert('알림', `${APP_WORKSPACE.KR} 이름을 입력해주세요.`);
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: `${APP_WORKSPACE.KR} 이름을 입력해주세요.`,
+      });
       return;
     }
 
@@ -78,7 +311,11 @@ const WorkspaceSetupScreen = () => {
 
   const handleSendInvite = () => {
     if (!inviteeEmail.trim()) {
-      showAlert('알림', '초대할 파트너의 이메일을 입력해주세요.');
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '초대할 파트너의 이메일을 입력해주세요.',
+      });
       return;
     }
 
@@ -89,9 +326,12 @@ const WorkspaceSetupScreen = () => {
         userEmail,
         inviteeEmail.trim(),
       );
-      showAlert('알림', '초대가 전송되었습니다.', () =>
-        navigation.navigate(NAV_ROUTES.MAIN_TABS.NAME),
-      );
+      showModal({
+        type: 'alert',
+        title: '알림',
+        message: '초대가 전송되었습니다.',
+        onConfirm: () => navigation.navigate(NAV_ROUTES.MAIN_TABS.NAME),
+      });
     }
   };
 
@@ -106,209 +346,38 @@ const WorkspaceSetupScreen = () => {
     }
   };
 
-  const renderInitial = () => (
-    <View style={styles.content}>
-      <View style={styles.mainBody}>
-        <View style={styles.iconCircle}>
-          <Users size={40} color={COLORS.primary} strokeWidth={2.5} />
-        </View>
-        <Text style={styles.title}>{APP_WORKSPACE.KR} 만들기</Text>
-        <Text style={styles.description}>
-          우리만의 새로운 {APP_WORKSPACE.KR}을 만들고{'\n'}파트너를 초대하여
-          일상과 기록을 공유하세요.
-        </Text>
-      </View>
-
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.mainButton}
-          onPress={() => setStep('create')}
-        >
-          <Plus size={20} color={COLORS.white} style={styles.buttonIcon} />
-          <Text style={styles.mainButtonText}>
-            새로운 {APP_WORKSPACE.KR} 만들기
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-
-  const renderCreate = () => (
-    <View style={styles.content}>
-      <View style={styles.mainBody}>
-        {createSubStep === 'type' ? (
-          <>
-            <Text style={styles.title}>유형 선택</Text>
-            <Text style={styles.description}>
-              누구와 함께하는 {APP_WORKSPACE.KR}인가요?{'\n'}나중에 변경할 수
-              없으니 신중히 골라주세요.
-            </Text>
-
-            <View style={styles.typeSelector}>
-              <TouchableOpacity
-                style={[
-                  styles.typeButton,
-                  roomType === 'couple' && styles.typeButtonActive,
-                  styles.typeButtonFirst,
-                ]}
-                onPress={() => setRoomType('couple')}
-                activeOpacity={0.8}
-              >
-                <Heart
-                  size={24}
-                  color={
-                    roomType === 'couple' ? COLORS.primary : COLORS.textTertiary
-                  }
-                  fill={roomType === 'couple' ? COLORS.primary : 'transparent'}
-                />
-                <Text
-                  style={[
-                    styles.typeButtonText,
-                    roomType === 'couple' && styles.typeButtonTextActive,
-                  ]}
-                >
-                  커플 라이프룸
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.typeButton,
-                  roomType === 'group' && styles.typeButtonActive,
-                ]}
-                onPress={() => setRoomType('group')}
-                activeOpacity={0.8}
-              >
-                <Users
-                  size={24}
-                  color={
-                    roomType === 'group' ? COLORS.primary : COLORS.textTertiary
-                  }
-                />
-                <Text
-                  style={[
-                    styles.typeButtonText,
-                    roomType === 'group' && styles.typeButtonTextActive,
-                  ]}
-                >
-                  단체 라이프룸
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        ) : (
-          <>
-            <Text style={styles.title}>이름 설정</Text>
-            <Text style={styles.description}>
-              우리만의 특별한 {APP_WORKSPACE.KR} 이름을{'\n'}지어주세요.
-            </Text>
-
-            <TextInput
-              style={styles.input}
-              placeholder={`${APP_WORKSPACE.KR} 이름을 입력하세요`}
-              value={workspaceName}
-              onChangeText={setWorkspaceName}
-              placeholderTextColor={COLORS.textTertiary}
-              autoFocus
-            />
-
-            <Text style={[styles.inputLabel, styles.labelMarginTop]}>
-              {roomType === 'couple' ? '만난 날짜' : '시작일'}
-            </Text>
-            <TextInput
-              style={styles.input}
-              placeholder="YYYY-MM-DD"
-              value={startDate}
-              onChangeText={setStartDate}
-              placeholderTextColor={COLORS.textTertiary}
-              keyboardType="numeric"
-            />
-
-            <Checkbox
-              label={`메인 ${APP_WORKSPACE.KR}으로 설정`}
-              checked={isFirst || isMain}
-              onPress={() => !isFirst && setIsMain(!isMain)}
-              disabled={isFirst}
-              style={styles.checkboxSpace}
-            />
-          </>
-        )}
-      </View>
-
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.mainButton}
-          onPress={
-            createSubStep === 'type'
-              ? () => {
-                  setWorkspaceName('');
-                  setCreateSubStep('name');
-                }
-              : completeSetup
-          }
-        >
-          <Text style={styles.mainButtonText}>
-            {createSubStep === 'type' ? '다음' : '시작하기'}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Text style={styles.backButtonText}>이전으로</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-
-  const renderInvite = () => (
-    <View style={styles.content}>
-      <View style={styles.mainBody}>
-        <View style={styles.iconCircle}>
-          <UserPlus size={40} color={COLORS.primary} strokeWidth={2.5} />
-        </View>
-        <Text style={styles.title}>파트너 초대하기</Text>
-        <Text style={styles.description}>
-          {workspaceName}이(가) 생성되었습니다!{'\n'}파트너의 이메일을 입력하여
-          초대를 보내보세요.
-        </Text>
-
-        <View style={styles.inputWrapper}>
-          <Mail
-            size={20}
-            color={COLORS.textTertiary}
-            style={styles.inputIcon}
-          />
-          <TextInput
-            style={styles.emailInput}
-            placeholder="파트너의 이메일 주소"
-            value={inviteeEmail}
-            onChangeText={setInviteeEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            placeholderTextColor={COLORS.textTertiary}
-          />
-        </View>
-      </View>
-
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.mainButton} onPress={handleSendInvite}>
-          <Send size={20} color={COLORS.white} style={styles.buttonIcon} />
-          <Text style={styles.mainButtonText}>초대 이메일 보내기</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.navigate(NAV_ROUTES.MAIN_TABS.NAME)}
-        >
-          <Text style={styles.backButtonText}>나중에 하기</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-
   return (
     <AppSafeAreaView style={styles.container}>
-      {step === 'initial' && renderInitial()}
-      {step === 'create' && renderCreate()}
-      {step === 'invite' && renderInvite()}
+      {step === 'initial' && <InitialStage onNext={() => setStep('create')} />}
+      {step === 'create' && (
+        <CreateStage
+          createSubStep={createSubStep}
+          roomType={roomType}
+          workspaceName={workspaceName}
+          startDate={startDate}
+          isFirst={isFirst}
+          isMain={isMain}
+          setRoomType={setRoomType}
+          setWorkspaceName={setWorkspaceName}
+          setStartDate={setStartDate}
+          setIsMain={setIsMain}
+          onNext={() => {
+            setWorkspaceName('');
+            setCreateSubStep('name');
+          }}
+          onBack={handleBack}
+          onComplete={completeSetup}
+        />
+      )}
+      {step === 'invite' && (
+        <InviteStage
+          workspaceName={workspaceName}
+          inviteeEmail={inviteeEmail}
+          setInviteeEmail={setInviteeEmail}
+          onSendInvite={handleSendInvite}
+          onLater={() => navigation.navigate(NAV_ROUTES.MAIN_TABS.NAME)}
+        />
+      )}
     </AppSafeAreaView>
   );
 };
