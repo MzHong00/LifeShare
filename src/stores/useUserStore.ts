@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { useShallow } from 'zustand/react/shallow';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import type { UserProfile } from '@/types/auth';
+import type { UserProfile } from '@/types/user';
 
 interface UserState {
   user: UserProfile | null;

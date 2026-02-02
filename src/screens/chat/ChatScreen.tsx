@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Image as ImageIcon, Video } from 'lucide-react-native';
 
-import type { Message } from '@/types';
+import type { ChatMessage } from '@/types';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { MessageBubble } from '@/components/chat/MessageBubble';
@@ -21,7 +21,7 @@ import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { formatChatTime } from '@/utils/date';
 
 const ChatScreen = () => {
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
       text: '오늘 저녁에 뭐 먹을까?',
@@ -55,7 +55,7 @@ const ChatScreen = () => {
   const sendMessage = () => {
     if (inputText.trim() === '') return;
 
-    const newMessage: Message = {
+    const newMessage: ChatMessage = {
       id: Date.now().toString(),
       text: inputText,
       sender: 'me',
