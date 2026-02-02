@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Config from 'react-native-config';
-import { useAuthStore } from '@/stores/useAuthStore';
+import { authStore, authActions } from '@/stores/useAuthStore';
 
 const api = axios.create({
   baseURL: Config.API_URL,
@@ -13,7 +13,7 @@ const api = axios.create({
 // Request Interceptor: Attach Access Token
 api.interceptors.request.use(
   config => {
-    const token = useAuthStore.getState().accessToken;
+    const token = authStore.getState().accessToken;
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -22,18 +22,17 @@ api.interceptors.request.use(
   error => Promise.reject(error),
 );
 
-// Response Interceptor: Handle Token Refresh
+// Response Interceptor: Handle Token Expiration
 api.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
 
-    // If 401 and not already retried
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        const refreshToken = useAuthStore.getState().refreshToken;
+        const refreshToken = authStore.getState().refreshToken;
         if (!refreshToken) throw new Error('No refresh token available');
 
         // Try rotating tokens
@@ -43,15 +42,15 @@ api.interceptors.response.use(
 
         const { accessToken, refreshToken: newRefreshToken } = data;
 
-        // Update user store
-        useAuthStore.getState().setTokens(accessToken, newRefreshToken);
+        // Update auth store
+        authActions.setTokens(accessToken, newRefreshToken);
 
         // Retry original request with new token
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
         // Refresh failed -> Logout user
-        useAuthStore.getState().clearTokens();
+        authActions.clearTokens();
         return Promise.reject(refreshError);
       }
     }

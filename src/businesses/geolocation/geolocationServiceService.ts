@@ -58,14 +58,18 @@ export const GeolocationService = {
     Geolocation.clearWatch(watchId);
   },
 
-  reverseGeocode: async (latitude: number, longitude: number) => {
+  reverseGeocode: async (
+    latitude: number,
+    longitude: number,
+  ): Promise<string> => {
     const apiKey = Config.GOOGLE_API_KEY;
 
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
     const response = await fetch(url);
 
-    const data = await response.json();
-    console.log(data);
-    return data.results[0].formatted_address;
+    const data = (await response.json()) as {
+      results: { formatted_address: string }[];
+    };
+    return data.results[0]?.formatted_address || '';
   },
 };

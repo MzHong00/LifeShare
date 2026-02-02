@@ -1,18 +1,17 @@
-import { useState, useEffect, useCallback } from 'react';
-import { GeolocationService } from './geolocationServiceService';
-import { useMemoryStore } from '@/stores/useMemoryStore';
+import { useEffect, useCallback } from 'react';
 
-interface Location {
-  latitude: number;
-  longitude: number;
-}
+import { useLocationStore, locationActions } from '@/stores/useLocationStore';
+import { useMemoryStore, memoryActions } from '@/stores/useMemoryStore';
+import { GeolocationService } from '@/businesses/geolocation/geolocationServiceService';
 
 export const useGeolocation = () => {
-  const [location, setLocation] = useState<Location | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { location, error, loading } = useLocationStore();
 
-  const { isRecording, addLocationPoint } = useMemoryStore();
+  const { setLocation, setError, setLoading } = locationActions;
+
+  // useMemoryStore는 아직 이전 방식이므로 그대로 둡니다.
+  const { isRecording } = useMemoryStore();
+  const { addLocationPoint } = memoryActions;
 
   const updateLocation = useCallback(async () => {
     try {
@@ -37,7 +36,7 @@ export const useGeolocation = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setLocation, setError, setLoading]);
 
   // 초기 위치 로드 및 실시간 추적 설정
   useEffect(() => {
@@ -79,7 +78,7 @@ export const useGeolocation = () => {
         GeolocationService.clearWatch(watchId);
       }
     };
-  }, [updateLocation, isRecording, addLocationPoint]);
+  }, [updateLocation, isRecording, addLocationPoint, setLocation]);
 
   return {
     location,
