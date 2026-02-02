@@ -85,6 +85,11 @@
   - 컴포넌트 내부에 또 다른 컴포넌트를 정의(Nested Component)하지 않는다. 필요 시 별도의 파일로 분리하거나, 파일 내 최상위 수준(Top-level)에서 정의한다.
   - TypeScript의 `any` 타입 사용을 지양하고, 최대한 명확한 타입을 정의하여 사용한다.
   - TypeScript의 타입을 가져올 때는 `import type` 키워드를 사용한다.
+  - **Premium Zustand Pattern**:
+    1. **상태(State)**와 **액션(Actions)**을 분리한다. 액션은 스토어 외부의 독립된 객체(`xxxActions`)로 정의하여 훅 규칙에 얽매이지 않고 어디서든 호출 가능하게 한다.
+    2. **커스텀 훅(`useXxxStore`)**은 내부적으로 `useShallow`를 기본 적용하여 구조 분해 할당 시에도 최적화된 성능을 보장한다.
+    3. **제네릭 셀렉터**를 지원하여 `useStore()`(전체)와 `useStore(s => s.item)`(선택) 방식 모두 타입 안전하게 지원한다.
+       (예: `export const useAuthStore = <T = AuthState>(selector: (state: AuthState) => T = (state: AuthState) => state as unknown as T) => authStore(useShallow(selector));`)
 
 ---
 

@@ -3,3 +3,4 @@ export * from './workspace';
 export * from './domain';
 export * from './chat';
 export * from './memory';
+export * from './location';

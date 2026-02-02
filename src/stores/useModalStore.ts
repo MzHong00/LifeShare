@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
 
 export type ModalType = 'alert' | 'confirm' | 'choice';
 
@@ -17,12 +18,6 @@ interface ModalOptions {
 interface ModalState {
   isVisible: boolean;
   options: ModalOptions;
-  /**
-   * 모달을 표시합니다. 유일한 모달 호출 창구입니다.
-   * @param options type('alert' | 'confirm' | 'choice'), title, message 등을 포함한 객체
-   */
-  showModal: (options: ModalOptions) => void;
-  hideModal: () => void;
 }
 
 const defaultOptions: ModalOptions = {
@@ -34,15 +29,23 @@ const defaultOptions: ModalOptions = {
   destructiveText: '삭제',
 };
 
-export const useModalStore = create<ModalState>(set => ({
+export const modalStore = create<ModalState>(() => ({
   isVisible: false,
   options: defaultOptions,
-
-  showModal: options =>
-    set({
-      isVisible: true,
-      options: { ...defaultOptions, ...options },
-    }),
-
-  hideModal: () => set({ isVisible: false }),
 }));
+
+// 3. 외부 노출용 커스텀 훅 (useShallow 적용)
+export const useModalStore = <T = ModalState>(
+  selector: (state: ModalState) => T = (state: ModalState) =>
+    state as unknown as T,
+) => modalStore(useShallow(selector));
+
+// 4. 액션 분리 (Static Actions)
+export const modalActions = {
+  showModal: (options: Partial<ModalOptions>) =>
+    modalStore.setState({
+      isVisible: true,
+      options: { ...defaultOptions, ...options } as ModalOptions,
+    }),
+  hideModal: () => modalStore.setState({ isVisible: false }),
+};

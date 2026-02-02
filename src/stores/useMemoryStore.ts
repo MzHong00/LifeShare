@@ -1,32 +1,16 @@
 import { create } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
+
 import type { Memory, LocationPoint } from '@/types';
 
 interface MemoryState {
   isRecording: boolean;
   recordingPath: LocationPoint[];
   memories: Memory[];
-
-  startRecording: () => void;
-  stopRecording: () => void;
-  addLocationPoint: (point: LocationPoint) => void;
   selectedMemoryId: string | null;
-  setSelectedMemoryId: (id: string | null) => void;
-  saveMemory: (memoryData: {
-    id: string;
-    title: string;
-    description?: string;
-    userId: string;
-    workspaceId: string;
-  }) => void;
-  clearRecording: () => void;
-  deleteMemory: (id: string) => void;
-  updateMemory: (
-    id: string,
-    data: { title: string; description?: string; thumbnailUrl?: string },
-  ) => void;
 }
 
-export const useMemoryStore = create<MemoryState>(set => ({
+export const memoryStore = create<MemoryState>(() => ({
   isRecording: false,
   recordingPath: [],
   memories: [
@@ -44,16 +28,33 @@ export const useMemoryStore = create<MemoryState>(set => ({
     },
   ],
   selectedMemoryId: null,
+}));
 
-  startRecording: () => set({ isRecording: true, recordingPath: [] }),
-  stopRecording: () => set({ isRecording: false }),
-  setSelectedMemoryId: id => set({ selectedMemoryId: id }),
-  addLocationPoint: point =>
-    set(state => ({
+// 3. 외부 노출용 커스텀 훅 (useShallow 적용)
+export const useMemoryStore = <T = MemoryState>(
+  selector: (state: MemoryState) => T = (state: MemoryState) =>
+    state as unknown as T,
+) => memoryStore(useShallow(selector));
+
+// 4. 액션 분리 (Static Actions)
+export const memoryActions = {
+  startRecording: () =>
+    memoryStore.setState({ isRecording: true, recordingPath: [] }),
+  stopRecording: () => memoryStore.setState({ isRecording: false }),
+  setSelectedMemoryId: (id: string | null) =>
+    memoryStore.setState({ selectedMemoryId: id }),
+  addLocationPoint: (point: LocationPoint) =>
+    memoryStore.setState(state => ({
       recordingPath: [...state.recordingPath, point],
     })),
-  saveMemory: memoryData =>
-    set(state => {
+  saveMemory: (memoryData: {
+    id: string;
+    title: string;
+    description?: string;
+    userId: string;
+    workspaceId: string;
+  }) =>
+    memoryStore.setState(state => {
       const newMemory: Memory = {
         ...memoryData,
         date: new Date().toISOString(),
@@ -65,13 +66,17 @@ export const useMemoryStore = create<MemoryState>(set => ({
         isRecording: false,
       };
     }),
-  clearRecording: () => set({ recordingPath: [], isRecording: false }),
-  deleteMemory: id =>
-    set(state => ({
+  clearRecording: () =>
+    memoryStore.setState({ recordingPath: [], isRecording: false }),
+  deleteMemory: (id: string) =>
+    memoryStore.setState(state => ({
       memories: state.memories.filter(m => m.id !== id),
     })),
-  updateMemory: (id, data) =>
-    set(state => ({
+  updateMemory: (
+    id: string,
+    data: { title: string; description?: string; thumbnailUrl?: string },
+  ) =>
+    memoryStore.setState(state => ({
       memories: state.memories.map(m => (m.id === id ? { ...m, ...data } : m)),
     })),
-}));
+};
