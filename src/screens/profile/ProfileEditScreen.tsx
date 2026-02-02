@@ -21,8 +21,8 @@ import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import { Camera } from 'lucide-react-native';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
-import { useUserStore } from '@/stores/useUserStore';
-import { useModalStore } from '@/stores/useModalStore';
+import { useUserStore, userActions } from '@/stores/useUserStore';
+import { modalActions } from '@/stores/useModalStore';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { ProfileAvatar } from '@/components/common/ProfileAvatar';
 
@@ -42,8 +42,9 @@ const HeaderSaveButton = () => {
 
 const ProfileEditScreen = () => {
   const navigation = useNavigation();
-  const { user: userProfile, updateUser: updateProfile } = useUserStore();
-  const { showModal } = useModalStore();
+  const { user: userProfile } = useUserStore();
+  const { updateUser: updateProfile } = userActions;
+  const { showModal } = modalActions;
 
   const [name, setName] = useState(userProfile?.name || '');
   const [profileImage, setProfileImage] = useState(

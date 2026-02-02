@@ -25,8 +25,11 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { APP_WORKSPACE } from '@/constants/config';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { useModalStore } from '@/stores/useModalStore';
+import {
+  useWorkspaceStore,
+  workspaceActions,
+} from '@/stores/useWorkspaceStore';
+import { modalActions } from '@/stores/useModalStore';
 import { calculateDDay, formatDate } from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
@@ -41,19 +44,16 @@ type RootStackParamList = {
 
 const WorkspaceListScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const workspaces = useWorkspaceStore(state => state.workspaces);
-  const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
-  const setCurrentWorkspace = useWorkspaceStore(
-    state => state.setCurrentWorkspace,
-  );
-  const removeWorkspace = useWorkspaceStore(state => state.removeWorkspace);
-  const updateWorkspaceName = useWorkspaceStore(
-    state => state.updateWorkspaceName,
-  );
-  const updateMemberProfile = useWorkspaceStore(
-    state => state.updateMemberProfile,
-  );
-  const { showModal } = useModalStore();
+  const { workspaces, currentWorkspace } = useWorkspaceStore();
+  const {
+    setCurrentWorkspace,
+    removeWorkspace,
+    updateWorkspaceName,
+    updateMemberProfile,
+    sendInvitation,
+    initMockData,
+  } = workspaceActions;
+  const { showModal } = modalActions;
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingWorkspace, setEditingWorkspace] = useState<any>(null);
@@ -76,7 +76,6 @@ const WorkspaceListScreen = () => {
   const [profileName, setProfileName] = useState('');
 
   const userEmail = 'user@example.com'; // 임시: 이메일 정보 위치 확인 필요
-  const sendInvitation = useWorkspaceStore(state => state.sendInvitation);
 
   const handleSwitch = (workspace: any) => {
     if (currentWorkspace?.id === workspace.id) return;
@@ -205,7 +204,7 @@ const WorkspaceListScreen = () => {
             <Text style={styles.title}>내 {APP_WORKSPACE.KR} 목록</Text>
             <TouchableOpacity
               onPress={() => {
-                useWorkspaceStore.getState().initMockData();
+                initMockData();
                 showModal({
                   type: 'alert',
                   title: '알림',

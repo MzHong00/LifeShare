@@ -105,7 +105,7 @@ const MemoriesFooter = ({ loading }: { loading: boolean }) => {
 
 const MemoriesScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
-  const memories = useMemoryStore(state => state.memories);
+  const { memories } = useMemoryStore();
 
   const [loading] = useState(false);
 

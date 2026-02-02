@@ -24,10 +24,13 @@ import {
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
-import { useAuthStore } from '@/stores/useAuthStore';
+import { authActions } from '@/stores/useAuthStore';
 import { useUserStore } from '@/stores/useUserStore';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { useModalStore } from '@/stores/useModalStore';
+import {
+  useWorkspaceStore,
+  workspaceActions,
+} from '@/stores/useWorkspaceStore';
+import { modalActions } from '@/stores/useModalStore';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
 interface MenuItem {
@@ -54,13 +57,10 @@ const ProfileScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { user } = useUserStore();
   const userEmail = 'user@example.com'; // 임시: 이메일 정보 위치 확인 필요
-  const clearTokens = useAuthStore(state => state.clearTokens);
-  const clearData = useWorkspaceStore(state => state.clearData);
-  const invitations = useWorkspaceStore(state => state.invitations);
-  const respondToInvitation = useWorkspaceStore(
-    state => state.respondToInvitation,
-  );
-  const { showModal } = useModalStore();
+  const { clearTokens } = authActions;
+  const { clearData, respondToInvitation } = workspaceActions;
+  const { invitations } = useWorkspaceStore();
+  const { showModal } = modalActions;
 
   const pendingInvitations = invitations.filter(
     inv => inv.inviteeEmail === userEmail && inv.status === 'pending',

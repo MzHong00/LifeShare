@@ -17,20 +17,27 @@ import {
   Modal,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { Calendar } from 'react-native-calendars';
+import type { DateData } from 'react-native-calendars';
 import { Calendar as CalendarIcon, Trash2 } from 'lucide-react-native';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
-import { useCalendarStore } from '@/stores/useCalendarStore';
+import { useCalendarStore, calendarActions } from '@/stores/useCalendarStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { useModalStore } from '@/stores/useModalStore';
-import { getTodayDateString } from '@/utils/date';
+import { modalActions } from '@/stores/useModalStore';
+import { getTodayDateString, getIntermediateDates } from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
-type EventCreateRouteProp = RouteProp<
-  { EventCreate: { eventId?: string; initialDate?: string } },
-  'EventCreate'
->;
+type EventCreateParamList = {
+  EventCreate: {
+    eventId?: string;
+    initialDate?: string;
+    handleDelete?: () => void;
+  };
+};
+
+type EventCreateRouteProp = RouteProp<EventCreateParamList, 'EventCreate'>;
 
 const EVENT_COLORS = [
   '#3182F6', // Blue
@@ -42,7 +49,7 @@ const EVENT_COLORS = [
 ];
 
 const HeaderDeleteButton = () => {
-  const route = useRoute<any>();
+  const route = useRoute<EventCreateRouteProp>();
   const handleDelete = route.params?.handleDelete;
 
   if (!route.params?.eventId) return null;
@@ -58,14 +65,15 @@ const HeaderDeleteButton = () => {
 };
 
 const EventCreateScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<EventCreateParamList>>();
   const route = useRoute<EventCreateRouteProp>();
   const eventId = route.params?.eventId;
   const initialDate = route.params?.initialDate;
 
   const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
-  const { events, addEvent, updateEvent, removeEvent } = useCalendarStore();
-  const { showModal } = useModalStore();
+  const { events } = useCalendarStore();
+  const { addEvent, updateEvent, removeEvent } = calendarActions;
+  const { showModal } = modalActions;
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -105,7 +113,10 @@ const EventCreateScreen = () => {
 
   // handleDelete 함수와 eventId를 네비게이션 파라미터에 등록
   useEffect(() => {
-    navigation.setParams({ handleDelete, eventId } as any);
+    navigation.setParams({
+      handleDelete,
+      eventId,
+    });
   }, [navigation, handleDelete, eventId]);
 
   useLayoutEffect(() => {
@@ -116,7 +127,7 @@ const EventCreateScreen = () => {
     }
   }, [navigation, eventId]);
 
-  const handleDayPress = (day: any) => {
+  const handleDayPress = (day: DateData) => {
     if (startDate && !endDate) {
       if (day.dateString >= startDate) {
         setEndDate(day.dateString);
@@ -131,7 +142,7 @@ const EventCreateScreen = () => {
   };
 
   const markedDates = useMemo(() => {
-    const marks: any = {};
+    const marks: Record<string, any> = {};
     if (startDate) {
       marks[startDate] = {
         startingDay: true,
@@ -146,17 +157,13 @@ const EventCreateScreen = () => {
         textColor: COLORS.white,
       };
 
-      let curr = new Date(startDate);
-      const end = new Date(endDate);
-      curr.setDate(curr.getDate() + 1);
-      while (curr < end) {
-        const iso = curr.toISOString().split('T')[0];
-        marks[iso] = {
+      const intermediateDates = getIntermediateDates(startDate, endDate);
+      intermediateDates.forEach(date => {
+        marks[date] = {
           color: COLORS.primaryLight,
           textColor: COLORS.primary,
         };
-        curr.setDate(curr.getDate() + 1);
-      }
+      });
     }
     return marks;
   }, [startDate, endDate]);

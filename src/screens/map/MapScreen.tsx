@@ -170,39 +170,38 @@ const MapScreen = () => {
     }
   };
 
-  if (myLocationLoading || !myLocation) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-        <Text style={styles.loadingText}>위치 정보를 불러오는 중...</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
-      <MainMap
-        mapRef={mapRef}
-        myLocation={myLocation}
-        currentDelta={currentDeltaRef.current}
-        isRecording={isRecording}
-        recordingPath={recordingPath}
-        showHistory={showHistory}
-        memories={memories}
-        selectedMemoryId={selectedMemoryId}
-        membersWithLocation={membersWithLocation}
-        onMarkerPress={moveToUser}
-        onPolylinePress={id => {
-          setSelectedMemoryId(id);
-          setSelectedUserId(null);
-        }}
-        onRegionChangeComplete={region => {
-          currentDeltaRef.current = {
-            latitudeDelta: region.latitudeDelta,
-            longitudeDelta: region.longitudeDelta,
-          };
-        }}
-      />
+      {myLocation && (
+        <MainMap
+          mapRef={mapRef}
+          myLocation={myLocation}
+          currentDelta={currentDeltaRef.current}
+          isRecording={isRecording}
+          recordingPath={recordingPath}
+          showHistory={showHistory}
+          memories={memories}
+          selectedMemoryId={selectedMemoryId}
+          membersWithLocation={membersWithLocation}
+          onMarkerPress={moveToUser}
+          onPolylinePress={id => {
+            setSelectedMemoryId(id);
+            setSelectedUserId(null);
+          }}
+          onRegionChangeComplete={region => {
+            currentDeltaRef.current = {
+              latitudeDelta: region.latitudeDelta,
+              longitudeDelta: region.longitudeDelta,
+            };
+          }}
+        />
+      )}
+      {myLocationLoading && (
+        <View style={styles.mapLoadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>위치 정보를 불러오는 중...</Text>
+        </View>
+      )}
 
       {/* Floating Header UI */}
       <AppSafeAreaView style={styles.floatingHeader} edges={['top']}>
@@ -326,6 +325,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: COLORS.white,
+  },
+  mapLoadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.skeleton,
   },
   loadingText: {
     marginTop: 12,

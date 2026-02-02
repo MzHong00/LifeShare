@@ -14,7 +14,7 @@ import { Map, Edit3, ChevronLeft } from 'lucide-react-native';
 import { COLORS, SPACING } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
-import { useMemoryStore } from '@/stores/useMemoryStore';
+import { useMemoryStore, memoryActions } from '@/stores/useMemoryStore';
 import { MemoryBriefInfo } from '@/components/memories/MemoryBriefInfo';
 
 type MemoryDetailRouteProp = RouteProp<
@@ -29,7 +29,8 @@ const MemoryDetailScreen = () => {
   const route = useRoute<MemoryDetailRouteProp>();
   const { memoryId } = route.params;
 
-  const { memories, setSelectedMemoryId } = useMemoryStore();
+  const { memories } = useMemoryStore();
+  const { setSelectedMemoryId } = memoryActions;
   const [memory, setMemory] = useState<any>(null);
 
   useEffect(() => {

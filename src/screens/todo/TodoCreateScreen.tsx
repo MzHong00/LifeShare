@@ -27,9 +27,9 @@ import {
 
 import '@/lib/reactNativeCalendars';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
-import { useTodoStore } from '@/stores/useTodoStore';
+import { useTodoStore, todoActions } from '@/stores/useTodoStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { useModalStore } from '@/stores/useModalStore';
+import { modalActions } from '@/stores/useModalStore';
 import {
   getTodayDateString,
   getDateWithOffset,
@@ -64,8 +64,9 @@ const TodoCreateScreen = () => {
   const todoId = route.params?.todoId;
 
   const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
-  const { todos, addTodo, updateTodo, removeTodo } = useTodoStore();
-  const { showModal } = useModalStore();
+  const { todos } = useTodoStore();
+  const { addTodo, updateTodo, removeTodo } = todoActions;
+  const { showModal } = modalActions;
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');

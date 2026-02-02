@@ -24,7 +24,7 @@ import {
 import { Todo } from '@/types/todo';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
-import { useTodoStore } from '@/stores/useTodoStore';
+import { useTodoStore, todoActions } from '@/stores/useTodoStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import {
   getTodayDateString,
@@ -149,8 +149,8 @@ const TodoScreen = () => {
     getTodayDateString(),
   );
 
-  const todos = useTodoStore(state => state.todos);
-  const toggleTodo = useTodoStore(state => state.toggleTodo);
+  const { todos } = useTodoStore();
+  const { toggleTodo } = todoActions;
   const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
 
   // Generate dates from 14 days ago to 14 days ahead

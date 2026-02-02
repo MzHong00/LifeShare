@@ -14,8 +14,11 @@ import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { MOCK_DATA } from '@/constants/mockData';
 import { calculateDDay } from '@/utils/date';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { useModalStore } from '@/stores/useModalStore';
+import {
+  useWorkspaceStore,
+  workspaceActions,
+} from '@/stores/useWorkspaceStore';
+import { modalActions } from '@/stores/useModalStore';
 import { Section } from '@/components/common/Section';
 import { Card } from '@/components/common/Card';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
@@ -36,11 +39,9 @@ type RootStackParamList = {
 
 const HomeScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
-  const updateWorkspaceBackground = useWorkspaceStore(
-    state => state.updateWorkspaceBackground,
-  );
-  const { showModal } = useModalStore();
+  const { currentWorkspace } = useWorkspaceStore();
+  const { updateWorkspaceBackground } = workspaceActions;
+  const { showModal } = modalActions;
 
   // currentWorkspace는 AppNavigator에서 보장됨
   if (!currentWorkspace) return null;

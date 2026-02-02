@@ -4,13 +4,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import '@/lib/reactNativeCalendars';
 import { GoogleOAuthService } from '@/businesses/oauth/google/googleOAuthService';
-import CustomModal from '@/components/common/CustomModal';
 import AppNavigator from '@/navigations/AppNavigator';
+import CustomModal from '@/components/common/CustomModal';
 
 const queryClient = new QueryClient();
 GoogleOAuthService.initGoogleOAuth();
 
-function App() {
+const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
@@ -25,6 +25,6 @@ function App() {
       </SafeAreaProvider>
     </QueryClientProvider>
   );
-}
+};
 
 export default App;

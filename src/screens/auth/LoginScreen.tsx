@@ -1,35 +1,30 @@
-
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Heart } from 'lucide-react-native';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { APP_BRAND_NAME } from '@/constants/config';
-import { useAuthStore } from '@/stores/useAuthStore';
-import { useUserStore } from '@/stores/useUserStore';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { authActions } from '@/stores/useAuthStore';
+import { userActions } from '@/stores/useUserStore';
+import { workspaceActions } from '@/stores/useWorkspaceStore';
 import { GoogleOAuthService } from '@/businesses/oauth/google/googleOAuthService';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { GoogleIcon, KakaoIcon } from '@/components/common/SocialIcons';
 
 const LoginScreen = () => {
-  const setTokens = useAuthStore(state => state.setTokens);
-  const setUser = useUserStore(state => state.setUser);
-  const clearData = useWorkspaceStore(state => state.clearData);
-
   const handleSocialLogin = (method: 'google' | 'kakao') => {
     const mockEmail =
       method === 'google' ? 'google_user@gmail.com' : 'kakao_user@kakao.com';
 
     // 1. 인증 토큰 저장
-    setTokens('social-access-token', 'social-refresh-token');
+    authActions.setTokens('social-access-token', 'social-refresh-token');
 
     // 2. 사용자 정보 저장
-    setUser({
+    userActions.setUser({
       name: mockEmail.split('@')[0],
       profileImage: undefined,
     });
 
-    clearData();
+    workspaceActions.clearData();
   };
 
   return (

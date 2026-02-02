@@ -53,10 +53,10 @@ const BACKGROUND_COLOR_HEADER_OPTIONS: StackNavigationOptions = {
 };
 
 const AppNavigator = () => {
-  const isLoggedIn = useAuthStore(state => state.isLoggedIn);
-  const workspaces = useWorkspaceStore(state => state.workspaces);
+  const { isLoggedIn } = useAuthStore();
+  const { workspaces } = useWorkspaceStore();
 
-  const hasWorkspace = workspaces.length !== 0;
+  const hasWorkspace = (workspaces || []).length !== 0;
 
   return (
     <NavigationContainer>

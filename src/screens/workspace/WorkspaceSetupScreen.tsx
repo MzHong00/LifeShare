@@ -13,8 +13,11 @@ import { Users, Plus, UserPlus, Heart, Mail, Send } from 'lucide-react-native';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { APP_WORKSPACE } from '@/constants/config';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { useModalStore } from '@/stores/useModalStore';
+import {
+  useWorkspaceStore,
+  workspaceActions,
+} from '@/stores/useWorkspaceStore';
+import { modalActions } from '@/stores/useModalStore';
 import { getTodayDateString } from '@/utils/date';
 import Checkbox from '@/components/common/Checkbox';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
@@ -282,12 +285,9 @@ const WorkspaceSetupScreen = () => {
   const [startDate, setStartDate] = useState(getTodayDateString());
 
   const userEmail = 'user@example.com'; // 임시: 이메일 정보 위치 확인 필요
-  const workspaces = useWorkspaceStore(state => state.workspaces);
-  const createNewWorkspace = useWorkspaceStore(
-    state => state.createNewWorkspace,
-  );
-  const sendInvitation = useWorkspaceStore(state => state.sendInvitation);
-  const { showModal } = useModalStore();
+  const { workspaces } = useWorkspaceStore();
+  const { createNewWorkspace, sendInvitation } = workspaceActions;
+  const { showModal } = modalActions;
 
   const completeSetup = () => {
     if (!workspaceName.trim()) {
