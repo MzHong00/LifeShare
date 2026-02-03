@@ -55,17 +55,17 @@ export const NAV_ROUTES = {
     NAME: 'TodoCreate',
     TITLE: '할 일 생성',
   },
-  MEMORIES: {
-    NAME: 'Memories',
-    TITLE: '추억',
+  STORIES: {
+    NAME: 'Stories',
+    TITLE: '스토리',
   },
-  MEMORY_EDIT: {
-    NAME: 'MemoryEdit',
-    TITLE: '추억 수정',
+  STORY_EDIT: {
+    NAME: 'StoryEdit',
+    TITLE: '스토리 수정',
   },
-  MEMORY_DETAIL: {
-    NAME: 'MemoryDetail',
-    TITLE: '추억 상세보기',
+  STORY_DETAIL: {
+    NAME: 'StoryDetail',
+    TITLE: '스토리 상세보기',
   },
   PROFILE: {
     NAME: 'Profile',

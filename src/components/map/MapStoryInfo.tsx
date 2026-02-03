@@ -1,29 +1,28 @@
-
 import { View, StyleSheet, Image, Text } from 'react-native';
 import { COLORS, SPACING } from '@/constants/theme';
-import { MemoryBriefInfo } from '@/components/memories/MemoryBriefInfo';
-import type { Memory } from '@/types';
+import { StoryBriefInfo } from '@/components/stories/StoryBriefInfo';
+import type { Story } from '@/types';
 
-interface MapMemoryInfoProps {
-  memory: Memory;
+interface MapStoryInfoProps {
+  story: Story;
 }
 
-export const MapMemoryInfo = ({ memory }: MapMemoryInfoProps) => {
+export const MapStoryInfo = ({ story }: MapStoryInfoProps) => {
   return (
-    <View style={styles.memoryDrawerContent}>
-      <MemoryBriefInfo memory={memory} />
+    <View style={styles.storyDrawerContent}>
+      <StoryBriefInfo story={story} />
 
-      {memory.thumbnailUrl && (
+      {story.thumbnailUrl && (
         <Image
-          source={{ uri: memory.thumbnailUrl }}
+          source={{ uri: story.thumbnailUrl }}
           style={styles.drawerImage}
           resizeMode="cover"
         />
       )}
 
-      {memory.description && (
+      {story.description && (
         <View style={styles.descriptionSection}>
-          <Text style={styles.descriptionText}>{memory.description}</Text>
+          <Text style={styles.descriptionText}>{story.description}</Text>
         </View>
       )}
     </View>
@@ -31,7 +30,7 @@ export const MapMemoryInfo = ({ memory }: MapMemoryInfoProps) => {
 };
 
 const styles = StyleSheet.create({
-  memoryDrawerContent: {
+  storyDrawerContent: {
     paddingHorizontal: SPACING.layout,
     paddingVertical: SPACING.md,
   },

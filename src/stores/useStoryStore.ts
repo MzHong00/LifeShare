@@ -1,19 +1,19 @@
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 
-import type { Memory, LocationPoint } from '@/types';
+import type { Story, LocationPoint } from '@/types';
 
-interface MemoryState {
+interface StoryState {
   isRecording: boolean;
   recordingPath: LocationPoint[];
-  memories: Memory[];
-  selectedMemoryId: string | null;
+  stories: Story[];
+  selectedStoryId: string | null;
 }
 
-export const memoryStore = create<MemoryState>(() => ({
+export const storyStore = create<StoryState>(() => ({
   isRecording: false,
   recordingPath: [],
-  memories: [
+  stories: [
     {
       id: 'mock-1',
       title: '지난 주 데이트',
@@ -27,68 +27,68 @@ export const memoryStore = create<MemoryState>(() => ({
       ],
     },
   ],
-  selectedMemoryId: null,
+  selectedStoryId: null,
 }));
 
 // 3. 외부 노출용 커스텀 훅 (useShallow 적용)
-export const useMemoryStore = <T = MemoryState>(
-  selector: (state: MemoryState) => T = (state: MemoryState) =>
+export const useStoryStore = <T = StoryState>(
+  selector: (state: StoryState) => T = (state: StoryState) =>
     state as unknown as T,
-) => memoryStore(useShallow(selector));
+) => storyStore(useShallow(selector));
 
 // 4. 액션 분리 (Static Actions)
-export const memoryActions = {
+export const storyActions = {
   startRecording: () =>
-    memoryStore.setState({ isRecording: true, recordingPath: [] }),
-  stopRecording: () => memoryStore.setState({ isRecording: false }),
-  setSelectedMemoryId: (id: string | null) =>
-    memoryStore.setState({ selectedMemoryId: id }),
+    storyStore.setState({ isRecording: true, recordingPath: [] }),
+  stopRecording: () => storyStore.setState({ isRecording: false }),
+  setSelectedStoryId: (id: string | null) =>
+    storyStore.setState({ selectedStoryId: id }),
   addLocationPoint: (point: LocationPoint) =>
-    memoryStore.setState(state => ({
+    storyStore.setState(state => ({
       recordingPath: [...state.recordingPath, point],
     })),
-  saveMemory: (memoryData: {
+  saveStory: (storyData: {
     id: string;
     title: string;
     description?: string;
     userId: string;
     workspaceId: string;
   }) =>
-    memoryStore.setState(state => {
-      const newMemory: Memory = {
-        ...memoryData,
+    storyStore.setState(state => {
+      const newStory: Story = {
+        ...storyData,
         date: new Date().toISOString(),
         path: state.recordingPath,
       };
       return {
-        memories: [newMemory, ...state.memories],
+        stories: [newStory, ...state.stories],
         recordingPath: [],
         isRecording: false,
       };
     }),
   clearRecording: () =>
-    memoryStore.setState({ recordingPath: [], isRecording: false }),
-  deleteMemory: (id: string) =>
-    memoryStore.setState(state => ({
-      memories: state.memories.filter(m => m.id !== id),
+    storyStore.setState({ recordingPath: [], isRecording: false }),
+  deleteStory: (id: string) =>
+    storyStore.setState(state => ({
+      stories: state.stories.filter(s => s.id !== id),
     })),
-  addMemory: (data: Omit<Memory, 'id' | 'userId' | 'workspaceId'>) =>
-    memoryStore.setState(state => {
-      const newMemory: Memory = {
+  addStory: (data: Omit<Story, 'id' | 'userId' | 'workspaceId'>) =>
+    storyStore.setState(state => {
+      const newStory: Story = {
         ...data,
         id: Math.random().toString(36).substring(7),
         userId: 'user-1',
         workspaceId: 'ws-1',
       };
       return {
-        memories: [newMemory, ...state.memories],
+        stories: [newStory, ...state.stories],
       };
     }),
-  updateMemory: (
+  updateStory: (
     id: string,
     data: { title: string; description?: string; thumbnailUrl?: string },
   ) =>
-    memoryStore.setState(state => ({
-      memories: state.memories.map(m => (m.id === id ? { ...m, ...data } : m)),
+    storyStore.setState(state => ({
+      stories: state.stories.map(s => (s.id === id ? { ...s, ...data } : s)),
     })),
 };

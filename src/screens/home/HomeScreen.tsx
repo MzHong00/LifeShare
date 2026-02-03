@@ -29,7 +29,7 @@ type RootStackParamList = {
   [NAV_ROUTES.MAIN_TABS.NAME]: undefined;
   [NAV_ROUTES.CALENDAR.NAME]: undefined;
   [NAV_ROUTES.TODO.NAME]: undefined;
-  [NAV_ROUTES.MEMORIES.NAME]: undefined;
+  [NAV_ROUTES.STORIES.NAME]: undefined;
   [NAV_ROUTES.PROFILE.NAME]: undefined;
   [NAV_ROUTES.WORKSPACE_SETUP.NAME]: undefined;
   [NAV_ROUTES.PRO_UPGRADE.NAME]: undefined;
@@ -137,10 +137,10 @@ const HomeScreen = () => {
               onPress={() => navigation.navigate(NAV_ROUTES.TODO.NAME)}
             />
             <MenuButton
-              title={NAV_ROUTES.MEMORIES.TITLE}
+              title={NAV_ROUTES.STORIES.TITLE}
               icon={<Heart size={18} color="#F04452" />}
               iconBgColor="#FFEBF0"
-              onPress={() => navigation.navigate(NAV_ROUTES.MEMORIES.NAME)}
+              onPress={() => navigation.navigate(NAV_ROUTES.STORIES.NAME)}
             />
           </View>
         </Section>
@@ -153,7 +153,7 @@ const HomeScreen = () => {
             onPress={() => navigation.navigate(NAV_ROUTES.PRO_UPGRADE.NAME)}
           >
             <Text style={styles.bannerText}>
-              가족, 친구와도 추억을 나누고 싶나요? ✨
+              가족, 친구와도 스토리를 나누고 싶나요? ✨
             </Text>
             <Text style={[styles.bannerSubText, { color: COLORS.primary }]}>
               Pro 플랜으로 업그레이드

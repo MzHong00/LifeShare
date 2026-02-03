@@ -22,24 +22,21 @@ import { Camera, Calendar, Plus, Trash2, MapPin } from 'lucide-react-native';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { modalActions } from '@/stores/useModalStore';
-import { useMemoryStore, memoryActions } from '@/stores/useMemoryStore';
+import { useStoryStore, storyActions } from '@/stores/useStoryStore';
 import { getTodayDateString, formatDate } from '@/utils/date';
 
-type MemoryEditRouteProp = RouteProp<
-  { params: { memoryId?: string } },
-  'params'
->;
+type StoryEditRouteProp = RouteProp<{ params: { storyId?: string } }, 'params'>;
 
-const MemoryEditScreen = () => {
+const StoryEditScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
-  const route = useRoute<MemoryEditRouteProp>();
-  const memoryId = route.params?.memoryId;
-  const isEditMode = !!memoryId;
+  const route = useRoute<StoryEditRouteProp>();
+  const storyId = route.params?.storyId;
+  const isEditMode = !!storyId;
 
   const { showModal } = modalActions;
-  const { memories } = useMemoryStore();
-  const { addMemory, updateMemory, deleteMemory, setSelectedMemoryId } =
-    memoryActions;
+  const { stories } = useStoryStore();
+  const { addStory, updateStory, deleteStory, setSelectedStoryId } =
+    storyActions;
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -50,44 +47,44 @@ const MemoryEditScreen = () => {
 
   // 데이터 불러오기 (수정 모드일 때만)
   useEffect(() => {
-    if (isEditMode && memoryId) {
-      const memory = memories.find(m => m.id === memoryId);
-      if (memory) {
-        setTitle(memory.title);
-        setDescription(memory.description || '');
-        setDate(formatDate(memory.date));
-        setThumbnailUrl(memory.thumbnailUrl);
+    if (isEditMode && storyId) {
+      const story = stories.find(s => s.id === storyId);
+      if (story) {
+        setTitle(story.title);
+        setDescription(story.description || '');
+        setDate(formatDate(story.date));
+        setThumbnailUrl(story.thumbnailUrl);
       } else {
         showModal({
           type: 'alert',
           title: '에러',
-          message: '추억 정보를 불러올 수 없습니다.',
+          message: '스토리 정보를 불러올 수 없습니다.',
           onConfirm: () => navigation.goBack(),
         });
       }
     }
-  }, [isEditMode, memoryId, memories, navigation, showModal]);
+  }, [isEditMode, storyId, stories, navigation, showModal]);
 
   const handleSave = () => {
     if (!title.trim()) {
       showModal({
         type: 'alert',
         title: '알림',
-        message: '추억의 제목을 입력해주세요.',
+        message: '스토리의 제목을 입력해주세요.',
       });
       return;
     }
 
-    if (isEditMode && memoryId) {
-      updateMemory(memoryId, { title, description, thumbnailUrl });
+    if (isEditMode && storyId) {
+      updateStory(storyId, { title, description, thumbnailUrl });
       showModal({
         type: 'alert',
         title: '성공',
-        message: '추억이 수정되었습니다.',
+        message: '스토리가 수정되었습니다.',
         onConfirm: () => navigation.goBack(),
       });
     } else {
-      addMemory({
+      addStory({
         title,
         description,
         thumbnailUrl,
@@ -97,29 +94,29 @@ const MemoryEditScreen = () => {
       showModal({
         type: 'alert',
         title: '성공',
-        message: '새로운 추억이 기록되었습니다.',
+        message: '새로운 스토리가 기록되었습니다.',
         onConfirm: () => navigation.goBack(),
       });
     }
   };
 
   const handleDelete = () => {
-    if (!memoryId) return;
+    if (!storyId) return;
 
     showModal({
       type: 'confirm',
-      title: '추억 삭제',
+      title: '스토리 삭제',
       message:
-        '정말로 이 추억을 삭제하시겠습니까? 삭제된 추억은 복구할 수 없습니다.',
+        '정말로 이 스토리를 삭제하시겠습니까? 삭제된 스토리는 복구할 수 없습니다.',
       confirmText: '삭제',
       cancelText: '취소',
       onConfirm: () => {
-        deleteMemory(memoryId);
-        setSelectedMemoryId(null);
+        deleteStory(storyId);
+        setSelectedStoryId(null);
         showModal({
           type: 'alert',
           title: '완료',
-          message: '추억이 삭제되었습니다.',
+          message: '스토리가 삭제되었습니다.',
           onConfirm: () => navigation.goBack(),
         });
       },
@@ -154,7 +151,7 @@ const MemoryEditScreen = () => {
   // 네비게이션 헤더 제목 설정
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: isEditMode ? '추억 수정' : '새 추억 기록',
+      title: isEditMode ? '스토리 수정' : '새 스토리 기록',
     });
   }, [isEditMode, navigation]);
 
@@ -164,7 +161,7 @@ const MemoryEditScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {!isEditMode && (
+        {!isEditMode && stories.length <= 3 && (
           <View style={styles.infoBanner}>
             <View style={styles.infoIconWrapper}>
               <MapPin size={16} color={COLORS.primary} />
@@ -172,8 +169,8 @@ const MemoryEditScreen = () => {
             <View style={styles.infoTextContainer}>
               <Text style={styles.infoTitle}>경로와 함께 기록하고 싶나요?</Text>
               <Text style={styles.infoDescription}>
-                이동 경로가 포함된 추억은 '위치' 탭의 기록하기 버튼을 통해 만들
-                수 있어요.
+                이동 경로가 포함된 스토리는 '위치' 탭의 기록하기 버튼을 통해
+                만들 수 있어요.
               </Text>
             </View>
           </View>
@@ -206,7 +203,7 @@ const MemoryEditScreen = () => {
             <Text style={styles.label}>제목</Text>
             <TextInput
               style={styles.input}
-              placeholder="어떤 추억인가요?"
+              placeholder="어떤 스토리인가요?"
               placeholderTextColor={COLORS.textTertiary}
               value={title}
               onChangeText={setTitle}
@@ -431,4 +428,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MemoryEditScreen;
+export default StoryEditScreen;

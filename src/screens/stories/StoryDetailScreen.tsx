@@ -14,43 +14,41 @@ import { Map, Edit3, ChevronLeft } from 'lucide-react-native';
 import { COLORS, SPACING } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
-import { useMemoryStore, memoryActions } from '@/stores/useMemoryStore';
-import { MemoryBriefInfo } from '@/components/memories/MemoryBriefInfo';
+import { useStoryStore, storyActions } from '@/stores/useStoryStore';
+import { StoryBriefInfo } from '@/components/stories/StoryBriefInfo';
 
-type MemoryDetailRouteProp = RouteProp<
-  { params: { memoryId: string } },
+type StoryDetailRouteProp = RouteProp<
+  { params: { storyId: string } },
   'params'
 >;
 
-// MemoryDetailScreen
-
-const MemoryDetailScreen = () => {
+const StoryDetailScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
-  const route = useRoute<MemoryDetailRouteProp>();
-  const { memoryId } = route.params;
+  const route = useRoute<StoryDetailRouteProp>();
+  const { storyId } = route.params;
 
-  const { memories } = useMemoryStore();
-  const { setSelectedMemoryId } = memoryActions;
-  const [memory, setMemory] = useState<any>(null);
+  const { stories } = useStoryStore();
+  const { setSelectedStoryId } = storyActions;
+  const [story, setStory] = useState<any>(null);
 
   useEffect(() => {
-    const found = memories.find(m => m.id === memoryId);
+    const found = stories.find(s => s.id === storyId);
     if (found) {
-      setMemory(found);
+      setStory(found);
     }
-  }, [memoryId, memories]);
+  }, [storyId, stories]);
 
-  if (!memory) return null;
+  if (!story) return null;
 
   const handleShowOnMap = () => {
-    setSelectedMemoryId(memory.id);
+    setSelectedStoryId(story.id);
     navigation.navigate(NAV_ROUTES.MAIN_TABS.NAME, {
       screen: NAV_ROUTES.LOCATION.NAME,
     });
   };
 
   const handleEdit = () => {
-    navigation.navigate(NAV_ROUTES.MEMORY_EDIT.NAME, { memoryId: memory.id });
+    navigation.navigate(NAV_ROUTES.STORY_EDIT.NAME, { storyId: story.id });
   };
 
   return (
@@ -63,7 +61,7 @@ const MemoryDetailScreen = () => {
         >
           <ChevronLeft size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>추억 상세보기</Text>
+        <Text style={styles.headerTitle}>스토리 상세보기</Text>
         <TouchableOpacity style={styles.editBtn} onPress={handleEdit}>
           <Edit3 size={20} color={COLORS.textPrimary} />
         </TouchableOpacity>
@@ -71,19 +69,19 @@ const MemoryDetailScreen = () => {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          <MemoryBriefInfo memory={memory} showDecorateBtn={false} />
+          <StoryBriefInfo story={story} showDecorateBtn={false} />
 
-          {memory.thumbnailUrl && (
+          {story.thumbnailUrl && (
             <Image
-              source={{ uri: memory.thumbnailUrl }}
+              source={{ uri: story.thumbnailUrl }}
               style={styles.detailImage}
               resizeMode="cover"
             />
           )}
 
-          {memory.description && (
+          {story.description && (
             <View style={styles.descriptionSection}>
-              <Text style={styles.descriptionText}>{memory.description}</Text>
+              <Text style={styles.descriptionText}>{story.description}</Text>
             </View>
           )}
 
@@ -190,4 +188,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MemoryDetailScreen;
+export default StoryDetailScreen;

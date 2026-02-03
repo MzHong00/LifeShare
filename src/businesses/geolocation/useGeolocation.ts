@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
 
 import { useLocationStore, locationActions } from '@/stores/useLocationStore';
-import { useMemoryStore, memoryActions } from '@/stores/useMemoryStore';
+import { useStoryStore, storyActions } from '@/stores/useStoryStore';
 import { GeolocationService } from '@/businesses/geolocation/geolocationServiceService';
 
 export const useGeolocation = () => {
@@ -9,9 +9,8 @@ export const useGeolocation = () => {
 
   const { setLocation, setError, setLoading } = locationActions;
 
-  // useMemoryStore는 아직 이전 방식이므로 그대로 둡니다.
-  const { isRecording } = useMemoryStore();
-  const { addLocationPoint } = memoryActions;
+  const { isRecording } = useStoryStore();
+  const { addLocationPoint } = storyActions;
 
   const updateLocation = useCallback(async () => {
     try {

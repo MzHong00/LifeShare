@@ -1,21 +1,20 @@
-
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Route, Calendar, MapPin, Paintbrush } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
-import type { Memory } from '@/types';
+import type { Story } from '@/types';
 
-interface MemoryBriefInfoProps {
-  memory: Memory;
+interface StoryBriefInfoProps {
+  story: Story;
   showDecorateBtn?: boolean;
 }
 
-export const MemoryBriefInfo = ({
-  memory,
+export const StoryBriefInfo = ({
+  story,
   showDecorateBtn = true,
-}: MemoryBriefInfoProps) => {
+}: StoryBriefInfoProps) => {
   const navigation = useNavigation<StackNavigationProp<any>>();
 
   return (
@@ -23,20 +22,20 @@ export const MemoryBriefInfo = ({
       <View style={styles.header}>
         <View style={styles.titleGroup}>
           <Route size={20} color={COLORS.primary} style={styles.icon} />
-          <Text style={TYPOGRAPHY.header2}>{memory.title}</Text>
+          <Text style={TYPOGRAPHY.header2}>{story.title}</Text>
         </View>
 
         {showDecorateBtn && (
           <TouchableOpacity
             style={styles.decorateBtn}
             onPress={() =>
-              navigation.navigate(NAV_ROUTES.MEMORY_EDIT.NAME, {
-                memoryId: memory.id,
+              navigation.navigate(NAV_ROUTES.STORY_EDIT.NAME, {
+                storyId: story.id,
               })
             }
           >
             <Paintbrush size={14} color={COLORS.primary} />
-            <Text style={styles.decorateBtnText}>추억 꾸미기</Text>
+            <Text style={styles.decorateBtnText}>스토리 꾸미기</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -44,15 +43,15 @@ export const MemoryBriefInfo = ({
       <View style={styles.detailRow}>
         <Calendar size={16} color={COLORS.textTertiary} />
         <Text style={styles.detailText}>
-          {new Date(memory.date).toLocaleDateString()}{' '}
-          {new Date(memory.date).toLocaleTimeString()}
+          {new Date(story.date).toLocaleDateString()}{' '}
+          {new Date(story.date).toLocaleTimeString()}
         </Text>
       </View>
 
       <View style={styles.detailRow}>
         <MapPin size={16} color={COLORS.textTertiary} />
         <Text style={styles.detailText}>
-          총 {memory.path.length}개의 위치 포인트 기록됨
+          총 {story.path.length}개의 위치 포인트 기록됨
         </Text>
       </View>
     </View>

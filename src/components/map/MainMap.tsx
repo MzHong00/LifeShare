@@ -9,7 +9,7 @@ import MapView, {
 
 import { COLORS } from '@/constants/theme';
 import { ProfileAvatar } from '@/components/common/ProfileAvatar';
-import type { Memory, LocationPoint } from '@/types';
+import type { Story, LocationPoint } from '@/types';
 
 interface MainMapProps {
   mapRef: RefObject<MapView | null>;
@@ -18,8 +18,8 @@ interface MainMapProps {
   isRecording: boolean;
   recordingPath: LocationPoint[];
   showHistory: boolean;
-  memories: Memory[];
-  selectedMemoryId: string | null;
+  stories: Story[];
+  selectedStoryId: string | null;
   membersWithLocation: any[];
   onMarkerPress: (id: string, lat: number, lng: number) => void;
   onPolylinePress: (id: string) => void;
@@ -33,8 +33,8 @@ export const MainMap = ({
   isRecording,
   recordingPath,
   showHistory,
-  memories,
-  selectedMemoryId,
+  stories,
+  selectedStoryId,
   membersWithLocation,
   onMarkerPress,
   onPolylinePress,
@@ -66,16 +66,16 @@ export const MainMap = ({
 
       {/* History Paths */}
       {showHistory &&
-        memories.map(memory => {
-          const isSelected = selectedMemoryId === memory.id;
+        stories.map(story => {
+          const isSelected = selectedStoryId === story.id;
           return (
             <Polyline
-              key={memory.id}
-              coordinates={memory.path}
+              key={story.id}
+              coordinates={story.path}
               strokeColor={isSelected ? COLORS.primary : COLORS.primary + '40'}
               strokeWidth={isSelected ? 6 : 4}
               tappable={true}
-              onPress={() => onPolylinePress(memory.id)}
+              onPress={() => onPolylinePress(story.id)}
             />
           );
         })}

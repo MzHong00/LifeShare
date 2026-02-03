@@ -4,7 +4,7 @@ export interface LocationPoint {
   timestamp: number;
 }
 
-export interface Memory {
+export interface Story {
   id: string;
   title: string;
   description?: string;

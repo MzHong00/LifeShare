@@ -1,4 +1,3 @@
-
 import {
   View,
   Text,
@@ -27,7 +26,7 @@ const ProUpgradeScreen = () => {
     {
       icon: <Cloud size={24} color={COLORS.primary} />,
       title: '고화질 미디업 업로드',
-      description: '소중한 추억을 원본 화질 그대로 클라우드에 보관하세요.',
+      description: '소중한 스토리를 원본 화질 그대로 클라우드에 보관하세요.',
     },
     {
       icon: <Zap size={24} color={COLORS.primary} />,

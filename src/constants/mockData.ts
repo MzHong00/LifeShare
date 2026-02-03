@@ -161,23 +161,23 @@ export const MOCK_DATA = {
       time: '오후 4:35',
     },
   ],
-  memories: [
+  stories: [
     {
-      id: 'mem-1',
+      id: 'story-1',
       title: '첫 캠핑 ⛺️',
       date: '2025-10-05',
       imageUrl:
         'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=400',
     },
     {
-      id: 'mem-2',
+      id: 'story-2',
       title: '한강 산책 🌊',
       date: '2025-11-12',
       imageUrl:
         'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?w=400',
     },
     {
-      id: 'mem-3',
+      id: 'story-3',
       title: '크리스마스 파티 🎄',
       date: '2025-12-25',
       imageUrl:

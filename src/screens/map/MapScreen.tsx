@@ -17,11 +17,11 @@ import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { BottomDrawer } from '@/components/common/BottomDrawer';
 import { ProfileAvatar } from '@/components/common/ProfileAvatar';
-import { MapMemoryInfo } from '@/components/map/MapMemoryInfo';
+import { MapStoryInfo } from '@/components/map/MapStoryInfo';
 import { MapPartnerInfo } from '@/components/map/MapPartnerInfo';
 import { useGeolocation } from '@/businesses/geolocation/useGeolocation';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { useMemoryStore, memoryActions } from '@/stores/useMemoryStore';
+import { useStoryStore, storyActions } from '@/stores/useStoryStore';
 import { modalActions } from '@/stores/useModalStore';
 import { getCurrentTimeString } from '@/utils/date';
 
@@ -34,10 +34,10 @@ const MapScreen = () => {
   const { loading: myLocationLoading, location: myLocation } = useGeolocation();
   const { currentWorkspace } = useWorkspaceStore();
 
-  const { isRecording, recordingPath, memories, selectedMemoryId } =
-    useMemoryStore();
-  const { startRecording, stopRecording, saveMemory, setSelectedMemoryId } =
-    memoryActions;
+  const { isRecording, recordingPath, stories, selectedStoryId } =
+    useStoryStore();
+  const { startRecording, stopRecording, saveStory, setSelectedStoryId } =
+    storyActions;
   const { showModal } = modalActions;
 
   const [showHistory, setShowHistory] = useState(false);
@@ -71,12 +71,12 @@ const MapScreen = () => {
     { id: '3', name: '강남구청 역 이자카야', date: '지난 주말', type: 'food' },
   ];
 
-  // 외부(예: 추억 탭)에서 추억을 선택하고 넘어왔을 때 지도 이동 처리
+  // 외부(예: 스토리 탭)에서 스토리를 선택하고 넘어왔을 때 지도 이동 처리
   useEffect(() => {
-    if (selectedMemoryId) {
-      const memory = memories.find(m => m.id === selectedMemoryId);
-      if (memory && memory.path.length > 0) {
-        const { latitude, longitude } = memory.path[0];
+    if (selectedStoryId) {
+      const story = stories.find(s => s.id === selectedStoryId);
+      if (story && story.path.length > 0) {
+        const { latitude, longitude } = story.path[0];
         setSelectedUserId(null); // 유저 정보 창 닫기
         mapRef.current?.animateToRegion(
           {
@@ -88,11 +88,11 @@ const MapScreen = () => {
         );
       }
     }
-  }, [selectedMemoryId, memories]);
+  }, [selectedStoryId, stories]);
 
   const moveToUser = (id: string, lat: number, lng: number) => {
     setSelectedUserId(id);
-    setSelectedMemoryId(null); // 유저 선택 시 메모리 선택 해제
+    setSelectedStoryId(null); // 유저 선택 시 스토리 선택 해제
     mapRef.current?.animateToRegion(
       {
         latitude: lat,
@@ -139,13 +139,13 @@ const MapScreen = () => {
       }
       showModal({
         type: 'choice',
-        title: '추억 기록 중단',
-        message: '지금까지의 경로를 추억으로 저장할까요?',
+        title: '스토리 기록 중단',
+        message: '지금까지의 경로를 스토리로 저장할까요?',
         confirmText: '저장',
         destructiveText: '기록 삭제',
         cancelText: '취소',
         onConfirm: () => {
-          saveMemory({
+          saveStory({
             id: Date.now().toString(),
             title: `${getCurrentTimeString()}의 기록`,
             userId: 'user-1',
@@ -154,7 +154,7 @@ const MapScreen = () => {
           showModal({
             type: 'alert',
             title: '저장 완료',
-            message: '추억 탭에서 확인할 수 있습니다.',
+            message: '스토리 탭에서 확인할 수 있습니다.',
           });
         },
         onDestructive: () => stopRecording(),
@@ -174,12 +174,12 @@ const MapScreen = () => {
           isRecording={isRecording}
           recordingPath={recordingPath}
           showHistory={showHistory}
-          memories={memories}
-          selectedMemoryId={selectedMemoryId}
+          stories={stories}
+          selectedStoryId={selectedStoryId}
           membersWithLocation={membersWithLocation}
           onMarkerPress={moveToUser}
           onPolylinePress={id => {
-            setSelectedMemoryId(id);
+            setSelectedStoryId(id);
             setSelectedUserId(null);
           }}
           onRegionChangeComplete={region => {
@@ -253,7 +253,7 @@ const MapScreen = () => {
                   showHistory && { color: COLORS.white },
                 ]}
               >
-                우리의 추억보기
+                우리의 스토리보기
               </Text>
             </TouchableOpacity>
 
@@ -275,7 +275,7 @@ const MapScreen = () => {
                   isRecording && { color: COLORS.white },
                 ]}
               >
-                {isRecording ? '위치 기록 중' : '추억 만들기'}
+                {isRecording ? '위치 기록 중' : '스토리 만들기'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -284,11 +284,11 @@ const MapScreen = () => {
 
       <BottomDrawer snapPoints={[0.15, 0.55, 0.87]}>
         <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-          {selectedMemoryId ? (
+          {selectedStoryId ? (
             (() => {
-              const memory = memories.find(m => m.id === selectedMemoryId);
-              if (!memory) return null;
-              return <MapMemoryInfo memory={memory} />;
+              const story = stories.find(s => s.id === selectedStoryId);
+              if (!story) return null;
+              return <MapStoryInfo story={story} />;
             })()
           ) : selectedUserId && selectedUser ? (
             <MapPartnerInfo

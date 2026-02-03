@@ -3,5 +3,5 @@ export * from './workspace';
 export * from './calendar';
 export * from './todo';
 export * from './chat';
-export * from './memory';
+export * from './story';
 export * from './location';

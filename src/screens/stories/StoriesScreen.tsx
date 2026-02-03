@@ -24,27 +24,27 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
-import { useMemoryStore } from '@/stores/useMemoryStore';
+import { useStoryStore } from '@/stores/useStoryStore';
 import { formatDate } from '@/utils/date';
-import type { Memory } from '@/types';
+import type { Story } from '@/types';
 
 const { width } = Dimensions.get('window');
 const columnWidth = (width - SPACING.layout * 2 - SPACING.md) / 2;
 
-interface MemoryItemProps {
-  item: Memory;
+interface StoryItemProps {
+  item: Story;
   onPress: (id: string) => void;
 }
 
 /**
- * [MemoryItem] 프리미엄 카드 컴포넌트
+ * [StoryItem] 프리미엄 카드 컴포넌트
  */
-const MemoryItem = ({ item, onPress }: MemoryItemProps) => {
+const StoryItem = ({ item, onPress }: StoryItemProps) => {
   const isHearted = parseInt(item.id, 10) % 3 === 0;
 
   return (
     <TouchableOpacity
-      style={styles.memoryCard}
+      style={styles.storyCard}
       onPress={() => onPress(item.id)}
       activeOpacity={0.9}
     >
@@ -66,32 +66,32 @@ const MemoryItem = ({ item, onPress }: MemoryItemProps) => {
           </View>
         )}
       </View>
-      <View style={styles.memoryInfo}>
-        <Text style={styles.memoryTitle} numberOfLines={1}>
+      <View style={styles.storyInfo}>
+        <Text style={styles.storyTitle} numberOfLines={1}>
           {item.title}
         </Text>
-        <Text style={styles.memoryDate}>{formatDate(item.date)}</Text>
+        <Text style={styles.storyDate}>{formatDate(item.date)}</Text>
       </View>
     </TouchableOpacity>
   );
 };
 
 /**
- * [MemoriesHeader] 통계 및 필터가 포함된 헤더
+ * [StoriesHeader] 통계 및 필터가 포함된 헤더
  */
-const MemoriesHeader = ({
-  memoryCount,
-  pathMemoryCount,
+const StoriesHeader = ({
+  storyCount,
+  pathStoryCount,
   onAddPress,
 }: {
-  memoryCount: number;
-  pathMemoryCount: number;
+  storyCount: number;
+  pathStoryCount: number;
   onAddPress: () => void;
 }) => (
   <View style={styles.headerContainer}>
     <View style={styles.headerTop}>
       <View>
-        <Text style={TYPOGRAPHY.header1}>추억</Text>
+        <Text style={TYPOGRAPHY.header1}>스토리</Text>
         <Text style={styles.subtitle}>소중한 순간들을 기록해요</Text>
       </View>
       <TouchableOpacity
@@ -126,8 +126,8 @@ const MemoriesHeader = ({
           <Heart size={16} color="#F04452" />
         </View>
         <View style={styles.statTextContainer}>
-          <Text style={styles.statLabel}>{memoryCount}개</Text>
-          <Text style={styles.statSubLabel}>전체 추억</Text>
+          <Text style={styles.statLabel}>{storyCount}개</Text>
+          <Text style={styles.statSubLabel}>전체 스토리</Text>
         </View>
       </View>
       <View style={styles.statDivider} />
@@ -136,7 +136,7 @@ const MemoriesHeader = ({
           <Route size={16} color="#34C759" />
         </View>
         <View style={styles.statTextContainer}>
-          <Text style={styles.statLabel}>{pathMemoryCount}곳</Text>
+          <Text style={styles.statLabel}>{pathStoryCount}곳</Text>
           <Text style={styles.statSubLabel}>경로 기록</Text>
         </View>
       </View>
@@ -155,7 +155,7 @@ const MemoriesHeader = ({
   </View>
 );
 
-const MemoriesFooter = ({ loading }: { loading: boolean }) => {
+const StoriesFooter = ({ loading }: { loading: boolean }) => {
   if (!loading) return <View style={styles.footerSpacer} />;
   return (
     <View style={styles.loaderContainer}>
@@ -164,34 +164,33 @@ const MemoriesFooter = ({ loading }: { loading: boolean }) => {
   );
 };
 
-const MemoriesScreen = () => {
+const StoriesScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
-  const { memories } = useMemoryStore();
+  const { stories } = useStoryStore();
   const [loading] = useState(false);
 
-  const pathMemoryCount = useMemo(() => {
-    return memories.filter(memory => memory.path && memory.path.length > 0)
-      .length;
-  }, [memories]);
+  const pathStoryCount = useMemo(() => {
+    return stories.filter(story => story.path && story.path.length > 0).length;
+  }, [stories]);
 
-  const handleAddMemory = useCallback(() => {
-    navigation.navigate(NAV_ROUTES.MEMORY_EDIT.NAME);
+  const handleAddStory = useCallback(() => {
+    navigation.navigate(NAV_ROUTES.STORY_EDIT.NAME);
   }, [navigation]);
 
-  const loadMoreMemories = useCallback(() => {
+  const loadMoreStories = useCallback(() => {
     // API 연동용
   }, []);
 
   return (
     <AppSafeAreaView style={styles.container}>
       <FlatList
-        data={memories}
+        data={stories}
         renderItem={({ item }) => (
-          <MemoryItem
+          <StoryItem
             item={item}
             onPress={id =>
-              navigation.navigate(NAV_ROUTES.MEMORY_DETAIL.NAME, {
-                memoryId: id,
+              navigation.navigate(NAV_ROUTES.STORY_DETAIL.NAME, {
+                storyId: id,
               })
             }
           />
@@ -200,14 +199,14 @@ const MemoriesScreen = () => {
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}
         ListHeaderComponent={
-          <MemoriesHeader
-            memoryCount={memories.length}
-            pathMemoryCount={pathMemoryCount}
-            onAddPress={handleAddMemory}
+          <StoriesHeader
+            storyCount={stories.length}
+            pathStoryCount={pathStoryCount}
+            onAddPress={handleAddStory}
           />
         }
-        ListFooterComponent={<MemoriesFooter loading={loading} />}
-        onEndReached={loadMoreMemories}
+        ListFooterComponent={<StoriesFooter loading={loading} />}
+        onEndReached={loadMoreStories}
         onEndReachedThreshold={0.5}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.flatListContent}
@@ -342,7 +341,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.layout,
     justifyContent: 'space-between',
   },
-  memoryCard: {
+  storyCard: {
     width: columnWidth,
     backgroundColor: COLORS.white,
     borderRadius: 24,
@@ -381,17 +380,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  memoryInfo: {
+  storyInfo: {
     padding: 14,
   },
-  memoryTitle: {
+  storyTitle: {
     ...TYPOGRAPHY.body1,
     fontSize: 15,
     fontWeight: '700',
     color: COLORS.textPrimary,
     marginBottom: 4,
   },
-  memoryDate: {
+  storyDate: {
     ...TYPOGRAPHY.caption,
     color: COLORS.textTertiary,
     fontWeight: '500',
@@ -405,4 +404,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MemoriesScreen;
+export default StoriesScreen;

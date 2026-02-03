@@ -13,7 +13,7 @@ import CalendarScreen from '@/screens/calendar/CalendarScreen';
 import EventCreateScreen from '@/screens/calendar/EventCreateScreen';
 import TodoScreen from '@/screens/todo/TodoScreen';
 import TodoCreateScreen from '@/screens/todo/TodoCreateScreen';
-import MemoriesScreen from '@/screens/memories/MemoriesScreen';
+import StoriesScreen from '@/screens/stories/StoriesScreen';
 import ProfileScreen from '@/screens/profile/ProfileScreen';
 import ProfileEditScreen from '@/screens/profile/ProfileEditScreen';
 import MainTabScreen from '@/screens/main/MainTabScreen';
@@ -22,8 +22,8 @@ import WorkspaceSetupScreen from '@/screens/workspace/WorkspaceSetupScreen';
 import WorkspaceListScreen from '@/screens/workspace/WorkspaceListScreen';
 import ProUpgradeScreen from '@/screens/upgrade/ProUpgradeScreen';
 import PlanManagementScreen from '@/screens/profile/PlanManagementScreen';
-import MemoryEditScreen from '@/screens/memories/MemoryEditScreen';
-import MemoryDetailScreen from '@/screens/memories/MemoryDetailScreen';
+import StoryEditScreen from '@/screens/stories/StoryEditScreen';
+import StoryDetailScreen from '@/screens/stories/StoryDetailScreen';
 import AnniversaryScreen from '@/screens/home/AnniversaryScreen';
 
 const Stack = createStackNavigator();
@@ -114,23 +114,23 @@ const AppNavigator = () => {
                   }}
                 />
                 <Stack.Screen
-                  name={NAV_ROUTES.MEMORIES.NAME}
-                  component={MemoriesScreen}
+                  name={NAV_ROUTES.STORIES.NAME}
+                  component={StoriesScreen}
                   options={{
                     ...BACKGROUND_COLOR_HEADER_OPTIONS,
                   }}
                 />
                 <Stack.Screen
-                  name={NAV_ROUTES.MEMORY_EDIT.NAME}
-                  component={MemoryEditScreen}
+                  name={NAV_ROUTES.STORY_EDIT.NAME}
+                  component={StoryEditScreen}
                   options={{
                     ...COMMON_HEADER_OPTIONS,
-                    title: NAV_ROUTES.MEMORY_EDIT.TITLE,
+                    title: NAV_ROUTES.STORY_EDIT.TITLE,
                   }}
                 />
                 <Stack.Screen
-                  name={NAV_ROUTES.MEMORY_DETAIL.NAME}
-                  component={MemoryDetailScreen}
+                  name={NAV_ROUTES.STORY_DETAIL.NAME}
+                  component={StoryDetailScreen}
                   options={{ headerShown: false }}
                 />
                 <Stack.Screen
