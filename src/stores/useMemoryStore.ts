@@ -72,6 +72,18 @@ export const memoryActions = {
     memoryStore.setState(state => ({
       memories: state.memories.filter(m => m.id !== id),
     })),
+  addMemory: (data: Omit<Memory, 'id' | 'userId' | 'workspaceId'>) =>
+    memoryStore.setState(state => {
+      const newMemory: Memory = {
+        ...data,
+        id: Math.random().toString(36).substring(7),
+        userId: 'user-1',
+        workspaceId: 'ws-1',
+      };
+      return {
+        memories: [newMemory, ...state.memories],
+      };
+    }),
   updateMemory: (
     id: string,
     data: { title: string; description?: string; thumbnailUrl?: string },

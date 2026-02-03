@@ -1,4 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useLayoutEffect,
+} from 'react';
 import {
   View,
   Text,
@@ -12,54 +17,56 @@ import {
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Camera, MapPin, Calendar, Plus, Trash2 } from 'lucide-react-native';
+import { Camera, Calendar, Plus, Trash2, MapPin } from 'lucide-react-native';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
-import { useModalStore } from '@/stores/useModalStore';
-import { useMemoryStore } from '@/stores/useMemoryStore';
+import { modalActions } from '@/stores/useModalStore';
+import { useMemoryStore, memoryActions } from '@/stores/useMemoryStore';
 import { getTodayDateString, formatDate } from '@/utils/date';
 
 type MemoryEditRouteProp = RouteProp<
-  { params: { memoryId: string } },
+  { params: { memoryId?: string } },
   'params'
 >;
 
 const MemoryEditScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
   const route = useRoute<MemoryEditRouteProp>();
-  const { memoryId } = route.params; // 이제 항상 memoryId가 있다고 가정함
+  const memoryId = route.params?.memoryId;
+  const isEditMode = !!memoryId;
 
-  const { showModal } = useModalStore();
-  const { memories, updateMemory, deleteMemory, setSelectedMemoryId } =
-    useMemoryStore();
+  const { showModal } = modalActions;
+  const { memories } = useMemoryStore();
+  const { addMemory, updateMemory, deleteMemory, setSelectedMemoryId } =
+    memoryActions;
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(getTodayDateString());
-  const [location] = useState('현재 위치');
   const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>(
     undefined,
   );
 
-  // 데이터 불러오기
+  // 데이터 불러오기 (수정 모드일 때만)
   useEffect(() => {
-    const memory = memories.find(m => m.id === memoryId);
-    if (memory) {
-      setTitle(memory.title);
-      setDescription(memory.description || '');
-      setDate(formatDate(memory.date));
-      setThumbnailUrl(memory.thumbnailUrl);
-    } else {
-      // 해당 추억을 찾을 수 없는 경우
-      showModal({
-        type: 'alert',
-        title: '에러',
-        message: '추억 정보를 불러올 수 없습니다.',
-        onConfirm: () => navigation.goBack(),
-      });
+    if (isEditMode && memoryId) {
+      const memory = memories.find(m => m.id === memoryId);
+      if (memory) {
+        setTitle(memory.title);
+        setDescription(memory.description || '');
+        setDate(formatDate(memory.date));
+        setThumbnailUrl(memory.thumbnailUrl);
+      } else {
+        showModal({
+          type: 'alert',
+          title: '에러',
+          message: '추억 정보를 불러올 수 없습니다.',
+          onConfirm: () => navigation.goBack(),
+        });
+      }
     }
-  }, [memoryId, memories, navigation, showModal]);
+  }, [isEditMode, memoryId, memories, navigation, showModal]);
 
   const handleSave = () => {
     if (!title.trim()) {
@@ -71,16 +78,34 @@ const MemoryEditScreen = () => {
       return;
     }
 
-    updateMemory(memoryId, { title, description, thumbnailUrl });
-    showModal({
-      type: 'alert',
-      title: '성공',
-      message: '추억이 수정되었습니다.',
-      onConfirm: () => navigation.goBack(),
-    });
+    if (isEditMode && memoryId) {
+      updateMemory(memoryId, { title, description, thumbnailUrl });
+      showModal({
+        type: 'alert',
+        title: '성공',
+        message: '추억이 수정되었습니다.',
+        onConfirm: () => navigation.goBack(),
+      });
+    } else {
+      addMemory({
+        title,
+        description,
+        thumbnailUrl,
+        date: new Date().toISOString(),
+        path: [], // 신규 생성 시에는 경로 없음
+      });
+      showModal({
+        type: 'alert',
+        title: '성공',
+        message: '새로운 추억이 기록되었습니다.',
+        onConfirm: () => navigation.goBack(),
+      });
+    }
   };
 
   const handleDelete = () => {
+    if (!memoryId) return;
+
     showModal({
       type: 'confirm',
       title: '추억 삭제',
@@ -100,7 +125,8 @@ const MemoryEditScreen = () => {
       },
     });
   };
-  const handleSelectImage = () => {
+
+  const handleSelectImage = useCallback(() => {
     showModal({
       type: 'choice',
       title: '사진 추가',
@@ -123,7 +149,14 @@ const MemoryEditScreen = () => {
         });
       },
     });
-  };
+  }, [showModal]);
+
+  // 네비게이션 헤더 제목 설정
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: isEditMode ? '추억 수정' : '새 추억 기록',
+    });
+  }, [isEditMode, navigation]);
 
   return (
     <AppSafeAreaView style={styles.container}>
@@ -131,6 +164,21 @@ const MemoryEditScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
+        {!isEditMode && (
+          <View style={styles.infoBanner}>
+            <View style={styles.infoIconWrapper}>
+              <MapPin size={16} color={COLORS.primary} />
+            </View>
+            <View style={styles.infoTextContainer}>
+              <Text style={styles.infoTitle}>경로와 함께 기록하고 싶나요?</Text>
+              <Text style={styles.infoDescription}>
+                이동 경로가 포함된 추억은 '위치' 탭의 기록하기 버튼을 통해 만들
+                수 있어요.
+              </Text>
+            </View>
+          </View>
+        )}
+
         {/* Photo Upload Placeholder */}
         <TouchableOpacity
           style={styles.photoContainer}
@@ -187,25 +235,21 @@ const MemoryEditScreen = () => {
                 <Text style={styles.metaValue}>{date}</Text>
               </View>
             </TouchableOpacity>
-
-            <TouchableOpacity style={styles.metaItem}>
-              <MapPin size={20} color={COLORS.primary} strokeWidth={2.5} />
-              <View style={styles.metaTextContainer}>
-                <Text style={styles.metaLabel}>장소</Text>
-                <Text style={styles.metaValue}>{location}</Text>
-              </View>
-            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
 
       {/* Bottom Action */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-          <Trash2 size={20} color={COLORS.error} />
-        </TouchableOpacity>
+        {isEditMode && (
+          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+            <Trash2 size={20} color={COLORS.error} />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>수정하기</Text>
+          <Text style={styles.saveButtonText}>
+            {isEditMode ? '수정하기' : '기록하기'}
+          </Text>
         </TouchableOpacity>
       </View>
     </AppSafeAreaView>
@@ -265,6 +309,39 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     gap: SPACING.xl,
+  },
+  infoBanner: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.primaryLight + '40', // 25% 투명도
+    padding: 16,
+    borderRadius: 16,
+    gap: 12,
+    alignItems: 'flex-start',
+    borderWidth: 1,
+    borderColor: COLORS.primaryLight,
+    marginBottom: 20,
+  },
+  infoIconWrapper: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: COLORS.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  infoTextContainer: {
+    flex: 1,
+  },
+  infoTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLORS.primary,
+    marginBottom: 4,
+  },
+  infoDescription: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    lineHeight: 18,
   },
   inputGroup: {
     gap: 8,
