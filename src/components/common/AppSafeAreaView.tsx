@@ -18,7 +18,7 @@ const BASE_EDGES: Edge[] = ['left', 'right'];
 export const AppSafeAreaView = ({
   children,
   style,
-  edges = [],
+  edges = ['bottom'], // 푸터가 없는 스크린이 더 많으므로 bottom은 기본값
   ...props
 }: AppSafeAreaViewProps) => {
   // 기본 L/R 엣지에 전달받은 엣지를 합쳐서 중복 제거 (left, right)

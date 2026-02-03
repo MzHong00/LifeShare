@@ -11,6 +11,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Calendar } from 'react-native-calendars';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Plus,
   CheckCircle2,
@@ -143,6 +144,7 @@ const TodoItem = ({
 
 const TodoScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
+  const insets = useSafeAreaInsets();
   const [showMineOnly, setShowMineOnly] = useState(false);
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(
@@ -325,7 +327,7 @@ const TodoScreen = () => {
       </ScrollView>
 
       <TouchableOpacity
-        style={styles.fab}
+        style={[styles.fab, { bottom: 20 + insets.bottom }]}
         onPress={() => navigation.navigate(NAV_ROUTES.TODO_CREATE.NAME)}
       >
         <Plus size={30} color={COLORS.white} />
