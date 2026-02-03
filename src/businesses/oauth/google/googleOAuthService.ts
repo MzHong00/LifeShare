@@ -3,8 +3,8 @@ import Config from 'react-native-config';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 import { OS } from '@/constants/common';
-import { useAuthStore } from '@/stores/useAuthStore';
-import { useUserStore } from '@/stores/useUserStore';
+import { authActions } from '@/stores/useAuthStore';
+import { userActions } from '@/stores/useUserStore';
 
 export const GoogleOAuthService = {
   /**
@@ -39,10 +39,10 @@ export const GoogleOAuthService = {
 
       // 1. AuthStore에 인증 토큰 저장
       // 백엔드가 없는 현재 상황에서는 idToken을 refreshToken 대용으로 임시 저장합니다.
-      useAuthStore.getState().setTokens(accessToken, idToken || '');
+      authActions.setTokens(accessToken, idToken || '');
 
       // 2. UserStore에 사용자 프로필 정보 저장
-      useUserStore.getState().setUser({
+      userActions.setUser({
         name: user.name || user.email.split('@')[0],
         profileImage: user.photo || undefined,
       });

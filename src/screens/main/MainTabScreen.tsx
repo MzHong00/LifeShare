@@ -1,5 +1,5 @@
-
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { COLORS } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
@@ -15,6 +15,8 @@ import MapScreen from '@/screens/map/MapScreen';
 const Tab = createBottomTabNavigator();
 
 const MainTabScreen = () => {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       initialRouteName={NAV_ROUTES.HOME.NAME}
@@ -24,15 +26,17 @@ const MainTabScreen = () => {
         tabBarActiveTintColor: '#191F28',
         tabBarInactiveTintColor: '#8B95A1',
         tabBarStyle: {
-          height: 60,
-          paddingBottom: 12,
-          paddingTop: 4,
+          height: 60 + insets.bottom,
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 12,
+          paddingTop: 8,
           borderTopWidth: 1,
           borderTopColor: COLORS.border,
+          backgroundColor: COLORS.white,
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '500',
+          marginBottom: insets.bottom > 0 ? 0 : 4,
         },
         tabBarBadgeStyle: {
           minWidth: 16,

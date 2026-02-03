@@ -6,15 +6,14 @@ import React, {
 } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
   Image,
   Modal,
+  Text,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { Calendar } from 'react-native-calendars';
@@ -36,22 +35,10 @@ import {
   formatDate,
 } from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
-
-const HeaderDeleteButton = () => {
-  const route = useRoute<any>();
-  const handleDelete = route.params?.handleDelete;
-
-  if (!route.params?.todoId) return null;
-
-  return (
-    <TouchableOpacity
-      onPress={() => handleDelete?.()}
-      style={{ marginRight: SPACING.md }}
-    >
-      <Trash2 size={24} color={COLORS.error} />
-    </TouchableOpacity>
-  );
-};
+import { HeaderButton } from '@/components/common/HeaderButton';
+import { FormField } from '@/components/common/FormField';
+import { Button } from '@/components/common/Button';
+import { FormLabel } from '@/components/common/FormLabel';
 
 type TodoCreateRouteProp = RouteProp<
   { TodoCreate: { todoId?: string } },
@@ -71,7 +58,7 @@ const TodoCreateScreen = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [assigneeId, setAssigneeId] = useState<string | undefined>(undefined);
-  const [dueDate, setDueDate] = useState(getTodayDateString()); // YYYY-MM-DD
+  const [dueDate, setDueDate] = useState(getTodayDateString());
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
 
   useEffect(() => {
@@ -100,18 +87,22 @@ const TodoCreateScreen = () => {
     });
   }, [todoId, removeTodo, navigation, showModal]);
 
-  // handleDelete 함수와 todoId를 네비게이션 파라미터에 등록
-  useEffect(() => {
-    navigation.setParams({ handleDelete, todoId } as any);
-  }, [navigation, handleDelete, todoId]);
+  const renderHeaderRight = useCallback(
+    () =>
+      todoId ? (
+        <HeaderButton
+          onPress={handleDelete}
+          icon={<Trash2 size={24} color={COLORS.error} />}
+        />
+      ) : undefined,
+    [todoId, handleDelete],
+  );
 
   useLayoutEffect(() => {
-    if (todoId) {
-      navigation.setOptions({
-        headerRight: HeaderDeleteButton,
-      });
-    }
-  }, [navigation, todoId]);
+    navigation.setOptions({
+      headerRight: renderHeaderRight,
+    });
+  }, [navigation, renderHeaderRight]);
 
   const members = currentWorkspace?.members || [];
 
@@ -184,33 +175,25 @@ const TodoCreateScreen = () => {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.section}>
-            <Text style={styles.label}>제목</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="무엇을 해야 하나요?"
-              value={title}
-              onChangeText={setTitle}
-              placeholderTextColor={COLORS.textTertiary}
-            />
-          </View>
+          <FormField
+            label="제목"
+            placeholder="무엇을 해야 하나요?"
+            value={title}
+            onChangeText={setTitle}
+            required
+          />
+
+          <FormField
+            label="설명 (선택)"
+            placeholder="상세 내용을 입력해주세요."
+            value={description}
+            onChangeText={setDescription}
+            multiline
+            numberOfLines={4}
+          />
 
           <View style={styles.section}>
-            <Text style={styles.label}>설명 (선택)</Text>
-            <TextInput
-              style={[styles.input, styles.textArea]}
-              placeholder="상세 내용을 입력해주세요."
-              value={description}
-              onChangeText={setDescription}
-              multiline
-              numberOfLines={4}
-              placeholderTextColor={COLORS.textTertiary}
-              textAlignVertical="top"
-            />
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.label}>마감 기한</Text>
+            <FormLabel>마감 기한</FormLabel>
             <View style={styles.dateInputWrapper}>
               <TouchableOpacity
                 style={styles.dateTouchArea}
@@ -248,7 +231,7 @@ const TodoCreateScreen = () => {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.label}>담당자 지정</Text>
+            <FormLabel>담당자 지정</FormLabel>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -338,14 +321,10 @@ const TodoCreateScreen = () => {
       </KeyboardAvoidingView>
 
       <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.createButton}
+        <Button
+          title={todoId ? '저장하기' : '추가하기'}
           onPress={handleCreateOrUpdate}
-        >
-          <Text style={styles.createButtonText}>
-            {todoId ? '저장하기' : '추가하기'}
-          </Text>
-        </TouchableOpacity>
+        />
       </View>
       <Modal
         visible={isCalendarVisible}
@@ -411,24 +390,6 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 28,
   },
-  label: {
-    ...TYPOGRAPHY.body1,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginBottom: 12,
-  },
-  input: {
-    backgroundColor: COLORS.background,
-    borderRadius: 16,
-    padding: 16,
-    fontSize: 16,
-    color: COLORS.textPrimary,
-    fontWeight: '500',
-  },
-  textArea: {
-    height: 120,
-    paddingTop: 16,
-  },
   dateInputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -454,10 +415,6 @@ const styles = StyleSheet.create({
   dateInputText: {
     ...TYPOGRAPHY.body2,
     color: COLORS.textPrimary,
-  },
-  clearDateBtn: {
-    padding: 4,
-    marginLeft: 4,
   },
   quickDateRow: {
     flexDirection: 'row',
@@ -531,26 +488,9 @@ const styles = StyleSheet.create({
     borderColor: COLORS.white,
   },
   footer: {
-    padding: SPACING.layout,
+    paddingVertical: SPACING.layout,
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
-  },
-  createButton: {
-    backgroundColor: COLORS.primary,
-    height: 56,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 4,
-  },
-  createButtonText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: COLORS.white,
   },
   modalOverlay: {
     flex: 1,

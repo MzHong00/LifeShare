@@ -10,10 +10,11 @@ import {
 } from 'react-native';
 import { X } from 'lucide-react-native';
 import { COLORS, TYPOGRAPHY } from '@/constants/theme';
-import { useModalStore } from '@/stores/useModalStore';
+import { useModalStore, modalActions } from '@/stores/useModalStore';
 
 const CustomModal = () => {
-  const { isVisible, options, hideModal } = useModalStore();
+  const { isVisible, options } = useModalStore();
+  const { hideModal } = modalActions;
   const [fadeAnim] = useState(new Animated.Value(0));
   const [slideAnim] = useState(new Animated.Value(20));
 

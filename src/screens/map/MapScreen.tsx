@@ -21,8 +21,8 @@ import { MapMemoryInfo } from '@/components/map/MapMemoryInfo';
 import { MapPartnerInfo } from '@/components/map/MapPartnerInfo';
 import { useGeolocation } from '@/businesses/geolocation/useGeolocation';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { useMemoryStore } from '@/stores/useMemoryStore';
-import { useModalStore } from '@/stores/useModalStore';
+import { useMemoryStore, memoryActions } from '@/stores/useMemoryStore';
+import { modalActions } from '@/stores/useModalStore';
 import { getCurrentTimeString } from '@/utils/date';
 
 const MapScreen = () => {
@@ -34,16 +34,12 @@ const MapScreen = () => {
   const { loading: myLocationLoading, location: myLocation } = useGeolocation();
   const { currentWorkspace } = useWorkspaceStore();
 
-  const {
-    isRecording,
-    recordingPath,
-    startRecording,
-    stopRecording,
-    saveMemory,
-    memories,
-    selectedMemoryId,
-    setSelectedMemoryId,
-  } = useMemoryStore();
+  const { isRecording, recordingPath, memories, selectedMemoryId } =
+    useMemoryStore();
+  const { startRecording, stopRecording, saveMemory, setSelectedMemoryId } =
+    memoryActions;
+  const { showModal } = modalActions;
+
   const [showHistory, setShowHistory] = useState(false);
 
   // 현재 바텀시트에서 보여줄 선택된 유저 ID
@@ -106,8 +102,6 @@ const MapScreen = () => {
       500,
     );
   };
-
-  const { showModal } = useModalStore();
 
   const openDirections = async () => {
     const partner = membersWithLocation.find(m => m.id === 'user-2');

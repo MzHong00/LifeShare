@@ -9,7 +9,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   ScrollView,
   KeyboardAvoidingView,
@@ -28,12 +27,15 @@ import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { modalActions } from '@/stores/useModalStore';
 import { getTodayDateString, getIntermediateDates } from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import { HeaderButton } from '@/components/common/HeaderButton';
+import { FormField } from '@/components/common/FormField';
+import { Button } from '@/components/common/Button';
+import { FormLabel } from '@/components/common/FormLabel';
 
 type EventCreateParamList = {
   EventCreate: {
     eventId?: string;
     initialDate?: string;
-    handleDelete?: () => void;
   };
 };
 
@@ -48,22 +50,10 @@ const EVENT_COLORS = [
   '#FF2D55', // Pink
 ];
 
-const HeaderDeleteButton = () => {
-  const route = useRoute<EventCreateRouteProp>();
-  const handleDelete = route.params?.handleDelete;
-
-  if (!route.params?.eventId) return null;
-
-  return (
-    <TouchableOpacity
-      onPress={() => handleDelete?.()}
-      style={{ marginRight: SPACING.md }}
-    >
-      <Trash2 size={24} color={COLORS.error} />
-    </TouchableOpacity>
-  );
-};
-
+/**
+ * [EventCreateScreen]
+ * 일정을 생성하거나 수정하는 화면입니다.
+ */
 const EventCreateScreen = () => {
   const navigation = useNavigation<StackNavigationProp<EventCreateParamList>>();
   const route = useRoute<EventCreateRouteProp>();
@@ -111,21 +101,23 @@ const EventCreateScreen = () => {
     });
   }, [eventId, removeEvent, navigation, showModal]);
 
-  // handleDelete 함수와 eventId를 네비게이션 파라미터에 등록
-  useEffect(() => {
-    navigation.setParams({
-      handleDelete,
-      eventId,
-    });
-  }, [navigation, handleDelete, eventId]);
+  const renderHeaderRight = useCallback(
+    () =>
+      eventId ? (
+        <HeaderButton
+          onPress={handleDelete}
+          icon={<Trash2 size={24} color={COLORS.error} />}
+        />
+      ) : undefined,
+    [eventId, handleDelete],
+  );
 
+  // 헤더 옵션 설정
   useLayoutEffect(() => {
-    if (eventId) {
-      navigation.setOptions({
-        headerRight: HeaderDeleteButton,
-      });
-    }
-  }, [navigation, eventId]);
+    navigation.setOptions({
+      headerRight: renderHeaderRight,
+    });
+  }, [navigation, renderHeaderRight]);
 
   const handleDayPress = (day: DateData) => {
     if (startDate && !endDate) {
@@ -211,14 +203,14 @@ const EventCreateScreen = () => {
       showModal({
         type: 'alert',
         title: '알림',
-        message: '일정이 수정되었습니다.',
+        message: '일정 수정되었습니다.',
       });
     } else {
       addEvent(eventData);
       showModal({
         type: 'alert',
         title: '알림',
-        message: '새로운 일정이 추가되었습니다.',
+        message: '새로운 일정 추가되었습니다.',
       });
     }
 
@@ -232,19 +224,16 @@ const EventCreateScreen = () => {
         style={styles.keyboardView}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.section}>
-            <Text style={styles.label}>제목</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="일정 제목을 입력하세요"
-              value={title}
-              onChangeText={setTitle}
-              placeholderTextColor={COLORS.textTertiary}
-            />
-          </View>
+          <FormField
+            label="제목"
+            placeholder="일정 제목을 입력하세요"
+            value={title}
+            onChangeText={setTitle}
+            required
+          />
 
           <View style={styles.section}>
-            <Text style={styles.label}>날짜</Text>
+            <FormLabel>날짜</FormLabel>
             <TouchableOpacity
               style={styles.dateSelector}
               activeOpacity={0.7}
@@ -263,7 +252,7 @@ const EventCreateScreen = () => {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.label}>색상 선택</Text>
+            <FormLabel>색상 선택</FormLabel>
             <View style={styles.colorRow}>
               {EVENT_COLORS.map(color => (
                 <TouchableOpacity
@@ -279,28 +268,22 @@ const EventCreateScreen = () => {
             </View>
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.label}>메모 (선택)</Text>
-            <TextInput
-              style={[styles.input, styles.textArea]}
-              placeholder="상세 내용을 입력해주세요."
-              value={description}
-              onChangeText={setDescription}
-              multiline
-              numberOfLines={4}
-              placeholderTextColor={COLORS.textTertiary}
-              textAlignVertical="top"
-            />
-          </View>
+          <FormField
+            label="메모 (선택)"
+            placeholder="상세 내용을 입력해주세요."
+            value={description}
+            onChangeText={setDescription}
+            multiline
+            numberOfLines={4}
+          />
         </ScrollView>
       </KeyboardAvoidingView>
 
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>
-            {eventId ? '저장하기' : '추가하기'}
-          </Text>
-        </TouchableOpacity>
+        <Button
+          title={eventId ? '저장하기' : '추가하기'}
+          onPress={handleSave}
+        />
       </View>
 
       <Modal
@@ -362,19 +345,6 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   section: { marginBottom: 28 },
-  label: {
-    ...TYPOGRAPHY.body1,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginBottom: 12,
-  },
-  input: {
-    backgroundColor: COLORS.background,
-    borderRadius: 16,
-    padding: 16,
-    fontSize: 16,
-    color: COLORS.textPrimary,
-  },
   dateSelector: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -388,7 +358,6 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     fontWeight: '500',
   },
-  textArea: { height: 120, paddingTop: 16 },
   smallIconMargin: { marginRight: 8 },
   colorRow: { flexDirection: 'row', gap: 12 },
   colorCircle: { width: 36, height: 36, borderRadius: 18 },
@@ -406,15 +375,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
   },
-  saveButton: {
-    backgroundColor: COLORS.primary,
-    height: 56,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  saveButtonText: { fontSize: 18, fontWeight: '700', color: COLORS.white },
-  // Modal Styles
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
