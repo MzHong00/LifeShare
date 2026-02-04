@@ -3,11 +3,36 @@ import { View, Text, StyleSheet, ScrollView, Switch } from 'react-native';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import { toastActions } from '@/stores/useToastStore';
 
 const PersonalSettingsScreen = () => {
   const [pushEnabled, setPushEnabled] = useState(true);
   const [inviteRefusalEnabled, setInviteRefusalEnabled] = useState(false);
   const [marketingEnabled, setMarketingEnabled] = useState(false);
+
+  const handlePushToggle = (value: boolean) => {
+    setPushEnabled(value);
+    toastActions.showToast(
+      value ? '알림을 켰습니다' : '알림을 껐습니다',
+      value ? 'success' : 'info',
+    );
+  };
+
+  const handleInviteToggle = (value: boolean) => {
+    setInviteRefusalEnabled(value);
+    toastActions.showToast(
+      value ? '초대 거부 모드를 켰습니다' : '초대 거부 모드를 껐습니다',
+      value ? 'success' : 'info',
+    );
+  };
+
+  const handleMarketingToggle = (value: boolean) => {
+    setMarketingEnabled(value);
+    toastActions.showToast(
+      value ? '마케팅 알림이 켜졌습니다' : '마케팅 알림이 꺼졌습니다',
+      'success',
+    );
+  };
 
   return (
     <AppSafeAreaView style={styles.container}>
@@ -28,7 +53,7 @@ const PersonalSettingsScreen = () => {
               </View>
               <Switch
                 value={pushEnabled}
-                onValueChange={setPushEnabled}
+                onValueChange={handlePushToggle}
                 trackColor={{ false: '#E5E8EB', true: COLORS.primary }}
                 thumbColor={COLORS.white}
               />
@@ -43,7 +68,7 @@ const PersonalSettingsScreen = () => {
               </View>
               <Switch
                 value={marketingEnabled}
-                onValueChange={setMarketingEnabled}
+                onValueChange={handleMarketingToggle}
                 trackColor={{ false: '#E5E8EB', true: COLORS.primary }}
                 thumbColor={COLORS.white}
               />
@@ -63,7 +88,7 @@ const PersonalSettingsScreen = () => {
               </View>
               <Switch
                 value={inviteRefusalEnabled}
-                onValueChange={setInviteRefusalEnabled}
+                onValueChange={handleInviteToggle}
                 trackColor={{ false: '#E5E8EB', true: COLORS.primary }}
                 thumbColor={COLORS.white}
               />
