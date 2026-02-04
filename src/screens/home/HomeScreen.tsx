@@ -90,6 +90,7 @@ const HomeScreen = () => {
           nextEventTitle={MOCK_DATA.workspace.nextEvent.title}
           nextDDay={MOCK_DATA.workspace.nextEvent.remainingDays}
           backgroundImage={currentWorkspace.backgroundImage}
+          workspaceType={currentWorkspace.type}
           onPress={() =>
             showModal({
               type: 'confirm',
@@ -131,18 +132,18 @@ const HomeScreen = () => {
             <MenuButton
               title={NAV_ROUTES.CALENDAR.TITLE}
               icon={<Calendar size={18} color={COLORS.textPrimary} />}
-              iconBgColor="#F2F4F6"
+              iconBgColor={COLORS.grey}
               onPress={() => navigation.navigate(NAV_ROUTES.CALENDAR.NAME)}
             />
             <MenuButton
               title={NAV_ROUTES.TODO.TITLE}
               icon={<CheckSquare size={18} color={COLORS.primary} />}
-              iconBgColor="#EBF4FF"
+              iconBgColor={COLORS.primaryLight}
               onPress={() => navigation.navigate(NAV_ROUTES.TODO.NAME)}
             />
             <MenuButton
               title={NAV_ROUTES.STORIES.TITLE}
-              icon={<Heart size={18} color="#F04452" />}
+              icon={<Heart size={18} color={COLORS.red} />}
               iconBgColor="#FFEBF0"
               onPress={() => navigation.navigate(NAV_ROUTES.STORIES.NAME)}
             />
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -230,9 +231,10 @@ const styles = StyleSheet.create({
   },
 
   banner: {
-    backgroundColor: '#191F28',
+    backgroundColor: COLORS.dark,
     alignItems: 'center',
     padding: SPACING.xl,
+    borderRadius: 24,
   },
   bannerText: {
     color: COLORS.white,

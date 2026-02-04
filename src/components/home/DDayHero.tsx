@@ -5,7 +5,7 @@ import {
   ImageBackground,
   TouchableOpacity,
 } from 'react-native';
-import { Image as ImageIcon } from 'lucide-react-native';
+import { Image as ImageIcon, Heart, Users } from 'lucide-react-native';
 import { Card } from '@/components/common/Card';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 
@@ -16,6 +16,7 @@ interface DDayHeroProps {
   nextEventTitle: string;
   nextDDay: number;
   backgroundImage?: string;
+  workspaceType?: 'couple' | 'group';
   onPress?: () => void;
   onPressNextEvent?: () => void;
 }
@@ -27,15 +28,32 @@ export const DDayHero = ({
   nextEventTitle,
   nextDDay,
   backgroundImage,
+  workspaceType,
   onPress,
   onPressNextEvent,
 }: DDayHeroProps) => {
   const content = (
     <View style={styles.contentContainer}>
       <View style={styles.topRow}>
-        <Text style={[styles.names, backgroundImage && styles.whiteText]}>
-          {partnerName} · {myName}
-        </Text>
+        <View style={styles.namesContainer}>
+          {workspaceType === 'couple' ? (
+            <Heart
+              size={16}
+              color={COLORS.red}
+              fill={COLORS.red}
+              style={styles.nameIcon}
+            />
+          ) : (
+            <Users
+              size={16}
+              color={COLORS.textSecondary}
+              style={styles.nameIcon}
+            />
+          )}
+          <Text style={[styles.names, backgroundImage && styles.whiteText]}>
+            {partnerName} · {myName}
+          </Text>
+        </View>
         <TouchableOpacity
           onPress={onPress}
           activeOpacity={0.7}
@@ -154,6 +172,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     opacity: 0.8,
+  },
+  namesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  nameIcon: {
+    marginRight: 6,
   },
   names: {
     fontSize: 16,
