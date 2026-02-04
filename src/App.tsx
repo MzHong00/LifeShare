@@ -6,6 +6,7 @@ import '@/lib/reactNativeCalendars';
 import { GoogleOAuthService } from '@/businesses/oauth/google/googleOAuthService';
 import AppNavigator from '@/navigations/AppNavigator';
 import CustomModal from '@/components/common/CustomModal';
+import { Toast } from '@/components/common/Toast';
 
 const queryClient = new QueryClient();
 GoogleOAuthService.initGoogleOAuth();
@@ -22,6 +23,7 @@ const App = () => {
         />
         <AppNavigator />
         <CustomModal />
+        <Toast />
       </SafeAreaProvider>
     </QueryClientProvider>
   );
