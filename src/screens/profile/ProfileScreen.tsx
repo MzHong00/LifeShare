@@ -21,7 +21,7 @@ import {
   Crown,
 } from 'lucide-react-native';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { COLORS, SPACING } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { authActions } from '@/stores/useAuthStore';
 import { useUserStore } from '@/stores/useUserStore';
@@ -38,11 +38,7 @@ interface MenuItem {
   icon: ReactNode;
   onPress: () => void;
   isCritical?: boolean;
-}
-
-interface MenuSection {
-  title: string;
-  items: MenuItem[];
+  badge?: ReactNode;
 }
 
 type RootStackParamList = {
@@ -50,6 +46,8 @@ type RootStackParamList = {
   [NAV_ROUTES.WORKSPACE_SETUP.NAME]: undefined;
   [NAV_ROUTES.WORKSPACE_LIST.NAME]: undefined;
   [NAV_ROUTES.PLAN_MANAGEMENT.NAME]: undefined;
+  [NAV_ROUTES.PRO_UPGRADE.NAME]: undefined;
+  [NAV_ROUTES.PRIVACY_POLICY.NAME]: undefined;
 };
 
 const ProfileScreen = () => {
@@ -93,79 +91,78 @@ const ProfileScreen = () => {
 
   const displayUserName = user?.name || userEmail?.split('@')[0] || '사용자';
 
-  const menuItems: MenuSection[] = [
+  const menuItems: MenuItem[] = [
     {
-      title: '공간 관리',
-      items: [
-        {
-          id: 'workspace',
-          label: '연결 관리 및 초대',
-          icon: <Users size={22} color={COLORS.textSecondary} />,
-          onPress: () => navigation.navigate(NAV_ROUTES.WORKSPACE_LIST.NAME),
-        },
-        {
-          id: 'plan',
-          label: '플랜 관리',
-          icon: <Crown size={22} color={COLORS.textSecondary} />,
-          onPress: () => navigation.navigate(NAV_ROUTES.PLAN_MANAGEMENT.NAME),
-        },
-      ],
+      id: 'workspace',
+      label: '공간 관리 및 초대',
+      icon: <Users size={20} color={COLORS.textPrimary} />,
+      onPress: () => navigation.navigate(NAV_ROUTES.WORKSPACE_LIST.NAME as any),
     },
     {
-      title: '설정',
-      items: [
-        {
-          id: 'notifications',
-          label: '알림 설정',
-          icon: <Bell size={22} color={COLORS.textSecondary} />,
-          onPress: () => {},
-        },
-        {
-          id: 'privacy',
-          label: '개인정보 보호',
-          icon: <ShieldCheck size={22} color={COLORS.textSecondary} />,
-          onPress: () =>
-            navigation.navigate(NAV_ROUTES.PRIVACY_POLICY.NAME as any),
-        },
-      ],
+      id: 'plan',
+      label: '멤버십 및 플랜',
+      icon: <Crown size={20} color={COLORS.textPrimary} />,
+      onPress: () =>
+        navigation.navigate(NAV_ROUTES.PLAN_MANAGEMENT.NAME as any),
+      badge: (
+        <View style={styles.proBadge}>
+          <Crown size={10} color={COLORS.white} fill={COLORS.white} />
+          <Text style={styles.proBadgeText}>PRO</Text>
+        </View>
+      ),
     },
     {
-      title: '계정',
-      items: [
-        {
-          id: 'logout',
-          label: '로그아웃',
-          icon: <LogOut size={22} color={COLORS.error} />,
-          onPress: handleLogout,
-          isCritical: true,
-        },
-      ],
+      id: 'personal_settings',
+      label: '개인 설정',
+      icon: <Bell size={20} color={COLORS.textPrimary} />,
+      onPress: () =>
+        navigation.navigate(NAV_ROUTES.PERSONAL_SETTINGS.NAME as any),
+    },
+    {
+      id: 'privacy',
+      label: '개인정보 처리방침',
+      icon: <ShieldCheck size={20} color={COLORS.textPrimary} />,
+      onPress: () => navigation.navigate(NAV_ROUTES.PRIVACY_POLICY.NAME as any),
+    },
+    {
+      id: 'logout',
+      label: '로그아웃',
+      icon: <LogOut size={20} color={COLORS.error} />,
+      onPress: handleLogout,
+      isCritical: true,
     },
   ];
 
   return (
     <AppSafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* User Profile Header */}
-        <View style={styles.header}>
-          <View style={styles.headerTop}>
-            <View style={styles.avatar}>
-              <User size={32} color={COLORS.primary} strokeWidth={2.5} />
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Profile Section (Flat) */}
+        <View style={styles.profileSection}>
+          <View style={styles.profileHeader}>
+            <View style={styles.avatarContainer}>
+              <View style={styles.avatar}>
+                <User size={36} color={COLORS.primary} strokeWidth={2.5} />
+              </View>
             </View>
-            <View style={styles.headerInfo}>
+
+            <View style={styles.profileInfo}>
               <Text style={styles.userName}>{displayUserName}</Text>
               <Text style={styles.userEmail}>{userEmail}</Text>
             </View>
+
             <TouchableOpacity
-              style={styles.editButton}
-              onPress={() => navigation.navigate(NAV_ROUTES.PROFILE_EDIT.NAME)}
+              style={styles.editIconBtn}
+              onPress={() =>
+                navigation.navigate(NAV_ROUTES.PROFILE_EDIT.NAME as any)
+              }
             >
-              <Text style={styles.editButtonText}>수정</Text>
+              <Text style={styles.editLabel}>수정</Text>
             </TouchableOpacity>
           </View>
         </View>
-
-        <View style={styles.divider} />
 
         {/* Pending Invitations Section */}
         {pendingInvitations.length > 0 && (
@@ -218,15 +215,14 @@ const ProfileScreen = () => {
           </View>
         )}
 
-        {/* Menu Sections */}
-        {menuItems.map((section, index) => (
-          <View key={index}>
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{section.title}</Text>
-              {section.items.map(item => (
+        {/* Single Menu Card */}
+        <View style={styles.menuGroups}>
+          <View style={styles.menuCard}>
+            {menuItems.map((item, index) => (
+              <View key={item.id}>
                 <TouchableOpacity
-                  key={item.id}
                   style={styles.menuItem}
+                  activeOpacity={0.6}
                   onPress={item.onPress}
                 >
                   <View style={styles.menuItemLeft}>
@@ -240,13 +236,18 @@ const ProfileScreen = () => {
                       {item.label}
                     </Text>
                   </View>
-                  <ChevronRight size={20} color={COLORS.textTertiary} />
+                  <View style={styles.menuItemRight}>
+                    {item.badge}
+                    <ChevronRight size={18} color={COLORS.textTertiary} />
+                  </View>
                 </TouchableOpacity>
-              ))}
-            </View>
-            {index < menuItems.length - 1 && <View style={styles.divider} />}
+                {index < menuItems.length - 1 && (
+                  <View style={styles.menuDivider} />
+                )}
+              </View>
+            ))}
           </View>
-        ))}
+        </View>
 
         <View style={styles.footer}>
           <Text style={styles.version}>버전 1.0.0 (beta)</Text>
@@ -259,109 +260,150 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.background, // 바탕을 연한 그레이로 처리하여 카드 부각
   },
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: 60,
   },
-  header: {
-    paddingHorizontal: SPACING.layout,
-    paddingVertical: SPACING.md,
-    backgroundColor: COLORS.white,
+  profileSection: {
+    backgroundColor: COLORS.background,
+    paddingHorizontal: 32,
+    paddingTop: 32,
+    paddingBottom: 24,
   },
-  headerTop: {
+  profileHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  headerInfo: {
-    flex: 1,
-    marginLeft: SPACING.md,
+  avatarContainer: {
+    position: 'relative',
   },
   avatar: {
     width: 64,
     height: 64,
-    borderRadius: 32,
+    borderRadius: 24,
     backgroundColor: COLORS.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  proBadge: {
+    backgroundColor: '#191F28',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+    marginRight: 6,
+  },
+  proBadgeText: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: COLORS.white,
+    marginLeft: 2,
+  },
+  profileInfo: {
+    flex: 1,
+    marginLeft: 16,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  nameAndBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  menuItemRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   userName: {
-    ...TYPOGRAPHY.header2,
+    fontSize: 20,
+    fontWeight: '700',
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
   userEmail: {
-    ...TYPOGRAPHY.caption,
+    fontSize: 13,
     color: COLORS.textTertiary,
   },
-  editButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+  editIconBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 8,
     backgroundColor: COLORS.background,
   },
-  editButtonText: {
-    fontSize: 13,
+  editLabel: {
+    fontSize: 12,
     fontWeight: '600',
     color: COLORS.textSecondary,
   },
-  divider: {
-    height: 10,
-    backgroundColor: COLORS.background,
-  },
-  section: {
+  menuGroups: {
     paddingHorizontal: SPACING.layout,
-    paddingVertical: 12,
+    marginTop: 12,
   },
   sectionTitle: {
-    ...TYPOGRAPHY.caption,
+    fontSize: 13,
     fontWeight: '700',
     color: COLORS.textTertiary,
-    marginTop: 12,
-    marginBottom: 8,
+    marginBottom: 10,
     marginLeft: 4,
+  },
+  menuCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 24,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 8,
+    elevation: 1,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 16,
+    padding: 18,
   },
   menuItemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   iconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
+    width: 36,
+    height: 36,
+    borderRadius: 12,
     backgroundColor: COLORS.background,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 14,
   },
   menuItemLabel: {
-    ...TYPOGRAPHY.body1,
+    fontSize: 16,
+    fontWeight: '500',
     color: COLORS.textPrimary,
   },
-  footer: {
-    alignItems: 'center',
-    paddingVertical: 40,
+  menuDivider: {
+    height: 1,
+    backgroundColor: COLORS.border,
+    marginHorizontal: 18,
+    opacity: 0.5,
   },
-  version: {
-    ...TYPOGRAPHY.caption,
-    color: COLORS.textTertiary,
+  section: {
+    paddingHorizontal: SPACING.layout,
+    paddingTop: 10,
+    marginBottom: 10,
   },
   invitationCard: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.primaryLight,
     borderRadius: 20,
-    padding: 16,
+    padding: 18,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    marginBottom: 10,
   },
   invitationInfo: {
     flexDirection: 'row',
@@ -369,16 +411,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   invitationIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: COLORS.primaryLight,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 14,
   },
   invitationText: {
-    ...TYPOGRAPHY.caption,
+    fontSize: 12,
     color: COLORS.textSecondary,
     marginBottom: 2,
   },
@@ -387,26 +429,34 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   invitationWorkspace: {
-    ...TYPOGRAPHY.body2,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
     color: COLORS.textPrimary,
   },
   invitationActions: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 10,
   },
   actionBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     justifyContent: 'center',
     alignItems: 'center',
   },
   declineBtn: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.white,
   },
   acceptBtn: {
     backgroundColor: COLORS.primary,
+  },
+  footer: {
+    alignItems: 'center',
+    paddingVertical: 50,
+  },
+  version: {
+    fontSize: 13,
+    color: COLORS.textTertiary,
   },
 });
 
