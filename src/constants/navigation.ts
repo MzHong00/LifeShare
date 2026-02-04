@@ -83,6 +83,10 @@ export const NAV_ROUTES = {
     NAME: 'WorkspaceList',
     TITLE: '연결 관리 및 초대',
   },
+  WORKSPACE_EDIT: {
+    NAME: 'WorkspaceEdit',
+    TITLE: '라이프룸 관리',
+  },
   PRO_UPGRADE: {
     NAME: 'ProUpgrade',
     TITLE: 'Pro 플랜 업그레이드',
@@ -90,5 +94,9 @@ export const NAV_ROUTES = {
   PLAN_MANAGEMENT: {
     NAME: 'PlanManagement',
     TITLE: '플랜 관리',
+  },
+  PRIVACY_POLICY: {
+    NAME: 'PrivacyPolicy',
+    TITLE: '개인정보 보호 정책',
   },
 } as const;

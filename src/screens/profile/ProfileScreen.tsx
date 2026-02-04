@@ -15,7 +15,6 @@ import {
   User,
   Bell,
   ShieldCheck,
-  CircleHelp,
   Inbox,
   Check,
   X,
@@ -125,13 +124,8 @@ const ProfileScreen = () => {
           id: 'privacy',
           label: '개인정보 보호',
           icon: <ShieldCheck size={22} color={COLORS.textSecondary} />,
-          onPress: () => {},
-        },
-        {
-          id: 'help',
-          label: '고객센터',
-          icon: <CircleHelp size={22} color={COLORS.textSecondary} />,
-          onPress: () => {},
+          onPress: () =>
+            navigation.navigate(NAV_ROUTES.PRIVACY_POLICY.NAME as any),
         },
       ],
     },

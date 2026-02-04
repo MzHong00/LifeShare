@@ -1,12 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
-import {
-  createStackNavigator,
-  StackNavigationOptions,
-} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { COLORS } from '@/constants/theme';
+
 import { NAV_ROUTES } from '@/constants/navigation';
 import LoginScreen from '@/screens/auth/LoginScreen';
 import CalendarScreen from '@/screens/calendar/CalendarScreen';
@@ -24,33 +21,11 @@ import ProUpgradeScreen from '@/screens/upgrade/ProUpgradeScreen';
 import PlanManagementScreen from '@/screens/profile/PlanManagementScreen';
 import StoryEditScreen from '@/screens/stories/StoryEditScreen';
 import StoryDetailScreen from '@/screens/stories/StoryDetailScreen';
+import WorkspaceEditScreen from '@/screens/workspace/WorkspaceEditScreen';
 import AnniversaryScreen from '@/screens/home/AnniversaryScreen';
+import PrivacyPolicyScreen from '@/screens/profile/PrivacyPolicyScreen';
 
 const Stack = createStackNavigator();
-
-/**
- * 공통 헤더 스타일 옵션
- */
-const COMMON_HEADER_OPTIONS: StackNavigationOptions = {
-  title: '',
-  headerShown: true,
-  headerTitleStyle: { fontWeight: '600' },
-  headerStyle: {
-    backgroundColor: COLORS.white,
-    elevation: 0,
-    shadowOpacity: 0,
-  },
-  cardStyle: { backgroundColor: COLORS.white },
-};
-
-const BACKGROUND_COLOR_HEADER_OPTIONS: StackNavigationOptions = {
-  ...COMMON_HEADER_OPTIONS,
-  headerStyle: {
-    ...COMMON_HEADER_OPTIONS.headerStyle,
-    backgroundColor: COLORS.background,
-  },
-  cardStyle: { backgroundColor: COLORS.background },
-};
 
 const AppNavigator = () => {
   const { isLoggedIn } = useAuthStore();
@@ -86,60 +61,34 @@ const AppNavigator = () => {
                 <Stack.Screen
                   name={NAV_ROUTES.CALENDAR.NAME}
                   component={CalendarScreen}
-                  options={{
-                    ...COMMON_HEADER_OPTIONS,
-                  }}
                 />
                 <Stack.Screen
                   name={NAV_ROUTES.EVENT_CREATE.NAME}
                   component={EventCreateScreen}
-                  options={{
-                    ...COMMON_HEADER_OPTIONS,
-                    title: NAV_ROUTES.EVENT_CREATE.TITLE,
-                  }}
                 />
                 <Stack.Screen
                   name={NAV_ROUTES.TODO.NAME}
                   component={TodoScreen}
-                  options={{
-                    ...COMMON_HEADER_OPTIONS,
-                  }}
                 />
                 <Stack.Screen
                   name={NAV_ROUTES.TODO_CREATE.NAME}
                   component={TodoCreateScreen}
-                  options={{
-                    ...COMMON_HEADER_OPTIONS,
-                    title: NAV_ROUTES.TODO_CREATE.TITLE,
-                  }}
                 />
                 <Stack.Screen
                   name={NAV_ROUTES.STORIES.NAME}
                   component={StoriesScreen}
-                  options={{
-                    ...BACKGROUND_COLOR_HEADER_OPTIONS,
-                  }}
                 />
                 <Stack.Screen
                   name={NAV_ROUTES.STORY_EDIT.NAME}
                   component={StoryEditScreen}
-                  options={{
-                    ...COMMON_HEADER_OPTIONS,
-                    title: NAV_ROUTES.STORY_EDIT.TITLE,
-                  }}
                 />
                 <Stack.Screen
                   name={NAV_ROUTES.STORY_DETAIL.NAME}
                   component={StoryDetailScreen}
-                  options={{ headerShown: false }}
                 />
                 <Stack.Screen
                   name={NAV_ROUTES.ANNIVERSARY.NAME}
                   component={AnniversaryScreen}
-                  options={{
-                    ...COMMON_HEADER_OPTIONS,
-                    title: NAV_ROUTES.ANNIVERSARY.TITLE,
-                  }}
                 />
               </>
             )}
@@ -148,47 +97,34 @@ const AppNavigator = () => {
             <Stack.Screen
               name={NAV_ROUTES.PROFILE.NAME}
               component={ProfileScreen}
-              options={{
-                ...COMMON_HEADER_OPTIONS,
-              }}
             />
             <Stack.Screen
               name={NAV_ROUTES.PROFILE_EDIT.NAME}
               component={ProfileEditScreen}
-              options={{
-                ...COMMON_HEADER_OPTIONS,
-                title: NAV_ROUTES.PROFILE_EDIT.TITLE,
-              }}
             />
             <Stack.Screen
               name={NAV_ROUTES.WORKSPACE_SETUP.NAME}
               component={WorkspaceSetupScreen}
-              options={{
-                ...COMMON_HEADER_OPTIONS,
-                title: NAV_ROUTES.WORKSPACE_SETUP.TITLE,
-              }}
             />
             <Stack.Screen
               name={NAV_ROUTES.WORKSPACE_LIST.NAME}
               component={WorkspaceListScreen}
-              options={{
-                ...COMMON_HEADER_OPTIONS,
-              }}
             />
             <Stack.Screen
               name={NAV_ROUTES.PRO_UPGRADE.NAME}
               component={ProUpgradeScreen}
-              options={{
-                ...BACKGROUND_COLOR_HEADER_OPTIONS,
-              }}
+            />
+            <Stack.Screen
+              name={NAV_ROUTES.WORKSPACE_EDIT.NAME}
+              component={WorkspaceEditScreen}
             />
             <Stack.Screen
               name={NAV_ROUTES.PLAN_MANAGEMENT.NAME}
               component={PlanManagementScreen}
-              options={{
-                ...BACKGROUND_COLOR_HEADER_OPTIONS,
-                title: NAV_ROUTES.PLAN_MANAGEMENT.TITLE,
-              }}
+            />
+            <Stack.Screen
+              name={NAV_ROUTES.PRIVACY_POLICY.NAME}
+              component={PrivacyPolicyScreen}
             />
           </>
         )}
