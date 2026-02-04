@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  TextInput,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -13,23 +14,27 @@ import {
   Users,
   ChevronRight,
   User,
-  Bell,
   ShieldCheck,
   Inbox,
   Check,
   X,
   Crown,
+  Pencil,
+  Camera,
+  Image as ImageIcon,
+  UserCog,
 } from 'lucide-react-native';
 
 import { COLORS, SPACING } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { authActions } from '@/stores/useAuthStore';
-import { useUserStore } from '@/stores/useUserStore';
+import { useUserStore, userActions } from '@/stores/useUserStore';
 import {
   useWorkspaceStore,
   workspaceActions,
 } from '@/stores/useWorkspaceStore';
 import { modalActions } from '@/stores/useModalStore';
+import { toastActions } from '@/stores/useToastStore';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
 interface MenuItem {
@@ -42,12 +47,12 @@ interface MenuItem {
 }
 
 type RootStackParamList = {
-  [NAV_ROUTES.PROFILE_EDIT.NAME]: undefined;
   [NAV_ROUTES.WORKSPACE_SETUP.NAME]: undefined;
-  [NAV_ROUTES.WORKSPACE_LIST.NAME]: undefined;
   [NAV_ROUTES.PLAN_MANAGEMENT.NAME]: undefined;
   [NAV_ROUTES.PRO_UPGRADE.NAME]: undefined;
   [NAV_ROUTES.PRIVACY_POLICY.NAME]: undefined;
+  [NAV_ROUTES.WORKSPACE_LIST.NAME]: undefined;
+  [NAV_ROUTES.PERSONAL_SETTINGS.NAME]: undefined;
 };
 
 const ProfileScreen = () => {
@@ -89,6 +94,65 @@ const ProfileScreen = () => {
     });
   };
 
+  const handleEditName = () => {
+    let newName = displayUserName;
+
+    modalActions.showModal({
+      title: '이름 수정',
+      type: 'confirm',
+      confirmText: '변경하기',
+      content: (
+        <View style={styles.modalContent}>
+          <TextInput
+            style={styles.nameInput}
+            defaultValue={displayUserName}
+            placeholder="새 이름을 입력하세요"
+            onChangeText={text => (newName = text)}
+            autoFocus
+          />
+        </View>
+      ),
+      onConfirm: () => {
+        if (newName.trim()) {
+          userActions.updateUser({ name: newName.trim() });
+          toastActions.showToast('이름이 성공적으로 변경되었습니다', 'success');
+        }
+      },
+    });
+  };
+
+  const handleEditPhoto = () => {
+    modalActions.showModal({
+      title: '프로필 사진 변경',
+      type: 'none',
+      content: (
+        <View style={styles.photoOptions}>
+          <TouchableOpacity
+            style={styles.photoOptionItem}
+            onPress={() => {
+              modalActions.hideModal();
+              toastActions.showToast('카메라 기능을 준비 중입니다', 'info');
+            }}
+          >
+            <Camera size={20} color={COLORS.textPrimary} />
+            <Text style={styles.photoOptionText}>카메라로 촬영</Text>
+          </TouchableOpacity>
+          <View style={styles.photoDivider} />
+          <TouchableOpacity
+            style={styles.photoOptionItem}
+            onPress={() => {
+              modalActions.hideModal();
+              toastActions.showToast('갤러리 기능을 준비 중입니다', 'info');
+            }}
+          >
+            <ImageIcon size={20} color={COLORS.textPrimary} />
+            <Text style={styles.photoOptionText}>앨범에서 선택</Text>
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+  };
+
   const displayUserName = user?.name || userEmail?.split('@')[0] || '사용자';
 
   const menuItems: MenuItem[] = [
@@ -114,7 +178,7 @@ const ProfileScreen = () => {
     {
       id: 'personal_settings',
       label: '개인 설정',
-      icon: <Bell size={20} color={COLORS.textPrimary} />,
+      icon: <UserCog size={20} color={COLORS.textPrimary} />,
       onPress: () =>
         navigation.navigate(NAV_ROUTES.PERSONAL_SETTINGS.NAME as any),
     },
@@ -142,25 +206,34 @@ const ProfileScreen = () => {
         {/* Profile Section (Flat) */}
         <View style={styles.profileSection}>
           <View style={styles.profileHeader}>
-            <View style={styles.avatarContainer}>
+            <TouchableOpacity
+              style={styles.avatarContainer}
+              onPress={handleEditPhoto}
+              activeOpacity={0.8}
+            >
               <View style={styles.avatar}>
-                <User size={36} color={COLORS.primary} strokeWidth={2.5} />
+                <User size={40} color={COLORS.primary} strokeWidth={2.5} />
               </View>
-            </View>
+              <View style={styles.avatarEditBadge}>
+                <Camera size={14} color={COLORS.white} strokeWidth={2.5} />
+              </View>
+            </TouchableOpacity>
 
             <View style={styles.profileInfo}>
-              <Text style={styles.userName}>{displayUserName}</Text>
+              <TouchableOpacity
+                style={styles.nameRow}
+                onPress={handleEditName}
+                activeOpacity={0.6}
+              >
+                <Text style={styles.userName}>{displayUserName}</Text>
+                <Pencil
+                  size={14}
+                  color={COLORS.textTertiary}
+                  style={styles.pencilIcon}
+                />
+              </TouchableOpacity>
               <Text style={styles.userEmail}>{userEmail}</Text>
             </View>
-
-            <TouchableOpacity
-              style={styles.editIconBtn}
-              onPress={() =>
-                navigation.navigate(NAV_ROUTES.PROFILE_EDIT.NAME as any)
-              }
-            >
-              <Text style={styles.editLabel}>수정</Text>
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -272,16 +345,18 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   profileHeader: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   avatarContainer: {
     position: 'relative',
+    marginBottom: 16,
   },
   avatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 24,
+    width: 80,
+    height: 80,
+    borderRadius: 32,
     backgroundColor: COLORS.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
@@ -302,43 +377,81 @@ const styles = StyleSheet.create({
     marginLeft: 2,
   },
   profileInfo: {
-    flex: 1,
-    marginLeft: 16,
+    alignItems: 'center',
+    width: '100%',
   },
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginBottom: 4,
   },
-  nameAndBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  menuItemRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  pencilIcon: {
+    marginLeft: 6,
   },
   userName: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
     color: COLORS.textPrimary,
-    marginBottom: 2,
   },
   userEmail: {
-    fontSize: 13,
+    fontSize: 14,
     color: COLORS.textTertiary,
   },
-  editIconBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-    backgroundColor: COLORS.background,
+  avatarEditBadge: {
+    position: 'absolute',
+    right: -2,
+    bottom: -2,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: COLORS.primary, // 토스 블루 포인트 컬러 적용
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: COLORS.white, // 아바타와 경계를 명확히 하는 화이트 보더
+    // 부드러운 그림자
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  editLabel: {
-    fontSize: 12,
+  modalContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+  },
+  nameInput: {
+    width: '100%',
+    height: 56,
+    backgroundColor: COLORS.background,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    color: COLORS.textPrimary,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+  },
+  photoOptions: {
+    paddingHorizontal: 10,
+    paddingBottom: 10,
+  },
+  photoOptionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+  },
+  photoOptionText: {
+    marginLeft: 16,
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+  },
+  photoDivider: {
+    height: 1,
+    backgroundColor: COLORS.border,
+    marginHorizontal: 10,
+    opacity: 0.5,
   },
   menuGroups: {
     paddingHorizontal: SPACING.layout,
@@ -384,6 +497,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: COLORS.textPrimary,
+  },
+  menuItemRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   menuDivider: {
     height: 1,
