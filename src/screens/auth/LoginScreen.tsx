@@ -1,32 +1,13 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Heart } from 'lucide-react-native';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { APP_BRAND_NAME } from '@/constants/config';
-import { authActions } from '@/stores/useAuthStore';
-import { userActions } from '@/stores/useUserStore';
-import { workspaceActions } from '@/stores/useWorkspaceStore';
+import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { GoogleOAuthService } from '@/businesses/oauth/google/googleOAuthService';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { GoogleIcon, KakaoIcon } from '@/components/common/SocialIcons';
 
 const LoginScreen = () => {
-  const handleSocialLogin = (method: 'google' | 'kakao') => {
-    const mockEmail =
-      method === 'google' ? 'google_user@gmail.com' : 'kakao_user@kakao.com';
-
-    // 1. 인증 토큰 저장
-    authActions.setTokens('social-access-token', 'social-refresh-token');
-
-    // 2. 사용자 정보 저장
-    userActions.setUser({
-      name: mockEmail.split('@')[0],
-      profileImage: undefined,
-    });
-
-    workspaceActions.clearData();
-  };
-
   return (
     <AppSafeAreaView style={styles.container} headerShown={false}>
       <View style={styles.inner}>
@@ -44,7 +25,7 @@ const LoginScreen = () => {
           <TouchableOpacity
             style={[styles.socialButton, styles.kakaoButton]}
             activeOpacity={0.8}
-            onPress={() => handleSocialLogin('kakao')}
+            onPress={() => {}}
           >
             <KakaoIcon size={24} />
             <Text style={styles.kakaoButtonText}>카카오톡으로 시작하기</Text>
@@ -129,17 +110,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   kakaoButton: {
-    backgroundColor: '#FEE500',
+    backgroundColor: COLORS.kakao,
   },
   googleButton: {
     backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: COLORS.border,
   },
   kakaoButtonText: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#3C1E1E',
+    color: COLORS.kakaoText,
     marginLeft: 10,
   },
   googleButtonText: {
