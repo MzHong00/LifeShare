@@ -146,6 +146,7 @@ const ChatScreen = () => {
           }}
           onSend={sendMessage}
           onPlusPress={toggleActionMenu}
+          isActionMenuVisible={isActionMenuVisible}
         />
         {isActionMenuVisible && (
           <View style={styles.actionMenu}>

@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
-import { Plus, Send } from 'lucide-react-native';
+import { Plus, Send, X } from 'lucide-react-native';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 
 interface ChatInputProps {
@@ -13,6 +13,7 @@ interface ChatInputProps {
   onChangeText: (text: string) => void;
   onSend: () => void;
   onPlusPress?: () => void;
+  isActionMenuVisible?: boolean;
 }
 
 export const ChatInput = ({
@@ -20,11 +21,16 @@ export const ChatInput = ({
   onChangeText,
   onSend,
   onPlusPress,
+  isActionMenuVisible,
 }: ChatInputProps) => {
   return (
     <View style={styles.inputWrapper}>
       <TouchableOpacity style={styles.plusButton} onPress={onPlusPress}>
-        <Plus size={24} color={COLORS.textSecondary} />
+        {isActionMenuVisible ? (
+          <X size={24} color={COLORS.textSecondary} />
+        ) : (
+          <Plus size={24} color={COLORS.textSecondary} />
+        )}
       </TouchableOpacity>
       <View style={styles.inputContainer}>
         <TextInput
