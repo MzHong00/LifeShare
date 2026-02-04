@@ -9,7 +9,15 @@ import {
   ActivityIndicator,
   Linking,
 } from 'react-native';
-import { Zap, Sparkles, MapPin, Square, Route } from 'lucide-react-native';
+import {
+  Zap,
+  Sparkles,
+  MapPin,
+  Square,
+  Route,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react-native';
 import MapView from 'react-native-maps';
 import { MainMap } from '@/components/map/MainMap';
 
@@ -41,6 +49,7 @@ const MapScreen = () => {
   const { showModal } = modalActions;
 
   const [showHistory, setShowHistory] = useState(false);
+  const [isHeaderMinimized, setIsHeaderMinimized] = useState(false);
 
   // 현재 바텀시트에서 보여줄 선택된 유저 ID
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -138,11 +147,10 @@ const MapScreen = () => {
         return;
       }
       showModal({
-        type: 'choice',
+        type: 'confirm',
         title: '스토리 기록 중단',
         message: '지금까지의 경로를 스토리로 저장할까요?',
         confirmText: '저장',
-        destructiveText: '기록 삭제',
         cancelText: '취소',
         onConfirm: () => {
           saveStory({
@@ -157,7 +165,7 @@ const MapScreen = () => {
             message: '스토리 탭에서 확인할 수 있습니다.',
           });
         },
-        onDestructive: () => stopRecording(),
+        onCancel: () => stopRecording(),
       });
     } else {
       startRecording();
@@ -209,84 +217,102 @@ const MapScreen = () => {
               <Zap size={10} color={COLORS.success} fill={COLORS.success} />
               <Text style={styles.statusBadgeText}>실시간 업데이트 중</Text>
             </View>
-          </View>
-
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.userListScroll}
-          >
-            {membersWithLocation.map(member => (
-              <TouchableOpacity
-                key={member.id}
-                style={styles.userItem}
-                onPress={() =>
-                  moveToUser(
-                    member.id,
-                    member.location.latitude,
-                    member.location.longitude,
-                  )
-                }
-              >
-                <ProfileAvatar
-                  uri={member.avatar}
-                  name={member.name}
-                  size={44}
-                />
-                <Text style={styles.userNameText}>{member.name}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-
-          {/* Action Buttons Integrated in Header */}
-          <View style={styles.headerActionBar}>
             <TouchableOpacity
-              style={[
-                styles.headerActionPill,
-                showHistory && { backgroundColor: COLORS.primary },
-              ]}
-              onPress={() => setShowHistory(!showHistory)}
+              onPress={() => setIsHeaderMinimized(!isHeaderMinimized)}
+              style={styles.minimizeBtn}
+              activeOpacity={0.7}
             >
-              <Route
-                size={14}
-                color={showHistory ? COLORS.white : COLORS.textPrimary}
-              />
-              <Text
-                style={[
-                  styles.headerActionText,
-                  showHistory && { color: COLORS.white },
-                ]}
-              >
-                우리의 스토리보기
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.headerActionPill,
-                isRecording && { backgroundColor: COLORS.error },
-              ]}
-              onPress={handleToggleRecording}
-            >
-              {isRecording ? (
-                <Square size={12} color={COLORS.white} fill={COLORS.white} />
+              {isHeaderMinimized ? (
+                <ChevronDown size={18} color={COLORS.textTertiary} />
               ) : (
-                <Sparkles
-                  size={14}
-                  color={COLORS.textPrimary}
-                  fill={COLORS.textPrimary + '20'}
-                />
+                <ChevronUp size={18} color={COLORS.textTertiary} />
               )}
-              <Text
-                style={[
-                  styles.headerActionText,
-                  isRecording && { color: COLORS.white },
-                ]}
-              >
-                {isRecording ? '위치 기록 중' : '스토리 만들기'}
-              </Text>
             </TouchableOpacity>
           </View>
+
+          {!isHeaderMinimized && (
+            <>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.userListScroll}
+              >
+                {membersWithLocation.map(member => (
+                  <TouchableOpacity
+                    key={member.id}
+                    style={styles.userItem}
+                    onPress={() =>
+                      moveToUser(
+                        member.id,
+                        member.location.latitude,
+                        member.location.longitude,
+                      )
+                    }
+                  >
+                    <ProfileAvatar
+                      uri={member.avatar}
+                      name={member.name}
+                      size={44}
+                    />
+                    <Text style={styles.userNameText}>{member.name}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              <View style={styles.headerActionBar}>
+                <TouchableOpacity
+                  style={[
+                    styles.headerActionPill,
+                    showHistory && { backgroundColor: COLORS.primary },
+                  ]}
+                  onPress={() => setShowHistory(!showHistory)}
+                >
+                  <Route
+                    size={14}
+                    color={showHistory ? COLORS.white : COLORS.textPrimary}
+                  />
+                  <Text
+                    style={[
+                      styles.headerActionText,
+                      showHistory && { color: COLORS.white },
+                    ]}
+                  >
+                    우리의 스토리보기
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.headerActionPill,
+                    isRecording && { backgroundColor: COLORS.error },
+                  ]}
+                  onPress={handleToggleRecording}
+                >
+                  {isRecording ? (
+                    <Square
+                      size={12}
+                      color={COLORS.white}
+                      fill={COLORS.white}
+                    />
+                  ) : (
+                    <Sparkles
+                      size={14}
+                      color={COLORS.textPrimary}
+                      fill={COLORS.textPrimary + '20'}
+                    />
+                  )}
+                  <Text
+                    style={[
+                      styles.headerActionText,
+                      isRecording && { color: COLORS.white },
+                    ]}
+                  >
+                    {isRecording ? '위치 기록 중' : '스토리 만들기'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
         </View>
       </AppSafeAreaView>
 
@@ -361,9 +387,15 @@ const styles = StyleSheet.create({
     }),
   },
   headerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingTop: 4,
     marginBottom: 4,
+  },
+  minimizeBtn: {
+    padding: 4,
   },
   headerActionBar: {
     flexDirection: 'row',
