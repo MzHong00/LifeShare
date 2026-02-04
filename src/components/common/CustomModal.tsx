@@ -1,151 +1,96 @@
-import { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Modal,
-  Animated,
   TouchableWithoutFeedback,
 } from 'react-native';
-import { X } from 'lucide-react-native';
-import { COLORS, TYPOGRAPHY } from '@/constants/theme';
+import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { useModalStore, modalActions } from '@/stores/useModalStore';
 
 const CustomModal = () => {
   const { isVisible, options } = useModalStore();
   const { hideModal } = modalActions;
-  const [fadeAnim] = useState(new Animated.Value(0));
-  const [slideAnim] = useState(new Animated.Value(20));
 
-  useEffect(() => {
-    if (isVisible) {
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.timing(slideAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    } else {
-      fadeAnim.setValue(0);
-      slideAnim.setValue(20);
-    }
-  }, [isVisible, fadeAnim, slideAnim]);
+  if (!isVisible) return null;
 
   const handleConfirm = () => {
+    if (options.confirmDisabled) return; // 비활성화 상태면 동작 방지
     hideModal();
-    if (options.onConfirm) {
-      options.onConfirm();
-    }
+    options.onConfirm?.();
   };
 
   const handleCancel = () => {
     hideModal();
-    if (options.onCancel) {
-      options.onCancel();
-    }
+    options.onCancel?.();
   };
-
-  const handleDestructive = () => {
-    hideModal();
-    if (options.onDestructive) {
-      options.onDestructive();
-    }
-  };
-
-  if (!isVisible) return null;
 
   return (
-    <Modal transparent visible={isVisible} animationType="none">
+    <Modal
+      transparent
+      visible={isVisible}
+      animationType="fade"
+      onRequestClose={hideModal}
+    >
       <TouchableWithoutFeedback onPress={handleCancel}>
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
-            <Animated.View
-              style={[
-                styles.container,
-                {
-                  opacity: fadeAnim,
-                  transform: [{ translateY: slideAnim }],
-                },
-              ]}
-            >
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={handleCancel}
-                activeOpacity={0.6}
-              >
-                <X size={20} color={COLORS.textTertiary} />
-              </TouchableOpacity>
-
-              <View style={styles.content}>
+            <View style={styles.container}>
+              {/* 1. 타이틀 영역 */}
+              <View style={styles.titleSection}>
                 <Text style={styles.title}>{options.title}</Text>
-                <Text style={styles.message}>{options.message}</Text>
+                {options.message && (
+                  <Text style={styles.message}>{options.message}</Text>
+                )}
               </View>
 
-              <View
-                style={[
-                  styles.buttonContainer,
-                  options.type === 'choice' && styles.choiceButtonContainer,
-                ]}
-              >
-                {options.type === 'confirm' && (
-                  <TouchableOpacity
-                    style={[styles.button, styles.cancelButton]}
-                    onPress={handleCancel}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.cancelButtonText}>
-                      {options.cancelText}
-                    </Text>
-                  </TouchableOpacity>
-                )}
+              {/* 2. 커스텀 콘텐츠 영역 (입력창 등) */}
+              {options.content && (
+                <View style={styles.customContentSection}>
+                  {options.content}
+                </View>
+              )}
 
-                {options.type === 'choice' && (
-                  <>
+              {/* 3. 버튼 영역 (타입에 따른 버튼 구성) */}
+              {options.type !== 'none' && (
+                <View style={styles.buttonContainer}>
+                  {/* Confirm 타입인 경우 취소 버튼 표시 */}
+                  {options.type === 'confirm' && (
                     <TouchableOpacity
                       style={[styles.button, styles.cancelButton]}
-                      onPress={handleDestructive}
-                      activeOpacity={0.8}
+                      onPress={handleCancel}
+                      activeOpacity={0.7}
                     >
-                      <Text style={styles.destructiveButtonText}>
-                        {options.destructiveText}
+                      <Text style={styles.cancelButtonText}>
+                        {options.cancelText || '취소'}
                       </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[styles.button, styles.confirmButton]}
-                      onPress={handleConfirm}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={[styles.confirmButtonText]}>
-                        {options.confirmText}
-                      </Text>
-                    </TouchableOpacity>
-                  </>
-                )}
+                  )}
 
-                {options.type !== 'choice' && (
+                  {/* 확인 버튼 (Alert/Confirm 공통) */}
                   <TouchableOpacity
                     style={[
                       styles.button,
                       styles.confirmButton,
-                      options.type === 'alert' && styles.fullWidthButton,
+                      options.confirmDisabled && styles.disabledButton,
                     ]}
                     onPress={handleConfirm}
-                    activeOpacity={0.8}
+                    activeOpacity={options.confirmDisabled ? 1 : 0.8}
+                    disabled={options.confirmDisabled}
                   >
-                    <Text style={styles.confirmButtonText}>
-                      {options.confirmText}
+                    <Text
+                      style={[
+                        styles.confirmButtonText,
+                        options.confirmDisabled && styles.disabledButtonText,
+                      ]}
+                    >
+                      {options.confirmText || '확인'}
                     </Text>
                   </TouchableOpacity>
-                )}
-              </View>
-            </Animated.View>
+                </View>
+              )}
+            </View>
           </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
@@ -159,34 +104,26 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: 24,
   },
   container: {
     width: '100%',
-    maxWidth: 320,
+    maxWidth: 340,
     backgroundColor: COLORS.white,
-    borderRadius: 24,
-    paddingTop: 48, // X 버튼 공간 확보
+    borderRadius: 40,
+    paddingTop: SPACING.xxl,
+    paddingBottom: SPACING.lg,
     overflow: 'hidden',
-    // Shadow for iOS
+    elevation: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
-    shadowRadius: 20,
-    // Elevation for Android
-    elevation: 10,
+    shadowRadius: 10,
+    gap: SPACING.xl,
   },
-  closeButton: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    padding: 8,
-    zIndex: 10,
-  },
-  content: {
-    paddingHorizontal: 24,
+  titleSection: {
     alignItems: 'center',
-    marginBottom: 32,
+    paddingHorizontal: 24,
   },
   title: {
     ...TYPOGRAPHY.header2,
@@ -200,55 +137,42 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
   },
+  customContentSection: {
+    width: '100%',
+  },
   buttonContainer: {
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-  },
-  choiceButtonContainer: {
-    flexDirection: 'row',
+    gap: 12,
+    paddingHorizontal: 20,
   },
   button: {
-    height: 60,
+    flex: 1,
+    height: 56,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  choiceButton: {
-    flex: 1,
-  },
-  choiceConfirmButton: {
-    borderRightWidth: 1,
-    borderRightColor: COLORS.border,
-  },
-  lastChoiceButton: {
-    borderBottomWidth: 0,
-  },
   confirmButton: {
-    flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.primary,
   },
   cancelButton: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-    borderRightWidth: 1,
-    borderRightColor: COLORS.border,
+    backgroundColor: COLORS.background,
   },
-  fullWidthButton: {
-    width: '100%',
+  disabledButton: {
+    backgroundColor: COLORS.background, // 비활성화 시 배경색 변경
   },
   confirmButtonText: {
-    ...TYPOGRAPHY.body1,
+    fontSize: 16,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: COLORS.white,
   },
   cancelButtonText: {
-    ...TYPOGRAPHY.body1,
-    color: COLORS.textTertiary,
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.textSecondary,
   },
-  destructiveButtonText: {
-    ...TYPOGRAPHY.body1,
-    fontWeight: '500',
-    color: COLORS.textPrimary,
+  disabledButtonText: {
+    color: COLORS.textTertiary, // 비활성화 시 텍스트 색상 변경
   },
 });
 

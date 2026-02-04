@@ -1,18 +1,25 @@
+import type { ReactNode } from 'react';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 
-export type ModalType = 'alert' | 'confirm' | 'choice';
+/**
+ * ModalType은 하단 버튼의 구성을 결정합니다.
+ * - none: 버튼 없음
+ * - alert: 확인 버튼 1개
+ * - confirm: 취소, 확인 버튼 2개
+ */
+export type ModalType = 'none' | 'alert' | 'confirm';
 
-interface ModalOptions {
+export interface ModalOptions {
   type: ModalType;
   title: string;
-  message: string;
+  message?: string;
   confirmText?: string;
   cancelText?: string;
-  destructiveText?: string;
+  content?: ReactNode;
+  confirmDisabled?: boolean; // 확인 버튼 비활성화 여부
   onConfirm?: () => void;
   onCancel?: () => void;
-  onDestructive?: () => void;
 }
 
 interface ModalState {
@@ -26,7 +33,7 @@ const defaultOptions: ModalOptions = {
   message: '',
   confirmText: '확인',
   cancelText: '취소',
-  destructiveText: '삭제',
+  confirmDisabled: false,
 };
 
 export const modalStore = create<ModalState>(() => ({
@@ -34,18 +41,23 @@ export const modalStore = create<ModalState>(() => ({
   options: defaultOptions,
 }));
 
-// 3. 외부 노출용 커스텀 훅 (useShallow 적용)
 export const useModalStore = <T = ModalState>(
   selector: (state: ModalState) => T = (state: ModalState) =>
     state as unknown as T,
 ) => modalStore(useShallow(selector));
 
-// 4. 액션 분리 (Static Actions)
 export const modalActions = {
   showModal: (options: Partial<ModalOptions>) =>
     modalStore.setState({
       isVisible: true,
       options: { ...defaultOptions, ...options } as ModalOptions,
     }),
+  /**
+   * 모달이 열려있는 상태에서 옵션만 업데이트 (예: 확인 버튼 활성화 제어)
+   */
+  updateOptions: (options: Partial<ModalOptions>) =>
+    modalStore.setState(state => ({
+      options: { ...state.options, ...options },
+    })),
   hideModal: () => modalStore.setState({ isVisible: false }),
 };

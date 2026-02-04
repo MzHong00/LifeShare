@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 
-import { SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { COLORS, SPACING } from '@/constants/theme';
 
 interface SectionProps {
   title?: string;
@@ -24,7 +24,12 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   title: {
-    ...TYPOGRAPHY.header2,
-    marginBottom: SPACING.lg,
+    fontSize: 13,
+    fontWeight: '800',
+    color: COLORS.textTertiary,
+    marginBottom: 10,
+    marginLeft: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
 });
