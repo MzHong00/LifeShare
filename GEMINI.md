@@ -55,7 +55,7 @@
 - **Functional Components**: 모든 컴포넌트는 화살표 함수(`const App = () => { ... }`) 형식을 사용.
 - **Modular Navigation**: `AppNavigator`가 너무 무거워지지 않도록 단위별(Auth, Main) 네비게이터를 분리하여 관리.
 - **Consistency**:
-  - 색상은 항상 `COLORS` 객체(`@/constants/theme`)에서 가져와 사용.
+  - 색상은 항상 `COLORS` 객체(`@/constants/theme`)에서 가져와 사용하며, 하드코딩된 Hex 코드는 절대 사용하지 않는다. 자주 쓰이는 색상이 없을 경우 `theme.ts`에 토큰을 먼저 추가한다.
   - 내비게이션 등록 및 이동 시에는 반드시 `NAV_ROUTES` 상수(`@/constants/navigation`)를 사용한다.
   - import 시에는 `@/` 접두사를 사용하는 절대 경로를 우선적으로 사용 (예: `@/components/Button`).
   - **Date Handling**: `dayjs` 또는 `new Date()`를 컴포넌트 내부에서 직접 사용하지 않고, 반드시 `@/utils/date`에 정의된 공통 유틸리티 함수를 사용한다.
