@@ -12,7 +12,6 @@ import TodoScreen from '@/screens/todo/TodoScreen';
 import TodoCreateScreen from '@/screens/todo/TodoCreateScreen';
 import StoriesScreen from '@/screens/stories/StoriesScreen';
 import ProfileScreen from '@/screens/profile/ProfileScreen';
-import ProfileEditScreen from '@/screens/profile/ProfileEditScreen';
 import MainTabScreen from '@/screens/main/MainTabScreen';
 import WorkspaceLandingScreen from '@/screens/workspace/WorkspaceLandingScreen';
 import WorkspaceSetupScreen from '@/screens/workspace/WorkspaceSetupScreen';
@@ -99,10 +98,7 @@ const AppNavigator = () => {
               name={NAV_ROUTES.PROFILE.NAME}
               component={ProfileScreen}
             />
-            <Stack.Screen
-              name={NAV_ROUTES.PROFILE_EDIT.NAME}
-              component={ProfileEditScreen}
-            />
+
             <Stack.Screen
               name={NAV_ROUTES.WORKSPACE_SETUP.NAME}
               component={WorkspaceSetupScreen}

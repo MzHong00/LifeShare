@@ -71,10 +71,7 @@ export const NAV_ROUTES = {
     NAME: 'Profile',
     TITLE: '마이페이지',
   },
-  PROFILE_EDIT: {
-    NAME: 'ProfileEdit',
-    TITLE: '프로필 수정',
-  },
+
   WORKSPACE_SETUP: {
     NAME: 'WorkspaceSetup',
     TITLE: '라이프룸 생성',
