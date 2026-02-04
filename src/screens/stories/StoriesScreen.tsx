@@ -123,7 +123,7 @@ const StoriesHeader = ({
       <View style={styles.statDivider} />
       <View style={styles.statBox}>
         <View style={[styles.statIconWrapper, styles.pinkIconWrapper]}>
-          <Heart size={16} color="#F04452" />
+          <Heart size={16} color={COLORS.red} />
         </View>
         <View style={styles.statTextContainer}>
           <Text style={styles.statLabel}>{storyCount}개</Text>
@@ -265,9 +265,9 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     marginBottom: 20,
     alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
   },
@@ -309,10 +309,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primaryLight,
   },
   pinkIconWrapper: {
-    backgroundColor: '#FFEEFB',
+    backgroundColor: COLORS.pinkLight,
   },
   greenIconWrapper: {
-    backgroundColor: '#E8FAEF',
+    backgroundColor: COLORS.greenLight,
   },
   filterBar: {
     flexDirection: 'row',
@@ -344,11 +344,11 @@ const styles = StyleSheet.create({
   storyCard: {
     width: columnWidth,
     backgroundColor: COLORS.white,
-    borderRadius: 24,
+    borderRadius: 20,
     marginBottom: 16,
     overflow: 'hidden',
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 12,
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
     height: columnWidth * 1.1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: COLORS.skeleton,
     position: 'relative',
   },
   cardImage: {
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F4F6F8',
+    backgroundColor: COLORS.grey,
   },
   heartBadge: {
     position: 'absolute',

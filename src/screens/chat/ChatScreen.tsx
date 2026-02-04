@@ -81,14 +81,14 @@ const ChatScreen = () => {
     {
       id: 'gallery',
       label: '갤러리',
-      icon: <ImageIcon size={24} color="#3182F6" />,
-      bgColor: '#EBF4FF',
+      icon: <ImageIcon size={24} color={COLORS.primary} />,
+      bgColor: COLORS.primaryLight,
     },
     {
       id: 'video',
       label: '동영상',
-      icon: <Video size={24} color="#3182F6" />,
-      bgColor: '#EBF4FF',
+      icon: <Video size={24} color={COLORS.primary} />,
+      bgColor: COLORS.primaryLight,
     },
   ];
 
