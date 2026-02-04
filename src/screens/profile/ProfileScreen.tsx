@@ -9,11 +9,11 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { launchImageLibrary } from 'react-native-image-picker';
 import {
   LogOut,
   Users,
   ChevronRight,
-  User,
   ShieldCheck,
   Inbox,
   Check,
@@ -21,7 +21,6 @@ import {
   Crown,
   Pencil,
   Camera,
-  Image as ImageIcon,
   UserCog,
 } from 'lucide-react-native';
 
@@ -36,6 +35,8 @@ import {
 import { modalActions } from '@/stores/useModalStore';
 import { toastActions } from '@/stores/useToastStore';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import { ProfileAvatar } from '@/components/common/ProfileAvatar';
+import { APP_WORKSPACE } from '@/constants/config';
 
 interface MenuItem {
   id: string;
@@ -121,36 +122,33 @@ const ProfileScreen = () => {
     });
   };
 
-  const handleEditPhoto = () => {
-    modalActions.showModal({
-      title: '프로필 사진 변경',
-      type: 'none',
-      content: (
-        <View style={styles.photoOptions}>
-          <TouchableOpacity
-            style={styles.photoOptionItem}
-            onPress={() => {
-              modalActions.hideModal();
-              toastActions.showToast('카메라 기능을 준비 중입니다', 'info');
-            }}
-          >
-            <Camera size={20} color={COLORS.textPrimary} />
-            <Text style={styles.photoOptionText}>카메라로 촬영</Text>
-          </TouchableOpacity>
-          <View style={styles.photoDivider} />
-          <TouchableOpacity
-            style={styles.photoOptionItem}
-            onPress={() => {
-              modalActions.hideModal();
-              toastActions.showToast('갤러리 기능을 준비 중입니다', 'info');
-            }}
-          >
-            <ImageIcon size={20} color={COLORS.textPrimary} />
-            <Text style={styles.photoOptionText}>앨범에서 선택</Text>
-          </TouchableOpacity>
-        </View>
-      ),
-    });
+  const handleEditPhoto = async () => {
+    try {
+      const result = await launchImageLibrary({
+        mediaType: 'photo',
+        maxWidth: 500,
+        maxHeight: 500,
+        quality: 0.8,
+      });
+
+      if (result.didCancel) return;
+
+      if (result.errorCode) {
+        toastActions.showToast('이미지를 불러오는데 실패했습니다', 'error');
+        return;
+      }
+
+      const imageUri = result.assets?.[0]?.uri;
+      if (imageUri) {
+        userActions.updateUser({ profileImage: imageUri });
+        toastActions.showToast(
+          '프로필 사진이 성공적으로 변경되었습니다',
+          'success',
+        );
+      }
+    } catch {
+      toastActions.showToast('이미지 처리 중 오류가 발생했습니다', 'error');
+    }
   };
 
   const displayUserName = user?.name || userEmail?.split('@')[0] || '사용자';
@@ -158,7 +156,7 @@ const ProfileScreen = () => {
   const menuItems: MenuItem[] = [
     {
       id: 'workspace',
-      label: '공간 관리 및 초대',
+      label: `${APP_WORKSPACE.KR} 관리 및 초대`,
       icon: <Users size={20} color={COLORS.textPrimary} />,
       onPress: () => navigation.navigate(NAV_ROUTES.WORKSPACE_LIST.NAME as any),
     },
@@ -212,7 +210,11 @@ const ProfileScreen = () => {
               activeOpacity={0.8}
             >
               <View style={styles.avatar}>
-                <User size={40} color={COLORS.primary} strokeWidth={2.5} />
+                <ProfileAvatar
+                  uri={user?.profileImage}
+                  name={displayUserName}
+                  size={80}
+                />
               </View>
               <View style={styles.avatarEditBadge}>
                 <Camera size={14} color={COLORS.white} strokeWidth={2.5} />
@@ -410,8 +412,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: COLORS.white, // 아바타와 경계를 명확히 하는 화이트 보더
-    // 부드러운 그림자
-    shadowColor: COLORS.primary,
+    // 입체감을 위한 그림자 추가
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -468,7 +470,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderRadius: 24,
     overflow: 'hidden',
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.02,
     shadowRadius: 8,
