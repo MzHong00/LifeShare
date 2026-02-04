@@ -99,4 +99,8 @@ export const NAV_ROUTES = {
     NAME: 'PrivacyPolicy',
     TITLE: '개인정보 보호 정책',
   },
+  PERSONAL_SETTINGS: {
+    NAME: 'PersonalSettings',
+    TITLE: '개인 설정',
+  },
 } as const;

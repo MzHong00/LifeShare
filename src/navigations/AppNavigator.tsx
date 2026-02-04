@@ -24,6 +24,7 @@ import StoryDetailScreen from '@/screens/stories/StoryDetailScreen';
 import WorkspaceEditScreen from '@/screens/workspace/WorkspaceEditScreen';
 import AnniversaryScreen from '@/screens/home/AnniversaryScreen';
 import PrivacyPolicyScreen from '@/screens/profile/PrivacyPolicyScreen';
+import PersonalSettingsScreen from '@/screens/profile/PersonalSettingsScreen';
 
 const Stack = createStackNavigator();
 
@@ -125,6 +126,10 @@ const AppNavigator = () => {
             <Stack.Screen
               name={NAV_ROUTES.PRIVACY_POLICY.NAME}
               component={PrivacyPolicyScreen}
+            />
+            <Stack.Screen
+              name={NAV_ROUTES.PERSONAL_SETTINGS.NAME}
+              component={PersonalSettingsScreen}
             />
           </>
         )}
