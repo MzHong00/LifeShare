@@ -153,6 +153,20 @@ export const workspaceActions = {
       };
     });
   },
+  updateWorkspaceStartDate: (workspaceId: string, startDate: string) => {
+    workspaceStore.setState(state => {
+      const nextWorkspaces = state.workspaces.map(ws =>
+        ws.id === workspaceId ? { ...ws, startDate } : ws,
+      );
+      const isCurrent = state.currentWorkspace?.id === workspaceId;
+      return {
+        workspaces: nextWorkspaces,
+        currentWorkspace: isCurrent
+          ? { ...state.currentWorkspace!, startDate }
+          : state.currentWorkspace,
+      };
+    });
+  },
   updateMemberProfile: (
     workspaceId: string,
     memberId: string,
