@@ -168,10 +168,7 @@ const StoryEditScreen = () => {
   }, [showModal]);
 
   return (
-    <AppSafeAreaView
-      style={styles.container}
-      title={isEditMode ? '스토리 수정' : '새 스토리 기록'}
-    >
+    <AppSafeAreaView style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}

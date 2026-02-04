@@ -47,11 +47,7 @@ const PlanManagementScreen = () => {
   ];
 
   return (
-    <AppSafeAreaView
-      style={styles.container}
-      title={NAV_ROUTES.PLAN_MANAGEMENT.TITLE}
-      headerBackground="background"
-    >
+    <AppSafeAreaView style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}

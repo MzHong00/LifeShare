@@ -347,10 +347,7 @@ const WorkspaceSetupScreen = () => {
   };
 
   return (
-    <AppSafeAreaView
-      style={styles.container}
-      title={NAV_ROUTES.WORKSPACE_SETUP.TITLE}
-    >
+    <AppSafeAreaView style={styles.container}>
       {step === 'initial' && <InitialStage onNext={() => setStep('create')} />}
       {step === 'create' && (
         <CreateStage

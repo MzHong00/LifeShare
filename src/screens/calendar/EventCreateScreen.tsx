@@ -16,7 +16,6 @@ import type { DateData } from 'react-native-calendars';
 import { Calendar as CalendarIcon, Trash2 } from 'lucide-react-native';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
-import { NAV_ROUTES } from '@/constants/navigation';
 import { useCalendarStore, calendarActions } from '@/stores/useCalendarStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { modalActions } from '@/stores/useModalStore';
@@ -206,11 +205,7 @@ const EventCreateScreen = () => {
   };
 
   return (
-    <AppSafeAreaView
-      style={styles.container}
-      title={NAV_ROUTES.EVENT_CREATE.TITLE}
-      headerRight={renderHeaderRight}
-    >
+    <AppSafeAreaView style={styles.container} headerRight={renderHeaderRight}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardView}

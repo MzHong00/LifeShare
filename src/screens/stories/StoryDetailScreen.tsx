@@ -63,11 +63,7 @@ const StoryDetailScreen = () => {
   if (!story) return null;
 
   return (
-    <AppSafeAreaView
-      style={styles.container}
-      title="스토리 상세보기"
-      headerRight={renderHeaderRight}
-    >
+    <AppSafeAreaView style={styles.container} headerRight={renderHeaderRight}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <StoryBriefInfo story={story} showDecorateBtn={false} />

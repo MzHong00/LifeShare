@@ -9,7 +9,6 @@ import {
 import { Crown, Users, Map, Cloud, Zap } from 'lucide-react-native';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
-import { NAV_ROUTES } from '@/constants/navigation';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
 const ProUpgradeScreen = () => {
@@ -37,11 +36,7 @@ const ProUpgradeScreen = () => {
   ];
 
   return (
-    <AppSafeAreaView
-      style={styles.container}
-      title={NAV_ROUTES.PRO_UPGRADE.TITLE}
-      headerBackground="background"
-    >
+    <AppSafeAreaView style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}

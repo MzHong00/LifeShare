@@ -15,7 +15,6 @@ import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import { Camera } from 'lucide-react-native';
 
 import { COLORS, SPACING } from '@/constants/theme';
-import { NAV_ROUTES } from '@/constants/navigation';
 import { useUserStore, userActions } from '@/stores/useUserStore';
 import { modalActions } from '@/stores/useModalStore';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
@@ -109,11 +108,7 @@ const ProfileEditScreen = () => {
   );
 
   return (
-    <AppSafeAreaView
-      style={styles.container}
-      title={NAV_ROUTES.PROFILE_EDIT.TITLE}
-      headerRight={renderHeaderRight}
-    >
+    <AppSafeAreaView style={styles.container} headerRight={renderHeaderRight}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

@@ -4,7 +4,7 @@ import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
 const PrivacyPolicyScreen = () => {
   return (
-    <AppSafeAreaView style={styles.container} title="개인정보 보호 정책">
+    <AppSafeAreaView style={styles.container}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.content}

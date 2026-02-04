@@ -2,7 +2,6 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Calendar } from 'lucide-react-native';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
-import { NAV_ROUTES } from '@/constants/navigation';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { Card } from '@/components/common/Card';
 
@@ -22,10 +21,7 @@ const AnniversaryScreen = () => {
   ];
 
   return (
-    <AppSafeAreaView
-      style={styles.container}
-      title={NAV_ROUTES.ANNIVERSARY.TITLE}
-    >
+    <AppSafeAreaView style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}

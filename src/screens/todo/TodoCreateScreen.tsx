@@ -21,7 +21,6 @@ import {
 
 import '@/lib/reactNativeCalendars';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
-import { NAV_ROUTES } from '@/constants/navigation';
 import { useTodoStore, todoActions } from '@/stores/useTodoStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { modalActions } from '@/stores/useModalStore';
@@ -156,11 +155,7 @@ const TodoCreateScreen = () => {
   };
 
   return (
-    <AppSafeAreaView
-      style={styles.container}
-      title={todoId ? '할 일 수정' : NAV_ROUTES.TODO_CREATE.TITLE}
-      headerRight={renderHeaderRight}
-    >
+    <AppSafeAreaView style={styles.container} headerRight={renderHeaderRight}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.flex1}
