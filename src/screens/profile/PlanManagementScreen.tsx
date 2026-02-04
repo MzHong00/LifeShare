@@ -1,4 +1,3 @@
-
 import {
   View,
   Text,
@@ -48,7 +47,11 @@ const PlanManagementScreen = () => {
   ];
 
   return (
-    <AppSafeAreaView style={styles.container}>
+    <AppSafeAreaView
+      style={styles.container}
+      title={NAV_ROUTES.PLAN_MANAGEMENT.TITLE}
+      headerBackground="background"
+    >
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}

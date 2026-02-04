@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -347,7 +347,10 @@ const WorkspaceSetupScreen = () => {
   };
 
   return (
-    <AppSafeAreaView style={styles.container}>
+    <AppSafeAreaView
+      style={styles.container}
+      title={NAV_ROUTES.WORKSPACE_SETUP.TITLE}
+    >
       {step === 'initial' && <InitialStage onNext={() => setStep('create')} />}
       {step === 'create' && (
         <CreateStage

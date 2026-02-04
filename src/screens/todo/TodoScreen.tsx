@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Calendar } from 'react-native-calendars';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Calendar } from 'react-native-calendars';
 import {
   Plus,
   CheckCircle2,
@@ -327,10 +327,12 @@ const TodoScreen = () => {
       </ScrollView>
 
       <TouchableOpacity
-        style={[styles.fab, { bottom: 20 + insets.bottom }]}
+        style={[styles.fab, { paddingBottom: insets.bottom }]}
         onPress={() => navigation.navigate(NAV_ROUTES.TODO_CREATE.NAME)}
       >
-        <Plus size={30} color={COLORS.white} />
+        <View style={styles.fabInner}>
+          <Plus size={30} color={COLORS.white} />
+        </View>
       </TouchableOpacity>
     </AppSafeAreaView>
   );
@@ -513,6 +515,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     bottom: 20,
+  },
+  fabInner: {
     width: 60,
     height: 60,
     borderRadius: 30,

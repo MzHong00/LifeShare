@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,12 +8,14 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
+  Text,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import { Camera } from 'lucide-react-native';
 
 import { COLORS, SPACING } from '@/constants/theme';
+import { NAV_ROUTES } from '@/constants/navigation';
 import { useUserStore, userActions } from '@/stores/useUserStore';
 import { modalActions } from '@/stores/useModalStore';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
@@ -38,26 +40,52 @@ const ProfileEditScreen = () => {
 
   const handleSelectImage = () => {
     showModal({
-      type: 'choice',
+      type: 'none',
       title: '프로필 사진 수정',
       message: '사진을 가져올 방법을 선택하세요.',
-      confirmText: '카메라',
-      destructiveText: '갤러리',
-      cancelText: '취소',
-      onConfirm: () => {
-        launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
-          if (response.assets && response.assets[0].uri) {
-            setProfileImage(response.assets[0].uri);
-          }
-        });
-      },
-      onDestructive: () => {
-        launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
-          if (response.assets && response.assets[0].uri) {
-            setProfileImage(response.assets[0].uri);
-          }
-        });
-      },
+      content: (
+        <View style={styles.modalContent}>
+          <TouchableOpacity
+            style={[styles.modalButton, { backgroundColor: COLORS.primary }]}
+            onPress={() => {
+              modalActions.hideModal();
+              launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
+                if (response.assets && response.assets[0].uri) {
+                  setProfileImage(response.assets[0].uri);
+                }
+              });
+            }}
+          >
+            <Text style={styles.modalButtonText}>카메라</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.modalButton, { backgroundColor: COLORS.primary }]}
+            onPress={() => {
+              modalActions.hideModal();
+              launchImageLibrary(
+                { mediaType: 'photo', quality: 0.8 },
+                response => {
+                  if (response.assets && response.assets[0].uri) {
+                    setProfileImage(response.assets[0].uri);
+                  }
+                },
+              );
+            }}
+          >
+            <Text style={styles.modalButtonText}>갤러리</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.modalButton, { backgroundColor: COLORS.background }]}
+            onPress={() => modalActions.hideModal()}
+          >
+            <Text
+              style={[styles.modalButtonText, { color: COLORS.textSecondary }]}
+            >
+              취소
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ),
     });
   };
 
@@ -80,15 +108,12 @@ const ProfileEditScreen = () => {
     [handleSave],
   );
 
-  // 헤더 옵션 설정
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: renderHeaderRight,
-    });
-  }, [navigation, renderHeaderRight]);
-
   return (
-    <AppSafeAreaView style={styles.container}>
+    <AppSafeAreaView
+      style={styles.container}
+      title={NAV_ROUTES.PROFILE_EDIT.TITLE}
+      headerRight={renderHeaderRight}
+    >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -158,6 +183,21 @@ const styles = StyleSheet.create({
   },
   form: {
     paddingHorizontal: SPACING.layout,
+  },
+  modalButton: {
+    height: 56,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.white,
+  },
+  modalContent: {
+    paddingHorizontal: 20,
+    gap: 10,
   },
 });
 

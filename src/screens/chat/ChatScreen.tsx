@@ -93,7 +93,11 @@ const ChatScreen = () => {
   ];
 
   return (
-    <AppSafeAreaView style={styles.container} edges={['top']}>
+    <AppSafeAreaView
+      style={styles.container}
+      edges={['top']}
+      headerShown={false}
+    >
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>

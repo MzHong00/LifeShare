@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,13 +9,14 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Map, Edit3, ChevronLeft } from 'lucide-react-native';
+import { Map, Edit3 } from 'lucide-react-native';
 
 import { COLORS, SPACING } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { useStoryStore, storyActions } from '@/stores/useStoryStore';
 import { StoryBriefInfo } from '@/components/stories/StoryBriefInfo';
+import { HeaderButton } from '@/components/common/HeaderButton';
 
 type StoryDetailRouteProp = RouteProp<
   { params: { storyId: string } },
@@ -38,35 +39,35 @@ const StoryDetailScreen = () => {
     }
   }, [storyId, stories]);
 
-  if (!story) return null;
-
-  const handleShowOnMap = () => {
-    setSelectedStoryId(story.id);
+  const handleShowOnMap = useCallback(() => {
+    setSelectedStoryId(story?.id);
     navigation.navigate(NAV_ROUTES.MAIN_TABS.NAME, {
       screen: NAV_ROUTES.LOCATION.NAME,
     });
-  };
+  }, [story?.id, setSelectedStoryId, navigation]);
 
-  const handleEdit = () => {
-    navigation.navigate(NAV_ROUTES.STORY_EDIT.NAME, { storyId: story.id });
-  };
+  const handleEdit = useCallback(() => {
+    navigation.navigate(NAV_ROUTES.STORY_EDIT.NAME, { storyId: story?.id });
+  }, [story?.id, navigation]);
+
+  const renderHeaderRight = useCallback(
+    () => (
+      <HeaderButton
+        onPress={handleEdit}
+        icon={<Edit3 size={20} color={COLORS.textPrimary} />}
+      />
+    ),
+    [handleEdit],
+  );
+
+  if (!story) return null;
 
   return (
-    <AppSafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => navigation.goBack()}
-        >
-          <ChevronLeft size={24} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>스토리 상세보기</Text>
-        <TouchableOpacity style={styles.editBtn} onPress={handleEdit}>
-          <Edit3 size={20} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-      </View>
-
+    <AppSafeAreaView
+      style={styles.container}
+      title="스토리 상세보기"
+      headerRight={renderHeaderRight}
+    >
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <StoryBriefInfo story={story} showDecorateBtn={false} />
@@ -109,26 +110,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.skeleton,
-  },
-  backBtn: {
-    padding: 4,
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-  },
-  editBtn: {
-    padding: 4,
   },
   content: {
     padding: SPACING.layout,

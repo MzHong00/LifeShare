@@ -1,10 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useMemo,
-  useLayoutEffect,
-  useCallback,
-} from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -22,6 +16,7 @@ import type { DateData } from 'react-native-calendars';
 import { Calendar as CalendarIcon, Trash2 } from 'lucide-react-native';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { NAV_ROUTES } from '@/constants/navigation';
 import { useCalendarStore, calendarActions } from '@/stores/useCalendarStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { modalActions } from '@/stores/useModalStore';
@@ -111,13 +106,6 @@ const EventCreateScreen = () => {
       ) : undefined,
     [eventId, handleDelete],
   );
-
-  // 헤더 옵션 설정
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: renderHeaderRight,
-    });
-  }, [navigation, renderHeaderRight]);
 
   const handleDayPress = (day: DateData) => {
     if (startDate && !endDate) {
@@ -218,7 +206,11 @@ const EventCreateScreen = () => {
   };
 
   return (
-    <AppSafeAreaView style={styles.container}>
+    <AppSafeAreaView
+      style={styles.container}
+      title={NAV_ROUTES.EVENT_CREATE.TITLE}
+      headerRight={renderHeaderRight}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardView}

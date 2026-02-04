@@ -1,4 +1,3 @@
-
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -18,7 +17,11 @@ const WorkspaceLandingScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   return (
-    <AppSafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <AppSafeAreaView
+      style={styles.container}
+      edges={['top', 'bottom']}
+      headerShown={false}
+    >
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.profileButton}

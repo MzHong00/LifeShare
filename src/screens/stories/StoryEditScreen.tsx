@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useLayoutEffect,
-} from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -41,9 +36,7 @@ const StoryEditScreen = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(getTodayDateString());
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>(
-    undefined,
-  );
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>();
 
   // 데이터 불러오기 (수정 모드일 때만)
   useEffect(() => {
@@ -125,38 +118,60 @@ const StoryEditScreen = () => {
 
   const handleSelectImage = useCallback(() => {
     showModal({
-      type: 'choice',
+      type: 'none',
       title: '사진 추가',
       message: '사진을 가져올 방법을 선택해주세요.',
-      confirmText: '카메라',
-      destructiveText: '갤러리',
-      cancelText: '취소',
-      onConfirm: () => {
-        launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
-          if (response.assets && response.assets[0].uri) {
-            setThumbnailUrl(response.assets[0].uri);
-          }
-        });
-      },
-      onDestructive: () => {
-        launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
-          if (response.assets && response.assets[0].uri) {
-            setThumbnailUrl(response.assets[0].uri);
-          }
-        });
-      },
+      content: (
+        <View style={styles.modalContent}>
+          <TouchableOpacity
+            style={[styles.modalButton, { backgroundColor: COLORS.primary }]}
+            onPress={() => {
+              modalActions.hideModal();
+              launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
+                if (response.assets && response.assets[0].uri) {
+                  setThumbnailUrl(response.assets[0].uri);
+                }
+              });
+            }}
+          >
+            <Text style={styles.modalButtonText}>카메라</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.modalButton, { backgroundColor: COLORS.primary }]}
+            onPress={() => {
+              modalActions.hideModal();
+              launchImageLibrary(
+                { mediaType: 'photo', quality: 0.8 },
+                response => {
+                  if (response.assets && response.assets[0].uri) {
+                    setThumbnailUrl(response.assets[0].uri);
+                  }
+                },
+              );
+            }}
+          >
+            <Text style={styles.modalButtonText}>갤러리</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.modalButton, { backgroundColor: COLORS.background }]}
+            onPress={() => modalActions.hideModal()}
+          >
+            <Text
+              style={[styles.modalButtonText, { color: COLORS.textSecondary }]}
+            >
+              취소
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ),
     });
   }, [showModal]);
 
-  // 네비게이션 헤더 제목 설정
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      title: isEditMode ? '스토리 수정' : '새 스토리 기록',
-    });
-  }, [isEditMode, navigation]);
-
   return (
-    <AppSafeAreaView style={styles.container}>
+    <AppSafeAreaView
+      style={styles.container}
+      title={isEditMode ? '스토리 수정' : '새 스토리 기록'}
+    >
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -425,6 +440,21 @@ const styles = StyleSheet.create({
     gap: 8,
     borderWidth: 1,
     borderColor: COLORS.error + '20',
+  },
+  modalButton: {
+    height: 56,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.white,
+  },
+  modalContent: {
+    paddingHorizontal: 20,
+    gap: 10,
   },
 });
 

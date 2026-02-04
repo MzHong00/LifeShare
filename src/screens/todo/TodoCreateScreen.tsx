@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-} from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -26,6 +21,7 @@ import {
 
 import '@/lib/reactNativeCalendars';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { NAV_ROUTES } from '@/constants/navigation';
 import { useTodoStore, todoActions } from '@/stores/useTodoStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { modalActions } from '@/stores/useModalStore';
@@ -98,12 +94,6 @@ const TodoCreateScreen = () => {
     [todoId, handleDelete],
   );
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: renderHeaderRight,
-    });
-  }, [navigation, renderHeaderRight]);
-
   const members = currentWorkspace?.members || [];
 
   const handleCreateOrUpdate = () => {
@@ -166,7 +156,11 @@ const TodoCreateScreen = () => {
   };
 
   return (
-    <AppSafeAreaView style={styles.container}>
+    <AppSafeAreaView
+      style={styles.container}
+      title={todoId ? '할 일 수정' : NAV_ROUTES.TODO_CREATE.TITLE}
+      headerRight={renderHeaderRight}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.flex1}

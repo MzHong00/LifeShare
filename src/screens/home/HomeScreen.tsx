@@ -47,7 +47,11 @@ const HomeScreen = () => {
   if (!currentWorkspace) return null;
 
   return (
-    <AppSafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <AppSafeAreaView
+      style={styles.container}
+      edges={['top', 'bottom']}
+      headerShown={false}
+    >
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -56,7 +60,7 @@ const HomeScreen = () => {
         <View style={styles.header}>
           <View>
             <Text style={TYPOGRAPHY.header1}>{currentWorkspace.name}</Text>
-            <Text style={[TYPOGRAPHY.body2, { color: COLORS.textSecondary }]}>
+            <Text style={[TYPOGRAPHY.body2, styles.headerSubTitle]}>
               {currentWorkspace.startDate
                 ? `함께 기록을 시작한 지 ${calculateDDay(
                     currentWorkspace.startDate,
@@ -155,7 +159,7 @@ const HomeScreen = () => {
             <Text style={styles.bannerText}>
               가족, 친구와도 스토리를 나누고 싶나요? ✨
             </Text>
-            <Text style={[styles.bannerSubText, { color: COLORS.primary }]}>
+            <Text style={[styles.bannerSubText, styles.bannerPrimaryText]}>
               Pro 플랜으로 업그레이드
             </Text>
           </Card>
@@ -270,6 +274,12 @@ const styles = StyleSheet.create({
   setupDescription: {
     ...TYPOGRAPHY.caption,
     color: COLORS.textSecondary,
+  },
+  headerSubTitle: {
+    color: COLORS.textSecondary,
+  },
+  bannerPrimaryText: {
+    color: COLORS.primary,
   },
 });
 

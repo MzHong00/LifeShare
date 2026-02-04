@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Linking,
 } from 'react-native';
-import { Zap, Video, MapPin, Square, Route } from 'lucide-react-native';
+import { Zap, Sparkles, MapPin, Square, Route } from 'lucide-react-native';
 import MapView from 'react-native-maps';
 import { MainMap } from '@/components/map/MainMap';
 
@@ -198,7 +198,11 @@ const MapScreen = () => {
       )}
 
       {/* Floating Header UI */}
-      <AppSafeAreaView style={styles.floatingHeader} edges={['top']}>
+      <AppSafeAreaView
+        style={styles.floatingHeader}
+        edges={['top']}
+        headerShown={false}
+      >
         <View style={styles.headerContent}>
           <View style={styles.headerTopRow}>
             <View style={styles.statusBadge}>
@@ -267,7 +271,11 @@ const MapScreen = () => {
               {isRecording ? (
                 <Square size={12} color={COLORS.white} fill={COLORS.white} />
               ) : (
-                <Video size={14} color={COLORS.textPrimary} />
+                <Sparkles
+                  size={14}
+                  color={COLORS.textPrimary}
+                  fill={COLORS.textPrimary + '20'}
+                />
               )}
               <Text
                 style={[
@@ -362,8 +370,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     gap: 8,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.background,
     marginTop: 4,
   },
   headerActionPill: {

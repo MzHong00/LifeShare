@@ -5,160 +5,69 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Modal,
-  TextInput,
   Image,
+  Platform,
+  Modal,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {
   Plus,
-  ArrowLeftRight,
-  UserPlus,
-  Trash2,
-  Edit3,
   Heart,
   Users,
-  User,
+  Settings,
+  ChevronRight,
 } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { APP_WORKSPACE } from '@/constants/config';
+import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import {
   useWorkspaceStore,
   workspaceActions,
 } from '@/stores/useWorkspaceStore';
 import { modalActions } from '@/stores/useModalStore';
-import { calculateDDay, formatDate } from '@/utils/date';
+import { calculateDDay } from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
 type RootStackParamList = {
-  [NAV_ROUTES.WORKSPACE_SETUP.NAME]:
-    | {
-        workspaceId?: string;
-        workspaceName?: string;
-      }
-    | undefined;
+  [NAV_ROUTES.WORKSPACE_SETUP.NAME]: any;
+  [NAV_ROUTES.WORKSPACE_EDIT.NAME]: { workspaceId: string };
 };
 
 const WorkspaceListScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { workspaces, currentWorkspace } = useWorkspaceStore();
-  const {
-    setCurrentWorkspace,
-    removeWorkspace,
-    updateWorkspaceName,
-    updateMemberProfile,
-    sendInvitation,
-    initMockData,
-  } = workspaceActions;
+  const { setCurrentWorkspace, initMockData } = workspaceActions;
   const { showModal } = modalActions;
-
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [editingWorkspace, setEditingWorkspace] = useState<any>(null);
-  const [newName, setNewName] = useState('');
-
-  const [inviteModalVisible, setInviteModalVisible] = useState(false);
-  const [invitingWorkspace, setInvitingWorkspace] = useState<any>(null);
-  const [inviteEmail, setInviteEmail] = useState('');
-
-  const [switchModalVisible, setSwitchModalVisible] = useState(false);
-  const [switchingWorkspace, setSwitchingWorkspace] = useState<any>(null);
 
   const [memberModalVisible, setMemberModalVisible] = useState(false);
   const [viewingMembersWorkspace, setViewingMembersWorkspace] =
     useState<any>(null);
 
-  const [profileModalVisible, setProfileModalVisible] = useState(false);
-  const [editingProfileWorkspace, setEditingProfileWorkspace] =
-    useState<any>(null);
-  const [profileName, setProfileName] = useState('');
-
-  const userEmail = 'user@example.com'; // 임시: 이메일 정보 위치 확인 필요
-
   const handleSwitch = (workspace: any) => {
-    if (currentWorkspace?.id === workspace.id) return;
-    setSwitchingWorkspace(workspace);
-    setSwitchModalVisible(true);
-  };
-
-  const confirmSwitch = () => {
-    if (switchingWorkspace) {
-      setCurrentWorkspace(switchingWorkspace);
-      setSwitchModalVisible(false);
-      setSwitchingWorkspace(null);
+    if (currentWorkspace?.id === workspace.id) {
+      navigation.navigate(NAV_ROUTES.WORKSPACE_EDIT.NAME, {
+        workspaceId: workspace.id,
+      });
+      return;
     }
-  };
 
-  const handleRemove = (workspace: any) => {
     showModal({
       type: 'confirm',
-      title: '연결 해지',
-      message: `'${workspace.name}' ${APP_WORKSPACE.KR}과의 연결을 해지하시겠습니까?\n데이터는 삭제되지 않지만 목록에서 제거됩니다.`,
-      onConfirm: () => removeWorkspace(workspace.id),
+      title: '공간 전환',
+      message: `'${workspace.name}'으로 지금 바로 이동할까요?`,
+      confirmText: '전환하기',
+      cancelText: '취소',
+      onConfirm: () => {
+        setCurrentWorkspace(workspace);
+      },
     });
   };
 
-  const handleEditName = (workspace: any) => {
-    setEditingWorkspace(workspace);
-    setNewName(workspace.name);
-    setEditModalVisible(true);
-  };
-
-  const saveName = () => {
-    if (!newName.trim()) {
-      showModal({
-        type: 'alert',
-        title: '알림',
-        message: '공간 이름을 입력해주세요.',
-      });
-      return;
-    }
-    updateWorkspaceName(editingWorkspace.id, newName.trim());
-    setEditModalVisible(false);
-    setEditingWorkspace(null);
-  };
-
-  const handleInvite = (workspace: any) => {
-    setInvitingWorkspace(workspace);
-    setInviteEmail('');
-    setInviteModalVisible(true);
-  };
-
-  const sendDirectInvite = () => {
-    if (!inviteEmail.trim()) {
-      showModal({
-        type: 'alert',
-        title: '알림',
-        message: '초대할 파트너의 이메일을 입력해주세요.',
-      });
-      return;
-    }
-
-    if (!userEmail) {
-      showModal({
-        type: 'alert',
-        title: '알림',
-        message: '로그인 정보가 없습니다.',
-      });
-      return;
-    }
-
-    sendInvitation(
-      invitingWorkspace.id,
-      invitingWorkspace.name,
-      userEmail,
-      inviteEmail.trim(),
-    );
-
-    showModal({
-      type: 'alert',
-      title: '알림',
-      message: '초대가 전송되었습니다.',
-    });
-    setInviteModalVisible(false);
-    setInvitingWorkspace(null);
+  const handleEditWorkspace = (workspaceId: string) => {
+    navigation.navigate(NAV_ROUTES.WORKSPACE_EDIT.NAME, { workspaceId });
   };
 
   const handleViewMembers = (workspace: any) => {
@@ -166,39 +75,12 @@ const WorkspaceListScreen = () => {
     setMemberModalVisible(true);
   };
 
-  const handleEditProfile = (workspace: any) => {
-    const myProfile = (workspace.members || []).find(
-      (m: any) => m.id === 'user-1',
-    );
-    setEditingProfileWorkspace(workspace);
-    setProfileName(myProfile?.name || '민수');
-    setProfileModalVisible(true);
-  };
-
-  const saveProfile = () => {
-    if (!profileName.trim()) {
-      showModal({
-        type: 'alert',
-        title: '알림',
-        message: '이름을 입력해주세요.',
-      });
-      return;
-    }
-    updateMemberProfile(editingProfileWorkspace.id, 'user-1', {
-      name: profileName.trim(),
-    });
-    setProfileModalVisible(false);
-    setEditingProfileWorkspace(null);
-    showModal({
-      type: 'alert',
-      title: '알림',
-      message: '활동명이 변경되었습니다.',
-    });
-  };
-
   return (
     <AppSafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
           <View style={styles.titleRow}>
             <Text style={styles.title}>내 {APP_WORKSPACE.KR} 목록</Text>
@@ -216,195 +98,149 @@ const WorkspaceListScreen = () => {
             </TouchableOpacity>
           </View>
           <Text style={styles.description}>
-            현재 참여 중인 공간들을 관리할 수 있습니다.
+            참여 중인 라이프룸을 전환하거나 관리할 수 있습니다.
           </Text>
         </View>
 
         <View style={styles.listContainer}>
-          {workspaces.map(ws => (
-            <View
-              key={ws.id}
-              style={[
-                styles.workspaceCard,
-                currentWorkspace?.id === ws.id && styles.activeCard,
-              ]}
-            >
-              <View style={styles.cardHeader}>
-                <View style={styles.iconWrapper}>
-                  {ws.type === 'couple' ? (
-                    <Heart
-                      size={20}
-                      color={COLORS.primary}
-                      fill={COLORS.primary}
-                    />
-                  ) : (
-                    <Users size={20} color={COLORS.primary} />
-                  )}
-                </View>
-                <View style={styles.wsInfo}>
-                  <Text style={styles.wsName}>{ws.name}</Text>
-                  <View style={styles.wsSubInfo}>
-                    <Text style={styles.wsType}>
-                      {ws.type === 'couple' ? '커플' : '단체'} 라이프룸
-                    </Text>
-                    {ws.startDate && (
-                      <>
-                        <View style={styles.dot} />
-                        <Text style={styles.wsDate}>
-                          {formatDate(ws.startDate)}~
-                        </Text>
-                      </>
+          {workspaces.map(ws => {
+            const isActive = currentWorkspace?.id === ws.id;
+            const dDay =
+              ws.type === 'couple' && ws.startDate
+                ? calculateDDay(ws.startDate)
+                : null;
+
+            return (
+              <TouchableOpacity
+                key={ws.id}
+                style={[styles.workspaceCard]}
+                onPress={() => handleSwitch(ws)}
+                activeOpacity={0.8}
+              >
+                <View style={styles.cardTop}>
+                  <View style={styles.iconWrapper}>
+                    {ws.type === 'couple' ? (
+                      <Heart
+                        size={20}
+                        color={isActive ? COLORS.primary : COLORS.textTertiary}
+                        fill={isActive ? COLORS.primary : 'transparent'}
+                      />
+                    ) : (
+                      <Users
+                        size={20}
+                        color={isActive ? COLORS.primary : COLORS.textTertiary}
+                      />
                     )}
                   </View>
-                </View>
-                {ws.type === 'couple' && ws.startDate && (
-                  <View style={styles.ddayBadge}>
-                    <Text style={styles.ddayText}>
-                      D+{calculateDDay(ws.startDate)}
-                    </Text>
+                  <View style={styles.wsInfo}>
+                    <View style={styles.nameRow}>
+                      <Text
+                        style={[
+                          styles.wsName,
+                          isActive && { color: COLORS.primary },
+                        ]}
+                      >
+                        {ws.name}
+                      </Text>
+                      {dDay !== null && (
+                        <View style={styles.ddayTag}>
+                          <Text style={styles.ddayTagText}>D+{dDay}</Text>
+                        </View>
+                      )}
+                    </View>
+                    <View style={styles.wsSubInfo}>
+                      <Text style={styles.wsType}>
+                        {ws.type === 'couple' ? '커플' : '단체'} 라이프룸
+                      </Text>
+                      {isActive && (
+                        <View style={styles.activeLabel}>
+                          <View style={styles.activeDot} />
+                          <Text style={styles.activeText}>사용 중</Text>
+                        </View>
+                      )}
+                    </View>
                   </View>
-                )}
-                {currentWorkspace?.id === ws.id && ws.type !== 'couple' && (
-                  <View style={styles.activeBadge}>
-                    <Text style={styles.activeBadgeText}>사용 중</Text>
-                  </View>
-                )}
-              </View>
 
-              {/* 멤버 프로필 섹션 */}
-              <TouchableOpacity
-                style={styles.membersSection}
-                onPress={() => handleViewMembers(ws)}
-                activeOpacity={0.7}
-              >
-                <View style={styles.memberAvatars}>
-                  {(() => {
-                    const members =
-                      ws.members && ws.members.length > 0
-                        ? ws.members
-                        : [{ id: 'me', name: '나', avatar: null }];
-                    const displayMembers = members.slice(0, 3);
-                    const remainingCount = members.length - 3;
-
-                    return (
-                      <>
-                        {displayMembers.map((member: any, idx: number) => (
-                          <View
-                            key={member.id + idx}
-                            style={[
-                              styles.avatarBorder,
-                              idx === 0
-                                ? styles.firstAvatar
-                                : styles.stackedAvatar,
-                            ]}
-                          >
-                            {member.avatar ? (
-                              <Image
-                                source={{ uri: member.avatar }}
-                                style={styles.miniAvatarImage}
-                              />
-                            ) : (
-                              <View
-                                style={[
-                                  styles.miniAvatar,
-                                  { backgroundColor: COLORS.primaryLight },
-                                ]}
-                              >
-                                <Text style={styles.avatarInitial}>
-                                  {member.name.charAt(0)}
-                                </Text>
-                              </View>
-                            )}
-                          </View>
-                        ))}
-                        {remainingCount > 0 && (
-                          <View
-                            style={[
-                              styles.avatarBorder,
-                              styles.stackedAvatar,
-                              styles.moreBadge,
-                            ]}
-                          >
-                            <Text style={styles.moreText}>
-                              +{remainingCount}
-                            </Text>
-                          </View>
-                        )}
-                      </>
-                    );
-                  })()}
-                </View>
-                <View style={styles.membersTextWrapper}>
-                  <Text style={styles.membersCount} numberOfLines={1}>
-                    {ws.members && ws.members.length > 0
-                      ? `${ws.members.length}명 (${ws.members
-                          .map((m: any) => m.name)
-                          .join(', ')})`
-                      : '나홀로 참여 중 (파트너 초대)'}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-
-              <View style={styles.cardActions}>
-                <TouchableOpacity
-                  style={styles.actionIconBtn}
-                  onPress={() => handleSwitch(ws)}
-                  disabled={currentWorkspace?.id === ws.id}
-                >
-                  <ArrowLeftRight
-                    size={20}
-                    color={
-                      currentWorkspace?.id === ws.id
-                        ? COLORS.border
-                        : COLORS.textSecondary
-                    }
-                  />
-                  <Text
-                    style={[
-                      styles.actionLabel,
-                      currentWorkspace?.id === ws.id && styles.disabledLabel,
-                    ]}
+                  <TouchableOpacity
+                    style={styles.manageBtn}
+                    onPress={() => handleEditWorkspace(ws.id)}
                   >
-                    전환
+                    <Settings size={18} color={COLORS.textTertiary} />
+                    <Text style={styles.manageBtnText}>관리</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* 멤버 요약 섹션 */}
+                <TouchableOpacity
+                  style={styles.cardBottom}
+                  onPress={() => handleViewMembers(ws)}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.memberAvatars}>
+                    {(() => {
+                      const members =
+                        ws.members && ws.members.length > 0
+                          ? ws.members
+                          : [{ id: 'me', name: '나', avatar: null }];
+                      const displayMembers = members.slice(0, 3);
+                      const remainingCount = members.length - 3;
+
+                      return (
+                        <>
+                          {displayMembers.map((member: any, idx: number) => (
+                            <View
+                              key={member.id + idx}
+                              style={[
+                                styles.avatarBorder,
+                                idx === 0
+                                  ? styles.firstAvatar
+                                  : styles.stackedAvatar,
+                              ]}
+                            >
+                              {member.avatar ? (
+                                <Image
+                                  source={{ uri: member.avatar }}
+                                  style={styles.miniAvatarImage}
+                                />
+                              ) : (
+                                <View
+                                  style={[
+                                    styles.miniAvatar,
+                                    { backgroundColor: COLORS.skeleton },
+                                  ]}
+                                >
+                                  <Text style={styles.avatarInitial}>
+                                    {member.name.charAt(0)}
+                                  </Text>
+                                </View>
+                              )}
+                            </View>
+                          ))}
+                          {remainingCount > 0 && (
+                            <View
+                              style={[
+                                styles.avatarBorder,
+                                styles.stackedAvatar,
+                                styles.moreBadge,
+                              ]}
+                            >
+                              <Text style={styles.moreText}>
+                                +{remainingCount}
+                              </Text>
+                            </View>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </View>
+                  <Text style={styles.memberSummary}>
+                    {ws.members?.length || 1}명의 멤버가 함께 기록 중
                   </Text>
+                  <ChevronRight size={16} color={COLORS.border} />
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.actionIconBtn}
-                  onPress={() => handleEditName(ws)}
-                >
-                  <Edit3 size={20} color={COLORS.textSecondary} />
-                  <Text style={styles.actionLabel}>이름</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.actionIconBtn}
-                  onPress={() => handleInvite(ws)}
-                >
-                  <UserPlus size={20} color={COLORS.textSecondary} />
-                  <Text style={styles.actionLabel}>초대</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.actionIconBtn}
-                  onPress={() => handleEditProfile(ws)}
-                >
-                  <User size={20} color={COLORS.textSecondary} />
-                  <Text style={styles.actionLabel}>프로필</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.actionIconBtn}
-                  onPress={() => handleRemove(ws)}
-                >
-                  <Trash2 size={20} color={COLORS.error} />
-                  <Text style={[styles.actionLabel, { color: COLORS.error }]}>
-                    해지
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         <TouchableOpacity
@@ -419,218 +255,65 @@ const WorkspaceListScreen = () => {
         </TouchableOpacity>
       </ScrollView>
 
-      {/* 이름 수정 모달 */}
-      <Modal
-        visible={editModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setEditModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>이름 변경</Text>
-            <Text style={styles.modalDescription}>
-              새로운 {APP_WORKSPACE.KR} 이름을 입력해주세요.
-            </Text>
-            <TextInput
-              style={styles.modalInput}
-              value={newName}
-              onChangeText={setNewName}
-              placeholder="공간 이름 입력"
-              autoFocus
-              selectTextOnFocus
-            />
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={[styles.modalBtn, styles.modalCancelBtn]}
-                onPress={() => setEditModalVisible(false)}
-              >
-                <Text style={styles.modalCancelText}>취소</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalBtn, styles.modalSaveBtn]}
-                onPress={saveName}
-              >
-                <Text style={styles.modalSaveText}>저장</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* 초대 모달 */}
-      <Modal
-        visible={inviteModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setInviteModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>파트너 초대</Text>
-            <Text style={styles.modalDescription}>
-              '{invitingWorkspace?.name}'에 초대할 파트너의 이메일을
-              입력해주세요.
-            </Text>
-            <TextInput
-              style={styles.modalInput}
-              value={inviteEmail}
-              onChangeText={setInviteEmail}
-              placeholder="파트너 이메일 입력"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoFocus
-            />
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={[styles.modalBtn, styles.modalCancelBtn]}
-                onPress={() => setInviteModalVisible(false)}
-              >
-                <Text style={styles.modalCancelText}>취소</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalBtn, styles.modalSaveBtn]}
-                onPress={sendDirectInvite}
-              >
-                <Text style={styles.modalSaveText}>초대 보내기</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* 전환 확인 모달 */}
-      <Modal
-        visible={switchModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setSwitchModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.iconWrapperLarge}>
-              <ArrowLeftRight size={32} color={COLORS.primary} />
-            </View>
-            <Text style={styles.modalTitle}>공간 전환</Text>
-            <Text style={styles.modalDescription}>
-              '{switchingWorkspace?.name}'으로{'\n'}지금 바로 이동할까요?
-            </Text>
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={[styles.modalBtn, styles.modalCancelBtn]}
-                onPress={() => setSwitchModalVisible(false)}
-              >
-                <Text style={styles.modalCancelText}>취소</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalBtn, styles.modalSaveBtn]}
-                onPress={confirmSwitch}
-              >
-                <Text style={styles.modalSaveText}>전환하기</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
       {/* 전체 멤버 보기 모달 */}
       <Modal
         visible={memberModalVisible}
         transparent
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => setMemberModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, styles.memberModalContent]}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>전체 멤버</Text>
-              <Text style={styles.modalSubtitle}>
-                {viewingMembersWorkspace?.name}
-              </Text>
-            </View>
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setMemberModalVisible(false)}
+        >
+          <TouchableWithoutFeedback>
+            <View style={[styles.modalContent, styles.memberModalContent]}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitleInline}>참여 중인 멤버</Text>
+                <Text style={styles.modalSubtitle}>
+                  {viewingMembersWorkspace?.name}
+                </Text>
+              </View>
 
-            <ScrollView style={styles.memberListScroll}>
-              {(viewingMembersWorkspace?.members || []).map((member: any) => (
-                <View key={member.id} style={styles.memberItem}>
-                  <View style={styles.memberAvatarWrapper}>
-                    {member.avatar ? (
-                      <Image
-                        source={{ uri: member.avatar }}
-                        style={styles.memberAvatarFull}
-                      />
-                    ) : (
-                      <View style={styles.memberAvatarPlaceholder}>
-                        <Text style={styles.avatarInitial}>
-                          {member.name.charAt(0)}
-                        </Text>
-                      </View>
-                    )}
+              <ScrollView style={styles.memberListScroll}>
+                {(viewingMembersWorkspace?.members || []).map((member: any) => (
+                  <View key={member.id} style={styles.memberItem}>
+                    <View style={styles.memberAvatarWrapper}>
+                      {member.avatar ? (
+                        <Image
+                          source={{ uri: member.avatar }}
+                          style={styles.memberAvatarFull}
+                        />
+                      ) : (
+                        <View style={styles.memberAvatarPlaceholder}>
+                          <Text style={styles.avatarInitialLarge}>
+                            {member.name.charAt(0)}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                    <View style={styles.memberInfoFull}>
+                      <Text style={styles.memberNameFull}>{member.name}</Text>
+                      {member.id === 'user-1' && (
+                        <View style={styles.meTag}>
+                          <Text style={styles.meTagText}>나</Text>
+                        </View>
+                      )}
+                    </View>
                   </View>
-                  <View style={styles.memberInfo}>
-                    <Text style={styles.memberNameFull}>{member.name}</Text>
-                    {member.id === 'user-1' && (
-                      <View style={styles.meTag}>
-                        <Text style={styles.meTagText}>나</Text>
-                      </View>
-                    )}
-                  </View>
-                </View>
-              ))}
-            </ScrollView>
+                ))}
+              </ScrollView>
 
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setMemberModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>닫기</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/* 활동명 수정 모달 */}
-      <Modal
-        visible={profileModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setProfileModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>활동명 설정</Text>
-            <Text style={styles.modalDescription}>
-              '{editingProfileWorkspace?.name}'에서 사용할{'\n'}나의 이름을
-              입력해주세요.
-            </Text>
-
-            <View style={styles.profileInputSection}>
-              <Text style={styles.inputLabel}>이름</Text>
-              <TextInput
-                style={styles.modalInput}
-                value={profileName}
-                onChangeText={setProfileName}
-                placeholder="이름 입력"
-                autoFocus
-                selectTextOnFocus
-              />
-            </View>
-
-            <View style={styles.modalActions}>
               <TouchableOpacity
-                style={[styles.modalBtn, styles.modalCancelBtn]}
-                onPress={() => setProfileModalVisible(false)}
+                style={styles.closeButton}
+                onPress={() => setMemberModalVisible(false)}
               >
-                <Text style={styles.modalCancelText}>취소</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalBtn, styles.modalSaveBtn]}
-                onPress={saveProfile}
-              >
-                <Text style={styles.modalSaveText}>저장</Text>
+                <Text style={styles.closeButtonText}>닫기</Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
       </Modal>
     </AppSafeAreaView>
   );
@@ -639,13 +322,14 @@ const WorkspaceListScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.background,
   },
   scrollContent: {
     paddingHorizontal: SPACING.layout,
     paddingBottom: 40,
   },
   header: {
-    marginBottom: 24,
+    paddingVertical: 24,
   },
   title: {
     ...TYPOGRAPHY.header2,
@@ -667,297 +351,236 @@ const styles = StyleSheet.create({
     color: COLORS.textTertiary,
   },
   listContainer: {
-    gap: 16,
+    gap: 12,
     marginBottom: 32,
   },
   workspaceCard: {
     backgroundColor: COLORS.white,
-    borderRadius: 20,
-    padding: 16,
-    borderWidth: 1.5,
-    borderColor: 'transparent',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 3,
+    borderRadius: 24,
+    padding: 20,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 12,
+      },
+      android: { elevation: 2 },
+    }),
   },
-  activeCard: {
-    borderColor: COLORS.primary,
-    backgroundColor: COLORS.white,
-  },
-  cardHeader: {
+  cardTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    marginBottom: 20,
   },
   iconWrapper: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    backgroundColor: COLORS.primaryLight,
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    backgroundColor: COLORS.background,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 16,
   },
   wsInfo: {
     flex: 1,
   },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+    gap: 6,
+  },
   wsName: {
-    ...TYPOGRAPHY.body1,
+    fontSize: 17,
     fontWeight: '700',
     color: COLORS.textPrimary,
-    marginBottom: 2,
   },
-  wsType: {
-    ...TYPOGRAPHY.caption,
-    color: COLORS.textTertiary,
+  ddayTag: {
+    backgroundColor: COLORS.primaryLight,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
   },
-  activeBadge: {
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
-  },
-  activeBadgeText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.white,
+  ddayTagText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: COLORS.primary,
   },
   wsSubInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 2,
+    gap: 8,
   },
-  dot: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: COLORS.textTertiary,
-    marginHorizontal: 6,
-  },
-  wsDate: {
-    ...TYPOGRAPHY.caption,
+  wsType: {
+    fontSize: 13,
     color: COLORS.textTertiary,
+    fontWeight: '500',
   },
-  ddayBadge: {
-    backgroundColor: COLORS.primaryLight,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+  activeLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E8F3FF',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
     borderRadius: 12,
   },
-  ddayText: {
-    fontSize: 14,
-    fontWeight: '800',
+  activeDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: COLORS.primary,
+    marginRight: 4,
+  },
+  activeText: {
+    fontSize: 10,
+    fontWeight: '700',
     color: COLORS.primary,
   },
-  cardActions: {
+  manageBtn: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
     alignItems: 'center',
+    backgroundColor: COLORS.background,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    gap: 4,
   },
-  actionIconBtn: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 4,
-    flex: 1,
-  },
-  actionLabel: {
-    fontSize: 11,
+  manageBtnText: {
+    fontSize: 12,
     fontWeight: '600',
     color: COLORS.textSecondary,
-    marginTop: 6,
   },
-  profileInputSection: {
+  cardBottom: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.background + '50',
+    padding: 12,
+    borderRadius: 16,
+  },
+  memberAvatars: {
+    flexDirection: 'row',
+    marginRight: 12,
+  },
+  avatarBorder: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: COLORS.white,
+    overflow: 'hidden',
+  },
+  firstAvatar: {
+    zIndex: 3,
+  },
+  stackedAvatar: {
+    marginLeft: -8,
+  },
+  miniAvatar: {
     width: '100%',
-    marginBottom: 8,
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  inputLabel: {
-    fontSize: 13,
+  miniAvatarImage: {
+    width: '100%',
+    height: '100%',
+  },
+  avatarInitial: {
+    fontSize: 10,
     fontWeight: '700',
     color: COLORS.textSecondary,
-    marginBottom: 8,
-    marginLeft: 4,
   },
-  disabledLabel: {
-    color: COLORS.border,
+  moreBadge: {
+    backgroundColor: COLORS.skeleton,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 0,
+  },
+  moreText: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: COLORS.textSecondary,
+  },
+  memberSummary: {
+    flex: 1,
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    fontWeight: '500',
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.primary,
-    height: 60,
+    height: 56,
     borderRadius: 18,
     gap: 8,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 4,
+    marginTop: 8,
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.2,
+        shadowRadius: 10,
+      },
+      android: { elevation: 4 },
+    }),
   },
   addButtonText: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '700',
     color: COLORS.white,
-  },
-  membersSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    backgroundColor: COLORS.background,
-    padding: 10,
-    borderRadius: 14,
-  },
-  memberAvatars: {
-    flexDirection: 'row',
-    marginRight: 10,
-  },
-  avatarBorder: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: COLORS.white,
-    overflow: 'hidden',
-    backgroundColor: COLORS.white,
-  },
-  firstAvatar: {
-    marginLeft: 0,
-  },
-  stackedAvatar: {
-    marginLeft: -10,
-  },
-  miniAvatarImage: {
-    width: 32,
-    height: 32,
-  },
-  miniAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarInitial: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.primary,
-  },
-  moreBadge: {
-    backgroundColor: COLORS.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  moreText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: COLORS.primary,
-  },
-  membersTextWrapper: {
-    flex: 1,
-  },
-  membersCount: {
-    ...TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 32,
   },
   modalContent: {
-    width: '100%',
     backgroundColor: COLORS.white,
-    borderRadius: 24,
-    padding: 24,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  modalTitle: {
-    ...TYPOGRAPHY.header2,
-    fontSize: 20,
-    marginBottom: 8,
-  },
-  modalDescription: {
-    ...TYPOGRAPHY.caption,
-    color: COLORS.textTertiary,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  modalInput: {
+    borderRadius: 28,
     width: '100%',
-    height: 56,
-    backgroundColor: COLORS.background,
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginBottom: 24,
-  },
-  modalActions: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  modalBtn: {
-    flex: 1,
-    height: 52,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalCancelBtn: {
-    backgroundColor: COLORS.background,
-  },
-  modalSaveBtn: {
-    backgroundColor: COLORS.primary,
-  },
-  modalCancelText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
-  },
-  modalSaveText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.white,
-  },
-  iconWrapperLarge: {
-    width: 64,
-    height: 64,
-    borderRadius: 22,
-    backgroundColor: COLORS.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
+    padding: 24,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.15,
+        shadowRadius: 16,
+      },
+      android: { elevation: 10 },
+    }),
   },
   memberModalContent: {
     maxHeight: '70%',
-    paddingBottom: 16,
   },
   modalHeader: {
     alignItems: 'center',
-    marginBottom: 20,
-    width: '100%',
+    marginBottom: 16,
+  },
+  modalIndicator: {
+    width: 40,
+    height: 5,
+    backgroundColor: COLORS.skeleton,
+    borderRadius: 2.5,
+    marginBottom: 16,
+  },
+  modalTitleInline: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: COLORS.textPrimary,
+    marginBottom: 4,
   },
   modalSubtitle: {
-    ...TYPOGRAPHY.caption,
+    fontSize: 13,
     color: COLORS.textTertiary,
-    marginTop: 4,
+    fontWeight: '600',
   },
   memberListScroll: {
-    width: '100%',
-    marginBottom: 16,
+    marginTop: 10,
   },
   memberItem: {
     flexDirection: 'row',
@@ -967,12 +590,11 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.background,
   },
   memberAvatarWrapper: {
-    width: 48,
-    height: 48,
-    borderRadius: 18,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     overflow: 'hidden',
-    backgroundColor: COLORS.background,
-    marginRight: 14,
+    marginRight: 12,
   },
   memberAvatarFull: {
     width: '100%',
@@ -982,42 +604,47 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: COLORS.primaryLight,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  memberInfo: {
+  avatarInitialLarge: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLORS.primary,
+  },
+  memberInfoFull: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
   },
   memberNameFull: {
-    ...TYPOGRAPHY.body1,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-  },
-  meTag: {
-    backgroundColor: COLORS.background,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginLeft: 8,
-  },
-  meTagText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: COLORS.textTertiary,
-  },
-  closeButton: {
-    width: '100%',
-    height: 52,
-    backgroundColor: COLORS.background,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButtonText: {
     fontSize: 16,
     fontWeight: '700',
     color: COLORS.textPrimary,
+    marginRight: 8,
+  },
+  meTag: {
+    backgroundColor: COLORS.primaryLight,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  meTagText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: COLORS.primary,
+  },
+  closeButton: {
+    backgroundColor: COLORS.background,
+    paddingVertical: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  closeButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: COLORS.textSecondary,
   },
 });
 

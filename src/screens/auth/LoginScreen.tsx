@@ -28,7 +28,7 @@ const LoginScreen = () => {
   };
 
   return (
-    <AppSafeAreaView style={styles.container}>
+    <AppSafeAreaView style={styles.container} headerShown={false}>
       <View style={styles.inner}>
         <View style={styles.header}>
           <View style={styles.logoContainer}>
