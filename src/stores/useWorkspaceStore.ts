@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useShallow } from 'zustand/react/shallow';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { mmkvStorage } from '@/lib/storage';
 import { MOCK_DATA } from '@/constants/mockData';
 import type { Workspace, WorkspaceInvitation } from '@/types/workspace';
 
@@ -21,7 +21,7 @@ export const workspaceStore = create<WorkspaceState>()(
     }),
     {
       name: 'workspace-storage',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => mmkvStorage),
     },
   ),
 );
