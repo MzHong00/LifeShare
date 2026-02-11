@@ -37,6 +37,6 @@ jobs:
       - name: 🧪 단위 테스트 실행
         run: npm test
 
-      # (6) 실제 배포용 파일로 변환 (build 폴더 생성)
-      - name: 🏗️ 프로젝트 빌드
-        run: npm run build
+      # (6) 빌드 대신 타입 검사를 진행하여 코드의 안정성을 확인
+      - name: 🔍 타입 체크 (TSC)
+        run: npx tsc --noEmit
