@@ -1,18 +1,42 @@
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+# 워크플로우의 이름입니다. 깃허브 Actions 탭에 표시됩니다.
+name: 통합 배포 파이프라인 (CI-CD)
+
+# 1. 트리거 (어떤 사건이 발생했을 때 실행할 것인가?)
+on:
+  push:
+    branches: ['main', 'develop'] # main, develop 브랜치에 코드가 push 되었을 때 실행
+
+# 2. 작업 단위 (크게 빌드/테스트 단계와 배포 단계로 나뉩니다.)
 jobs:
-  Explore-GitHub-Actions:
-    runs-on: ubuntu-latest
+  # [첫 번째 작업: 코드 검증 및 빌드 (CI)]
+  build-and-test:
+    name: 코드 검증 및 빌드 작업
+    runs-on: ubuntu-latest # 깃허브가 제공하는 최신 우분투 리눅스 서버에서 실행
+
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
-        uses: actions/checkout@v5
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+      # (1) 깃허브 서버로 내 코드를 복사해옵니다.
+      - name: 📦 소스코드 체크아웃
+        uses: actions/checkout@v4
+
+      # (2) 노드(Node.js) 설치 및 캐시 설정
+      - name: 🟢 Node.js 환경 세팅
+        uses: actions/setup-node@v4
+        with:
+          node-version: '25' # 사용할 노드 버전
+          cache: 'npm' # 라이브러리 설치 속도를 위해 캐싱 사용
+
+      # (3) 필요한 라이브러리 설치 (npm ci는 lock 파일 기준 엄격 설치)
+      - name: 📥 의존성 라이브러리 설치
+        run: npm ci
+
+      # (4) 코드 스타일 검사 (ESLint 등)
+      - name: 🔍 코드 린트(Lint) 검사
+        run: npm run lint
+
+      # (5) 작성한 테스트 코드가 통과하는지 확인
+      - name: 🧪 단위 테스트 실행
+        run: npm test
+
+      # (6) 빌드 대신 타입 검사를 진행하여 코드의 안정성을 확인
+      - name: 🔍 타입 체크 (TSC)
+        run: npx tsc --noEmit

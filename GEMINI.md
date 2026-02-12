@@ -9,6 +9,7 @@
 - **이름**: LifeShare
 - **목표**: 파트너(연인, 가족 등)와 일상, 일정, 추억을 공유하는 프리미엄 커플 앱
 - **핵심 디자인 키워드**: Toss-style, Minimalist, Premium, Blue (#3182F6)
+- **AI Assist Config**: `.gemini/config.yml`, `.gemini/styleguide.md` (Gemini Code Assist용 설정)
 
 ---
 

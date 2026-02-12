@@ -62,3 +62,25 @@ jest.mock('react-native-geolocation-service', () => ({
       });
     }),
 }));
+
+// react-native-mmkv 가짜 모듈 설정
+// 실제 모바일 기기의 저장소 기능을 테스트 환경(Node.js)에서 동작하도록 가짜 객체로 대체합니다.
+jest.mock('react-native-mmkv', () => {
+  const mockMMKV = {
+    set: jest.fn(),
+    getString: jest.fn(),
+    getNumber: jest.fn(),
+    getBoolean: jest.fn(),
+    getBuffer: jest.fn(),
+    contains: jest.fn(),
+    delete: jest.fn(),
+    clearAll: jest.fn(),
+    getAllKeys: jest.fn(),
+    recrypt: jest.fn(),
+  };
+
+  return {
+    MMKV: jest.fn().mockImplementation(() => mockMMKV),
+    createMMKV: jest.fn().mockImplementation(() => mockMMKV),
+  };
+});
