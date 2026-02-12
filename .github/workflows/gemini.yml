@@ -17,4 +17,5 @@ jobs:
         uses: google-github-actions/run-gemini-cli@v0.1.20
         with:
           gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          gemini_model: 'gemini-2.0-flash'
           prompt: 'GEMINI.md 파일과 프로젝트의 전반적인 코드 스타일 패턴 등을 참고해서 PR 내용의 개선점이나 버그 위험을 한국어로 리뷰해줘.'
