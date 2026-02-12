@@ -5,6 +5,7 @@ name: 통합 배포 파이프라인 (CI-CD)
 on:
   push:
     branches: ['main', 'develop'] # main, develop 브랜치에 코드가 push 되었을 때 실행
+  workflow_dispatch: # 수동 실행 기능 유지
 
 # 2. 작업 단위 (크게 빌드/테스트 단계와 배포 단계로 나뉩니다.)
 jobs:
@@ -40,3 +41,95 @@ jobs:
       # (6) 빌드 대신 타입 검사를 진행하여 코드의 안정성을 확인
       - name: 🔍 타입 체크 (TSC)
         run: npx tsc --noEmit
+
+  # [두 번째 작업: Firebase App Distribution 배포 (CD)]
+  # 이 작업은 main 브랜치에 코드가 push(머지)되었을 때만 실행됩니다.
+  distribute-android:
+    name: Android 베타 배포
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      # (1) 소스코드 체크아웃
+      - name: 📦 소스코드 체크아웃
+        uses: actions/checkout@v4
+
+      # (2) Node.js 환경 세팅
+      - name: 🟢 Node.js 환경 세팅
+        uses: actions/setup-node@v4
+        with:
+          node-version: '25'
+          cache: 'npm'
+
+      # (3) 의존성 라이브러리 설치
+      - name: 📥 의존성 라이브러리 설치
+        run: npm ci
+
+      # (4) 자바(JDK) 환경 세팅
+      - name: ☕ JDK 세팅
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # (5) 안드로이드 앱 빌드 (Develop Release)
+      - name: 🔨 Android 빌드 (Develop Release)
+        run: |
+          cd android
+          ./gradlew assembleDevelopRelease
+
+      # (6) Firebase App Distribution 업로드
+      - name: 🚀 Firebase App Distribution 업로드
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIALS_JSON }}
+          groups: testers
+          file: android/app/build/outputs/apk/develop/release/app-develop-release.apk
+
+  # distribute-ios:
+  #   name: iOS 베타 배포
+  #   needs: build-and-test
+  #   runs-on: macos-latest
+  #   if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+
+  #   steps:
+  #     # (1) 소스코드 체크아웃
+  #     - name: 📦 소스코드 체크아웃
+  #       uses: actions/checkout@v4
+
+  #     # (2) Node.js 환경 세팅
+  #     - name: 🟢 Node.js 환경 세팅
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '25'
+  #         cache: 'npm'
+
+  #     # (3) 의존성 라이브러리 설치
+  #     - name: 📥 의존성 라이브러리 설치
+  #       run: npm ci
+
+  #     # (4) CocoaPods 설치
+  #     - name: 💎 CocoaPods 설치
+  #       run: |
+  #         cd ios
+  #         pod install
+
+  #     # (5) iOS 앱 아카이빙 및 빌드 (PRD Scheme)
+  #     - name: 🔨 iOS 빌드 (PRD Scheme)
+  #       run: |
+  #         xcodebuild -workspace ios/LifeShare.xcworkspace \
+  #                    -scheme PRD \
+  #                    -sdk iphoneos \
+  #                    -configuration Release \
+  #                    archive -archivePath ios/LifeShare.xcarchive
+
+  #     # (6) Firebase App Distribution 업로드
+  #     - name: 🚀 Firebase App Distribution 업로드
+  #       uses: wzieba/Firebase-Distribution-Github-Action@v1
+  #       with:
+  #         appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
+  #         serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIALS_JSON }}
+  #         groups: testers
+  #         file: ios/LifeShare.ipa

@@ -130,9 +130,24 @@
 
 ---
 
+## 🚀 배포 및 CI/CD
+
+### 1. GitHub Actions
+
+- **통합 파이프라인**: `.github/workflows/main.yml` (Lint, Test, Type Check)
+- **Firebase App Distribution**: `.github/workflows/firebase-app-distribution.yml` (Beta 배포)
+
+### 2. 필요한 GitHub Secrets
+
+Firebase 배포를 위해 다음 시크릿 설정이 필요합니다:
+
+- `FIREBASE_ANDROID_APP_ID`: Android App ID (`<YOUR_ANDROID_APP_ID>`)
+- `FIREBASE_IOS_APP_ID`: iOS App ID (`<YOUR_IOS_APP_ID>`)
+- `FIREBASE_CREDENTIALS_JSON`: Firebase 서비스 계정 JSON 키 전문
+
 ---
 
-## �🤖 AI 어시스턴트 지침
+## 🤖 AI 어시스턴트 지침
 
 - 성능과 보안을 최우선으로 고려한다.
 - 모든 코드 생성 시 위 규칙을 준수한다.
