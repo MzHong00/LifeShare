@@ -1,5 +1,6 @@
 ## Core Principles
 
+- **Language/Communication**: 모든 코드 리뷰 댓글, 설명, 코드 내 주석 및 에러 메시지는 **한국어(Korean)**를 기본으로 사용합니다.
 - **Toss-style Minimalism**: 단순하고 직관적인 UI/UX를 지향합니다.
 - **Premium Aesthetics**: #3182F6 (Blue)를 포인트로 한 깔끔하고 고급스러운 디자인을 유지합니다.
 - **Type Safety**: TypeScript를 사용하며, `any` 사용을 절대 지양하고 인터페이스를 명확히 정의합니다.
