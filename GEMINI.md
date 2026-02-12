@@ -141,8 +141,8 @@
 
 Firebase 배포를 위해 다음 시크릿 설정이 필요합니다:
 
-- `FIREBASE_ANDROID_APP_ID`: Android App ID (`1:526212275810:android:74be4088b8478e75f67b3b`)
-- `FIREBASE_IOS_APP_ID`: iOS App ID (`1:526212275810:ios:d0559b3458c61cabf67b3b`)
+- `FIREBASE_ANDROID_APP_ID`: Android App ID (`<YOUR_ANDROID_APP_ID>`)
+- `FIREBASE_IOS_APP_ID`: iOS App ID (`<YOUR_IOS_APP_ID>`)
 - `FIREBASE_CREDENTIALS_JSON`: Firebase 서비스 계정 JSON 키 전문
 
 ---
