@@ -6,7 +6,7 @@ import { OS } from '@/constants/common';
 import { authActions } from '@/stores/useAuthStore';
 import { userActions } from '@/stores/useUserStore';
 
-export const GoogleOAuthService = {
+export const googleOAuthService = {
   /**
    * 구글 로그인 초기 설정
    */

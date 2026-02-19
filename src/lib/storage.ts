@@ -1,7 +1,7 @@
 import { createMMKV } from 'react-native-mmkv';
 import { StateStorage } from 'zustand/middleware';
 
-export const storage = createMMKV();
+const storage = createMMKV();
 
 /**
  * MMKV Adapter for Zustand persist middleware

@@ -2,7 +2,7 @@ import { Platform, PermissionsAndroid } from 'react-native';
 import Config from 'react-native-config';
 import Geolocation from 'react-native-geolocation-service';
 
-export const GeolocationService = {
+export const geolocationService = {
   /**
    * 위치 권한 요청
    */
