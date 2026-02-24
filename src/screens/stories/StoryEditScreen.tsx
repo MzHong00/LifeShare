@@ -8,17 +8,27 @@ import {
   ScrollView,
   Platform,
   Image,
+  Modal,
 } from 'react-native';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Camera, Calendar, Plus, Trash2, MapPin } from 'lucide-react-native';
+import {
+  Camera,
+  Calendar as CalendarIcon,
+  Plus,
+  Trash2,
+  MapPin,
+} from 'lucide-react-native';
+import { Calendar } from 'react-native-calendars';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { COLORS, SPACING, TYPOGRAPHY, PATH_COLORS } from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { modalActions } from '@/stores/useModalStore';
 import { useStoryStore, storyActions } from '@/stores/useStoryStore';
 import { getTodayDateString, formatDate } from '@/utils/date';
+import StoryMapPicker from '@/components/stories/StoryMapPicker';
+import type { LocationPoint } from '@/types';
 
 type StoryEditRouteProp = RouteProp<{ params: { storyId?: string } }, 'params'>;
 
@@ -36,26 +46,37 @@ const StoryEditScreen = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(getTodayDateString());
+  const [isCalendarVisible, setIsCalendarVisible] = useState(false);
+  const [isMapVisible, setIsMapVisible] = useState(false);
+  const [path, setPath] = useState<LocationPoint[]>([]);
+  const [pathColor, setPathColor] = useState<string>('#3182F6');
   const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>();
 
   // 데이터 불러오기 (수정 모드일 때만)
   useEffect(() => {
-    if (isEditMode && storyId) {
-      const story = stories.find(s => s.id === storyId);
-      if (story) {
-        setTitle(story.title);
-        setDescription(story.description || '');
-        setDate(formatDate(story.date));
-        setThumbnailUrl(story.thumbnailUrl);
-      } else {
-        showModal({
-          type: 'alert',
-          title: '에러',
-          message: '스토리 정보를 불러올 수 없습니다.',
-          onConfirm: () => navigation.goBack(),
-        });
-      }
+    if (!isEditMode || !storyId) {
+      // 새 스토리 작성 시 랜덤 색상 지정
+      const randomColor =
+        PATH_COLORS[Math.floor(Math.random() * PATH_COLORS.length)];
+      setPathColor(randomColor);
+      return;
     }
+
+    const story = stories.find(s => s.id === storyId);
+    if (!story)
+      return showModal({
+        type: 'alert',
+        title: '에러',
+        message: '스토리 정보를 불러올 수 없습니다.',
+        onConfirm: () => navigation.goBack(),
+      });
+
+    setTitle(story.title);
+    setDescription(story.description || '');
+    setDate(formatDate(story.date, 'YYYY-MM-DD'));
+    setPath(story.path || []);
+    setPathColor(story.pathColor || '#3182F6');
+    setThumbnailUrl(story.thumbnailUrl);
   }, [isEditMode, storyId, stories, navigation, showModal]);
 
   const handleSave = () => {
@@ -69,7 +90,13 @@ const StoryEditScreen = () => {
     }
 
     if (isEditMode && storyId) {
-      updateStory(storyId, { title, description, thumbnailUrl });
+      updateStory(storyId, {
+        title,
+        description,
+        thumbnailUrl,
+        path,
+        pathColor,
+      });
       showModal({
         type: 'alert',
         title: '성공',
@@ -81,8 +108,9 @@ const StoryEditScreen = () => {
         title,
         description,
         thumbnailUrl,
-        date: new Date().toISOString(),
-        path: [], // 신규 생성 시에는 경로 없음
+        date: new Date(date).toISOString(),
+        path,
+        pathColor,
       });
       showModal({
         type: 'alert',
@@ -173,21 +201,6 @@ const StoryEditScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {!isEditMode && stories.length <= 3 && (
-          <View style={styles.infoBanner}>
-            <View style={styles.infoIconWrapper}>
-              <MapPin size={16} color={COLORS.primary} />
-            </View>
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoTitle}>경로와 함께 기록하고 싶나요?</Text>
-              <Text style={styles.infoDescription}>
-                이동 경로가 포함된 스토리는 '위치' 탭의 기록하기 버튼을 통해
-                만들 수 있어요.
-              </Text>
-            </View>
-          </View>
-        )}
-
         {/* Photo Upload Placeholder */}
         <TouchableOpacity
           style={styles.photoContainer}
@@ -237,16 +250,96 @@ const StoryEditScreen = () => {
           </View>
 
           <View style={styles.metaRow}>
-            <TouchableOpacity style={styles.metaItem}>
-              <Calendar size={20} color={COLORS.primary} strokeWidth={2.5} />
+            <TouchableOpacity
+              style={styles.metaItem}
+              onPress={() => setIsCalendarVisible(true)}
+            >
+              <CalendarIcon
+                size={20}
+                color={COLORS.primary}
+                strokeWidth={2.5}
+              />
               <View style={styles.metaTextContainer}>
                 <Text style={styles.metaLabel}>날짜</Text>
                 <Text style={styles.metaValue}>{date}</Text>
               </View>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.metaItem}
+              onPress={() => setIsMapVisible(true)}
+            >
+              <MapPin size={20} color={COLORS.primary} strokeWidth={2.5} />
+              <View style={styles.metaTextContainer}>
+                <Text style={styles.metaLabel}>경로</Text>
+                <Text style={styles.metaValue} numberOfLines={1}>
+                  {path.length > 0
+                    ? `${path.length}개의 지점 선택됨`
+                    : '경로 설정'}
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
+
+      {/* Date Picker Modal */}
+      <Modal
+        visible={isCalendarVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsCalendarVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setIsCalendarVisible(false)}
+        >
+          <View style={styles.calendarContainer}>
+            <View style={styles.calendarHeader}>
+              <Text style={styles.calendarTitle}>날짜 선택</Text>
+              <TouchableOpacity onPress={() => setIsCalendarVisible(false)}>
+                <Text style={styles.closeText}>닫기</Text>
+              </TouchableOpacity>
+            </View>
+            <Calendar
+              current={date}
+              onDayPress={day => {
+                setDate(day.dateString);
+                setIsCalendarVisible(false);
+              }}
+              markedDates={{
+                [date]: {
+                  selected: true,
+                  selectedColor: COLORS.primary,
+                  selectedTextColor: COLORS.white,
+                },
+              }}
+              theme={{
+                selectedDayBackgroundColor: COLORS.primary,
+                todayTextColor: COLORS.primary,
+                arrowColor: COLORS.primary,
+                dotColor: COLORS.primary,
+              }}
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* Map Picker Modal */}
+      <Modal
+        visible={isMapVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setIsMapVisible(false)}
+      >
+        <StoryMapPicker
+          path={path}
+          pathColor={pathColor}
+          onSelect={setPath}
+          onClose={() => setIsMapVisible(false)}
+        />
+      </Modal>
 
       {/* Bottom Action */}
       <View style={styles.footer}>
@@ -452,6 +545,44 @@ const styles = StyleSheet.create({
   modalContent: {
     paddingHorizontal: 20,
     gap: 10,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  calendarContainer: {
+    backgroundColor: COLORS.white,
+    borderRadius: 24,
+    width: '100%',
+    padding: 16,
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.black,
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.1,
+        shadowRadius: 20,
+      },
+      android: { elevation: 10 },
+    }),
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingHorizontal: 8,
+  },
+  calendarTitle: {
+    ...TYPOGRAPHY.header2,
+    color: COLORS.textPrimary,
+  },
+  closeText: {
+    color: COLORS.primary,
+    fontWeight: '700',
+    fontSize: 16,
   },
 });
 

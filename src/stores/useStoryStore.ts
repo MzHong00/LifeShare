@@ -25,6 +25,7 @@ export const storyStore = create<StoryState>(() => ({
         { latitude: 37.505, longitude: 127.035, timestamp: Date.now() },
         { latitude: 37.51, longitude: 127.04, timestamp: Date.now() },
       ],
+      pathColor: '#3182F6',
     },
   ],
   selectedStoryId: null,
@@ -53,6 +54,7 @@ export const storyActions = {
     description?: string;
     userId: string;
     workspaceId: string;
+    pathColor: string;
   }) =>
     storyStore.setState(state => {
       const newStory: Story = {
@@ -86,7 +88,13 @@ export const storyActions = {
     }),
   updateStory: (
     id: string,
-    data: { title: string; description?: string; thumbnailUrl?: string },
+    data: {
+      title: string;
+      description?: string;
+      thumbnailUrl?: string;
+      path?: LocationPoint[];
+      pathColor?: string;
+    },
   ) =>
     storyStore.setState(state => ({
       stories: state.stories.map(s => (s.id === id ? { ...s, ...data } : s)),
