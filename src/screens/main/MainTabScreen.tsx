@@ -7,10 +7,12 @@ import {
   HomeIconWrapper,
   MapIconWrapper,
   ChatIconWrapper,
+  StoryIconWrapper,
 } from '@/components/navigation/TabIcons';
 import ChatScreen from '@/screens/chat/ChatScreen';
 import HomeScreen from '@/screens/home/HomeScreen';
 import MapScreen from '@/screens/map/MapScreen';
+import StoriesScreen from '@/screens/stories/StoriesScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -47,6 +49,14 @@ const MainTabScreen = () => {
       }}
     >
       <Tab.Screen
+        name={NAV_ROUTES.HOME.NAME}
+        component={HomeScreen}
+        options={{
+          tabBarLabel: NAV_ROUTES.HOME.TITLE,
+          tabBarIcon: HomeIconWrapper,
+        }}
+      />
+      <Tab.Screen
         name={NAV_ROUTES.CHAT.NAME}
         component={ChatScreen}
         options={{
@@ -56,19 +66,19 @@ const MainTabScreen = () => {
         }}
       />
       <Tab.Screen
-        name={NAV_ROUTES.HOME.NAME}
-        component={HomeScreen}
-        options={{
-          tabBarLabel: NAV_ROUTES.HOME.TITLE,
-          tabBarIcon: HomeIconWrapper,
-        }}
-      />
-      <Tab.Screen
         name={NAV_ROUTES.LOCATION.NAME}
         component={MapScreen}
         options={{
           tabBarLabel: NAV_ROUTES.LOCATION.TITLE,
           tabBarIcon: MapIconWrapper,
+        }}
+      />
+      <Tab.Screen
+        name={NAV_ROUTES.STORIES.NAME}
+        component={StoriesScreen}
+        options={{
+          tabBarLabel: NAV_ROUTES.STORIES.TITLE,
+          tabBarIcon: StoryIconWrapper,
         }}
       />
     </Tab.Navigator>

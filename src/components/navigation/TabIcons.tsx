@@ -1,6 +1,11 @@
-
 import { View, StyleSheet } from 'react-native';
-import { MessageCircle, Home, MapPin, Calendar } from 'lucide-react-native';
+import {
+  MessageCircle,
+  Home,
+  MapPin,
+  Calendar,
+  Heart,
+} from 'lucide-react-native';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 
 const styles = StyleSheet.create({
@@ -58,3 +63,19 @@ export const CalendarIconWrapper = ({
   color: string;
   size: number;
 }) => <Calendar color={color} size={size} strokeWidth={2.3} />;
+
+export const StoryIconWrapper = ({
+  color,
+  size,
+}: {
+  color: string;
+  size: number;
+  focused: boolean;
+}) => {
+  const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
+  return (
+    <View style={currentWorkspace ? styles.iconEnabled : styles.iconDisabled}>
+      <Heart color={color} size={size} strokeWidth={2.3} />
+    </View>
+  );
+};

@@ -36,6 +36,32 @@ export const COLORS = {
   googleBlue: '#4285F4',
 };
 
+/**
+ * 스토리 경로를 위한 20가지 프리미엄 컬러 팔레트
+ */
+export const PATH_COLORS = [
+  '#3182F6', // Blue
+  '#F04452', // Red
+  '#FF6B01', // Orange
+  '#00BA54', // Green
+  '#8E44AD', // Purple
+  '#F044D2', // Pink
+  '#22CCFF', // Sky Blue
+  '#6226EF', // Deep Indigo
+  '#FFB800', // Amber
+  '#1AB769', // Teal
+  '#FF4D4D', // Light Red
+  '#A29BFE', // Soft Purple
+  '#00CEC9', // Turquoise
+  '#FAB1A0', // Peach
+  '#74B9FF', // Baby Blue
+  '#B2BEC3', // Steel Grey
+  '#55E6C1', // Mint
+  '#E17055', // Terra Cotta
+  '#D63031', // Crimson
+  '#E84393', // Magenta
+];
+
 export const SPACING = {
   xs: 4,
   sm: 8,

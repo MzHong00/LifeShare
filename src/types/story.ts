@@ -10,6 +10,7 @@ export interface Story {
   description?: string;
   date: string; // ISO string
   path: LocationPoint[];
+  pathColor: string;
   thumbnailUrl?: string;
   userId: string;
   workspaceId: string;

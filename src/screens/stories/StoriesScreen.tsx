@@ -15,7 +15,6 @@ import {
   Filter,
   Plus,
   Camera,
-  Clock,
   Route,
 } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -40,8 +39,6 @@ interface StoryItemProps {
  * [StoryItem] 프리미엄 카드 컴포넌트
  */
 const StoryItem = ({ item, onPress }: StoryItemProps) => {
-  const isHearted = parseInt(item.id, 10) % 3 === 0;
-
   return (
     <TouchableOpacity
       style={styles.storyCard}
@@ -58,11 +55,6 @@ const StoryItem = ({ item, onPress }: StoryItemProps) => {
         ) : (
           <View style={styles.placeholderContainer}>
             <Camera size={28} color={COLORS.textTertiary} strokeWidth={1.5} />
-          </View>
-        )}
-        {isHearted && (
-          <View style={styles.heartBadge}>
-            <Heart size={12} color={COLORS.white} fill={COLORS.white} />
           </View>
         )}
       </View>
@@ -106,21 +98,6 @@ const StoriesHeader = ({
     </View>
 
     <View style={styles.statsContainer}>
-      <View style={styles.statBox}>
-        <View
-          style={[
-            styles.statIconWrapper,
-            { backgroundColor: COLORS.primaryLight },
-          ]}
-        >
-          <Clock size={16} color={COLORS.primary} />
-        </View>
-        <View style={styles.statTextContainer}>
-          <Text style={styles.statLabel}>128일</Text>
-          <Text style={styles.statSubLabel}>함께한 날</Text>
-        </View>
-      </View>
-      <View style={styles.statDivider} />
       <View style={styles.statBox}>
         <View style={[styles.statIconWrapper, styles.pinkIconWrapper]}>
           <Heart size={16} color={COLORS.red} />
@@ -182,7 +159,11 @@ const StoriesScreen = () => {
   }, []);
 
   return (
-    <AppSafeAreaView style={styles.container}>
+    <AppSafeAreaView
+      style={styles.container}
+      headerShown={false}
+      edges={['top']}
+    >
       <FlatList
         data={stories}
         renderItem={({ item }) => (
@@ -222,7 +203,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     paddingHorizontal: SPACING.layout,
-    paddingTop: SPACING.md,
+    paddingTop: SPACING.xl,
     marginBottom: SPACING.md,
   },
   headerTop: {
@@ -305,9 +286,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  blueIconWrapper: {
-    backgroundColor: COLORS.primaryLight,
-  },
+
   pinkIconWrapper: {
     backgroundColor: COLORS.pinkLight,
   },
@@ -369,17 +348,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: COLORS.grey,
   },
-  heartBadge: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    backgroundColor: 'rgba(240, 68, 82, 0.8)',
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   storyInfo: {
     padding: 14,
   },

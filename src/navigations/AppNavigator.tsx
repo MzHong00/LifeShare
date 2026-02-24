@@ -10,7 +10,6 @@ import CalendarScreen from '@/screens/calendar/CalendarScreen';
 import EventCreateScreen from '@/screens/calendar/EventCreateScreen';
 import TodoScreen from '@/screens/todo/TodoScreen';
 import TodoCreateScreen from '@/screens/todo/TodoCreateScreen';
-import StoriesScreen from '@/screens/stories/StoriesScreen';
 import ProfileScreen from '@/screens/profile/ProfileScreen';
 import MainTabScreen from '@/screens/main/MainTabScreen';
 import WorkspaceLandingScreen from '@/screens/workspace/WorkspaceLandingScreen';
@@ -73,10 +72,6 @@ const AppNavigator = () => {
                 <Stack.Screen
                   name={NAV_ROUTES.TODO_CREATE.NAME}
                   component={TodoCreateScreen}
-                />
-                <Stack.Screen
-                  name={NAV_ROUTES.STORIES.NAME}
-                  component={StoriesScreen}
                 />
                 <Stack.Screen
                   name={NAV_ROUTES.STORY_EDIT.NAME}
