@@ -21,7 +21,7 @@ import {
 } from '@/stores/useWorkspaceStore';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { Section } from '@/components/common/Section';
-import { useAppModal } from '@/hooks/useAppModal';
+import { modalActions } from '@/stores/useModalStore';
 
 type WorkspaceEditRouteProp = RouteProp<
   { params: { workspaceId: string } },
@@ -35,7 +35,7 @@ const WorkspaceEditScreen = () => {
 
   const { workspaces } = useWorkspaceStore();
   const { removeWorkspace } = workspaceActions;
-  const { openModal, closeModal, updateModal } = useAppModal();
+  const { showModal, hideModal, updateOptions } = modalActions;
 
   const workspace = workspaces.find(ws => ws.id === workspaceId);
 
@@ -45,7 +45,7 @@ const WorkspaceEditScreen = () => {
   const currentStartDate = workspace.startDate;
 
   const handleDelete = () => {
-    openModal({
+    showModal({
       type: 'confirm',
       title: `${APP_WORKSPACE.KR}에서 나가기`,
       message: `정말로 '${workspace?.name}' ${APP_WORKSPACE.KR}에서 나갈까요?\n기존에 기록된 데이터는 삭제되지 않지만 목록에서 사라집니다.`,
@@ -60,12 +60,12 @@ const WorkspaceEditScreen = () => {
 
   const handleDayPress = (day: DateData) => {
     workspaceActions.updateWorkspaceStartDate(workspaceId, day.dateString);
-    closeModal();
+    hideModal();
   };
 
   const handleUpdateProfile = (newName: string) => {
     if (!newName.trim()) {
-      openModal({
+      showModal({
         type: 'alert',
         title: '알림',
         message: '이름을 입력해주세요.',
@@ -75,8 +75,8 @@ const WorkspaceEditScreen = () => {
     workspaceActions.updateMemberProfile(workspaceId, 'user-1', {
       name: newName.trim(),
     });
-    closeModal();
-    openModal({
+    hideModal();
+    showModal({
       type: 'alert',
       title: '완료',
       message: '프로필이 수정되었습니다.',
@@ -85,7 +85,7 @@ const WorkspaceEditScreen = () => {
 
   const handleSendInvite = (email: string) => {
     if (!email.trim() || !email.includes('@')) {
-      openModal({
+      showModal({
         type: 'alert',
         title: '알림',
         message: '올바른 이메일 주소를 입력해주세요.',
@@ -98,8 +98,8 @@ const WorkspaceEditScreen = () => {
       'user@example.com',
       email.trim(),
     );
-    closeModal();
-    openModal({
+    hideModal();
+    showModal({
       type: 'alert',
       title: '초대 전송',
       message: '파트너에게 초대 이메일을 보냈습니다.',
@@ -109,7 +109,7 @@ const WorkspaceEditScreen = () => {
   const openWorkspaceNameEditModal = () => {
     let inputName = workspace?.name || '';
 
-    openModal({
+    showModal({
       type: 'confirm',
       title: '라이프룸 제목 수정',
       confirmText: '수정하기',
@@ -122,7 +122,7 @@ const WorkspaceEditScreen = () => {
             defaultValue={inputName}
             onChangeText={text => {
               inputName = text;
-              updateModal({ confirmDisabled: !text.trim() });
+              updateOptions({ confirmDisabled: !text.trim() });
             }}
             placeholder="제목 입력"
             autoFocus
@@ -140,7 +140,7 @@ const WorkspaceEditScreen = () => {
       workspace?.members?.find(m => m.id === 'user-1')?.name || '';
     let inputMemberName = initialName;
 
-    openModal({
+    showModal({
       type: 'confirm',
       title: '내 활동 프로필 설정',
       confirmText: '수정하기',
@@ -155,7 +155,7 @@ const WorkspaceEditScreen = () => {
             defaultValue={initialName}
             onChangeText={text => {
               inputMemberName = text;
-              updateModal({ confirmDisabled: !text.trim() });
+              updateOptions({ confirmDisabled: !text.trim() });
             }}
             placeholder="이름 입력"
             autoFocus
@@ -169,7 +169,7 @@ const WorkspaceEditScreen = () => {
   const openInvitePartnerModal = () => {
     let currentEmail = '';
 
-    openModal({
+    showModal({
       type: 'confirm',
       title: '파트너 초대하기',
       confirmText: '초대하기',
@@ -185,7 +185,7 @@ const WorkspaceEditScreen = () => {
             onChangeText={text => {
               currentEmail = text;
               const isValid = text.trim().includes('@');
-              updateModal({ confirmDisabled: !isValid });
+              updateOptions({ confirmDisabled: !isValid });
             }}
             placeholder="example@email.com"
             keyboardType="email-address"
@@ -199,7 +199,7 @@ const WorkspaceEditScreen = () => {
   };
 
   const openCalendarModal = () => {
-    openModal({
+    showModal({
       type: 'none',
       title: '날짜 선택',
       content: (

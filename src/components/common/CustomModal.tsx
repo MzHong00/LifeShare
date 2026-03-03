@@ -7,13 +7,12 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useModalStore, modalActions } from '@/stores/useModalStore';
 
 const CustomModal = () => {
   const { isVisible, options } = useModalStore();
   const { hideModal } = modalActions;
-
-  if (!isVisible) return null;
 
   const handleConfirm = () => {
     if (options.confirmDisabled) return; // 비활성화 상태면 동작 방지
@@ -26,74 +25,82 @@ const CustomModal = () => {
     options.onCancel?.();
   };
 
+  if (!isVisible) return null;
+
   return (
     <Modal
+      visible
       transparent
-      visible={isVisible}
-      animationType="fade"
+      animationType={options.type === 'full' ? 'slide' : 'fade'}
       onRequestClose={hideModal}
     >
-      <TouchableWithoutFeedback onPress={handleCancel}>
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback>
-            <View style={styles.container}>
-              {/* 1. 타이틀 영역 */}
-              <View style={styles.titleSection}>
-                <Text style={styles.title}>{options.title}</Text>
-                {options.message && (
-                  <Text style={styles.message}>{options.message}</Text>
-                )}
-              </View>
-
-              {/* 2. 커스텀 콘텐츠 영역 (입력창 등) */}
-              {options.content && (
-                <View style={styles.customContentSection}>
-                  {options.content}
+      {options.type === 'full' ? (
+        <SafeAreaView style={styles.fullContainer}>
+          {options.content}
+        </SafeAreaView>
+      ) : (
+        <TouchableWithoutFeedback onPress={handleCancel}>
+          <View style={styles.overlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.container}>
+                {/* 1. 타이틀 영역 */}
+                <View style={styles.titleSection}>
+                  <Text style={styles.title}>{options.title}</Text>
+                  {options.message && (
+                    <Text style={styles.message}>{options.message}</Text>
+                  )}
                 </View>
-              )}
 
-              {/* 3. 버튼 영역 (타입에 따른 버튼 구성) */}
-              {options.type !== 'none' && (
-                <View style={styles.buttonContainer}>
-                  {/* Confirm 타입인 경우 취소 버튼 표시 */}
-                  {options.type === 'confirm' && (
+                {/* 2. 커스텀 콘텐츠 영역 (입력창 등) */}
+                {options.content && (
+                  <View style={styles.customContentSection}>
+                    {options.content}
+                  </View>
+                )}
+
+                {/* 3. 버튼 영역 (타입에 따른 버튼 구성) */}
+                {options.type !== 'none' && (
+                  <View style={styles.buttonContainer}>
+                    {/* Confirm 타입인 경우 취소 버튼 표시 */}
+                    {options.type === 'confirm' && (
+                      <TouchableOpacity
+                        style={[styles.button, styles.cancelButton]}
+                        onPress={handleCancel}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.cancelButtonText}>
+                          {options.cancelText || '취소'}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+
+                    {/* 확인 버튼 (Alert/Confirm 공통) */}
                     <TouchableOpacity
-                      style={[styles.button, styles.cancelButton]}
-                      onPress={handleCancel}
-                      activeOpacity={0.7}
+                      style={[
+                        styles.button,
+                        styles.confirmButton,
+                        options.confirmDisabled && styles.disabledButton,
+                      ]}
+                      onPress={handleConfirm}
+                      activeOpacity={options.confirmDisabled ? 1 : 0.8}
+                      disabled={options.confirmDisabled}
                     >
-                      <Text style={styles.cancelButtonText}>
-                        {options.cancelText || '취소'}
+                      <Text
+                        style={[
+                          styles.confirmButtonText,
+                          options.confirmDisabled && styles.disabledButtonText,
+                        ]}
+                      >
+                        {options.confirmText || '확인'}
                       </Text>
                     </TouchableOpacity>
-                  )}
-
-                  {/* 확인 버튼 (Alert/Confirm 공통) */}
-                  <TouchableOpacity
-                    style={[
-                      styles.button,
-                      styles.confirmButton,
-                      options.confirmDisabled && styles.disabledButton,
-                    ]}
-                    onPress={handleConfirm}
-                    activeOpacity={options.confirmDisabled ? 1 : 0.8}
-                    disabled={options.confirmDisabled}
-                  >
-                    <Text
-                      style={[
-                        styles.confirmButtonText,
-                        options.confirmDisabled && styles.disabledButtonText,
-                      ]}
-                    >
-                      {options.confirmText || '확인'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
+                  </View>
+                )}
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      )}
     </Modal>
   );
 };
@@ -173,6 +180,10 @@ const styles = StyleSheet.create({
   },
   disabledButtonText: {
     color: COLORS.textTertiary, // 비활성화 시 텍스트 색상 변경
+  },
+  fullContainer: {
+    flex: 1,
+    backgroundColor: COLORS.white,
   },
 });
 

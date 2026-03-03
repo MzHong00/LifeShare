@@ -8,7 +8,7 @@ import { useShallow } from 'zustand/react/shallow';
  * - alert: 확인 버튼 1개
  * - confirm: 취소, 확인 버튼 2개
  */
-export type ModalType = 'none' | 'alert' | 'confirm';
+export type ModalType = 'none' | 'alert' | 'confirm' | 'full';
 
 export interface ModalOptions {
   type: ModalType;
