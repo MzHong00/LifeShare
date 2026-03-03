@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { User, Calendar, CheckSquare, Heart } from 'lucide-react-native';
+import { User, Calendar, CheckSquare } from 'lucide-react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
@@ -140,12 +140,6 @@ const HomeScreen = () => {
               icon={<CheckSquare size={18} color={COLORS.primary} />}
               iconBgColor={COLORS.primaryLight}
               onPress={() => navigation.navigate(NAV_ROUTES.TODO.NAME)}
-            />
-            <MenuButton
-              title={NAV_ROUTES.STORIES.TITLE}
-              icon={<Heart size={18} color={COLORS.red} />}
-              iconBgColor="#FFEBF0"
-              onPress={() => navigation.navigate(NAV_ROUTES.STORIES.NAME)}
             />
           </View>
         </Section>

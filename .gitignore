@@ -78,3 +78,7 @@ yarn-error.log
 .env
 .env.prd
 .env.dev
+
+# Sentry
+ios/sentry.properties
+android/sentry.properties

@@ -9,19 +9,12 @@ import {
   ActivityIndicator,
   Linking,
 } from 'react-native';
-import {
-  Zap,
-  Sparkles,
-  MapPin,
-  Square,
-  Route,
-  ChevronDown,
-  ChevronUp,
-} from 'lucide-react-native';
+import { MapPin, ChevronDown, ChevronUp, Search } from 'lucide-react-native';
 import MapView from 'react-native-maps';
 import { MainMap } from '@/components/map/MainMap';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { MAP_CONFIG } from '@/constants/map';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { BottomDrawer } from '@/components/common/BottomDrawer';
 import { ProfileAvatar } from '@/components/common/ProfileAvatar';
@@ -31,24 +24,17 @@ import { useGeolocation } from '@/businesses/geolocation/useGeolocation';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { useStoryStore, storyActions } from '@/stores/useStoryStore';
 import { modalActions } from '@/stores/useModalStore';
-import { getCurrentTimeString } from '@/utils/date';
 
 const MapScreen = () => {
   const mapRef = useRef<MapView>(null);
-  const currentDeltaRef = useRef({
-    latitudeDelta: 0.001,
-    longitudeDelta: 0.001,
-  });
+  const currentDeltaRef = useRef(MAP_CONFIG.CLOSE_DELTA);
   const { loading: myLocationLoading, location: myLocation } = useGeolocation();
   const { currentWorkspace } = useWorkspaceStore();
 
-  const { isRecording, recordingPath, stories, selectedStoryId } =
-    useStoryStore();
-  const { startRecording, stopRecording, saveStory, setSelectedStoryId } =
-    storyActions;
+  const { stories, selectedStoryId } = useStoryStore();
+  const { setSelectedStoryId } = storyActions;
   const { showModal } = modalActions;
 
-  const [showHistory, setShowHistory] = useState(false);
   const [isHeaderMinimized, setIsHeaderMinimized] = useState(false);
 
   // 현재 바텀시트에서 보여줄 선택된 유저 ID
@@ -61,8 +47,10 @@ const MapScreen = () => {
     location:
       member.id === 'user-1'
         ? {
-            latitude: myLocation?.latitude || 37.4979,
-            longitude: myLocation?.longitude || 127.0276,
+            latitude:
+              myLocation?.latitude || MAP_CONFIG.DEFAULT_LOCATION.latitude,
+            longitude:
+              myLocation?.longitude || MAP_CONFIG.DEFAULT_LOCATION.longitude,
           }
         : member.id === 'user-2'
         ? { latitude: 37.5, longitude: 127.03 }
@@ -140,38 +128,6 @@ const MapScreen = () => {
     }
   };
 
-  const handleToggleRecording = () => {
-    if (isRecording) {
-      if (recordingPath.length === 0) {
-        stopRecording();
-        return;
-      }
-      showModal({
-        type: 'confirm',
-        title: '스토리 기록 중단',
-        message: '지금까지의 경로를 스토리로 저장할까요?',
-        confirmText: '저장',
-        cancelText: '취소',
-        onConfirm: () => {
-          saveStory({
-            id: Date.now().toString(),
-            title: `${getCurrentTimeString()}의 기록`,
-            userId: 'user-1',
-            workspaceId: currentWorkspace?.id || 'ws-1',
-          });
-          showModal({
-            type: 'alert',
-            title: '저장 완료',
-            message: '스토리 탭에서 확인할 수 있습니다.',
-          });
-        },
-        onCancel: () => stopRecording(),
-      });
-    } else {
-      startRecording();
-    }
-  };
-
   return (
     <View style={styles.container}>
       {myLocation && (
@@ -179,9 +135,6 @@ const MapScreen = () => {
           mapRef={mapRef}
           myLocation={myLocation}
           currentDelta={currentDeltaRef.current}
-          isRecording={isRecording}
-          recordingPath={recordingPath}
-          showHistory={showHistory}
           stories={stories}
           selectedStoryId={selectedStoryId}
           membersWithLocation={membersWithLocation}
@@ -214,7 +167,7 @@ const MapScreen = () => {
         <View style={styles.headerContent}>
           <View style={styles.headerTopRow}>
             <View style={styles.statusBadge}>
-              <Zap size={10} color={COLORS.success} fill={COLORS.success} />
+              <MapPin size={10} color={COLORS.success} fill={COLORS.success} />
               <Text style={styles.statusBadgeText}>실시간 업데이트 중</Text>
             </View>
             <TouchableOpacity
@@ -249,68 +202,24 @@ const MapScreen = () => {
                       )
                     }
                   >
-                    <ProfileAvatar
-                      uri={member.avatar}
-                      name={member.name}
-                      size={44}
-                    />
+                    <View style={styles.avatarContainer}>
+                      <ProfileAvatar
+                        uri={member.avatar}
+                        name={member.name}
+                        size={44}
+                      />
+                      <View style={styles.locateIconContainer}>
+                        <Search
+                          size={10}
+                          color={COLORS.white}
+                          strokeWidth={3}
+                        />
+                      </View>
+                    </View>
                     <Text style={styles.userNameText}>{member.name}</Text>
                   </TouchableOpacity>
                 ))}
               </ScrollView>
-
-              <View style={styles.headerActionBar}>
-                <TouchableOpacity
-                  style={[
-                    styles.headerActionPill,
-                    showHistory && { backgroundColor: COLORS.primary },
-                  ]}
-                  onPress={() => setShowHistory(!showHistory)}
-                >
-                  <Route
-                    size={14}
-                    color={showHistory ? COLORS.white : COLORS.textPrimary}
-                  />
-                  <Text
-                    style={[
-                      styles.headerActionText,
-                      showHistory && { color: COLORS.white },
-                    ]}
-                  >
-                    우리의 스토리보기
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    styles.headerActionPill,
-                    isRecording && { backgroundColor: COLORS.error },
-                  ]}
-                  onPress={handleToggleRecording}
-                >
-                  {isRecording ? (
-                    <Square
-                      size={12}
-                      color={COLORS.white}
-                      fill={COLORS.white}
-                    />
-                  ) : (
-                    <Sparkles
-                      size={14}
-                      color={COLORS.textPrimary}
-                      fill={COLORS.textPrimary + '20'}
-                    />
-                  )}
-                  <Text
-                    style={[
-                      styles.headerActionText,
-                      isRecording && { color: COLORS.white },
-                    ]}
-                  >
-                    {isRecording ? '위치 기록 중' : '스토리 만들기'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
             </>
           )}
         </View>
@@ -476,6 +385,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: COLORS.textPrimary,
+  },
+  avatarContainer: {
+    position: 'relative',
+  },
+  locateIconContainer: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    backgroundColor: COLORS.primary,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: COLORS.white,
   },
   markerAvatarImg: {
     width: '100%',

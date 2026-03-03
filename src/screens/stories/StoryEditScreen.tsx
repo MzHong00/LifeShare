@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,13 +12,22 @@ import {
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Camera, Calendar, Plus, Trash2, MapPin } from 'lucide-react-native';
+import {
+  Camera,
+  Calendar as CalendarIcon,
+  Plus,
+  Trash2,
+  MapPin,
+} from 'lucide-react-native';
+import { Calendar } from 'react-native-calendars';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { COLORS, SPACING, TYPOGRAPHY, PATH_COLORS } from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { modalActions } from '@/stores/useModalStore';
 import { useStoryStore, storyActions } from '@/stores/useStoryStore';
 import { getTodayDateString, formatDate } from '@/utils/date';
+import StoryMapPicker from '@/components/stories/StoryMapPicker';
+import type { LocationPoint } from '@/types';
 
 type StoryEditRouteProp = RouteProp<{ params: { storyId?: string } }, 'params'>;
 
@@ -33,30 +42,40 @@ const StoryEditScreen = () => {
   const { addStory, updateStory, deleteStory, setSelectedStoryId } =
     storyActions;
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [date, setDate] = useState(getTodayDateString());
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>();
+  const existingStory = useMemo(
+    () => (isEditMode ? stories.find(s => s.id === storyId) : null),
+    [isEditMode, storyId, stories],
+  );
 
-  // 데이터 불러오기 (수정 모드일 때만)
+  const [title, setTitle] = useState(existingStory?.title || '');
+  const [description, setDescription] = useState(
+    existingStory?.description || '',
+  );
+  const [date, setDate] = useState(
+    existingStory
+      ? formatDate(existingStory.date, 'YYYY-MM-DD')
+      : getTodayDateString(),
+  );
+  const [path, setPath] = useState<LocationPoint[]>(existingStory?.path || []);
+  const [pathColor] = useState<string>(() => {
+    if (existingStory?.pathColor) return existingStory.pathColor;
+    return PATH_COLORS[Math.floor(Math.random() * PATH_COLORS.length)];
+  });
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>(
+    existingStory?.thumbnailUrl,
+  );
+
+  // 잘못된 접근 처리 (수정 모드인데 스토리가 없는 경우)
   useEffect(() => {
-    if (isEditMode && storyId) {
-      const story = stories.find(s => s.id === storyId);
-      if (story) {
-        setTitle(story.title);
-        setDescription(story.description || '');
-        setDate(formatDate(story.date));
-        setThumbnailUrl(story.thumbnailUrl);
-      } else {
-        showModal({
-          type: 'alert',
-          title: '에러',
-          message: '스토리 정보를 불러올 수 없습니다.',
-          onConfirm: () => navigation.goBack(),
-        });
-      }
+    if (isEditMode && !existingStory) {
+      showModal({
+        type: 'alert',
+        title: '에러',
+        message: '스토리 정보를 불러올 수 없습니다.',
+        onConfirm: () => navigation.goBack(),
+      });
     }
-  }, [isEditMode, storyId, stories, navigation, showModal]);
+  }, [isEditMode, existingStory, navigation, showModal]);
 
   const handleSave = () => {
     if (!title.trim()) {
@@ -68,29 +87,31 @@ const StoryEditScreen = () => {
       return;
     }
 
+    const storyData = {
+      title: title.trim(),
+      description: description.trim(),
+      thumbnailUrl,
+      path,
+      pathColor,
+    };
+
     if (isEditMode && storyId) {
-      updateStory(storyId, { title, description, thumbnailUrl });
-      showModal({
-        type: 'alert',
-        title: '성공',
-        message: '스토리가 수정되었습니다.',
-        onConfirm: () => navigation.goBack(),
-      });
+      updateStory(storyId, storyData);
     } else {
       addStory({
-        title,
-        description,
-        thumbnailUrl,
-        date: new Date().toISOString(),
-        path: [], // 신규 생성 시에는 경로 없음
-      });
-      showModal({
-        type: 'alert',
-        title: '성공',
-        message: '새로운 스토리가 기록되었습니다.',
-        onConfirm: () => navigation.goBack(),
+        ...storyData,
+        date: new Date(date).toISOString(),
       });
     }
+
+    showModal({
+      type: 'alert',
+      title: '성공',
+      message: isEditMode
+        ? '스토리가 수정되었습니다.'
+        : '새로운 스토리가 기록되었습니다.',
+      onConfirm: () => navigation.goBack(),
+    });
   };
 
   const handleDelete = () => {
@@ -173,21 +194,6 @@ const StoryEditScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {!isEditMode && stories.length <= 3 && (
-          <View style={styles.infoBanner}>
-            <View style={styles.infoIconWrapper}>
-              <MapPin size={16} color={COLORS.primary} />
-            </View>
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoTitle}>경로와 함께 기록하고 싶나요?</Text>
-              <Text style={styles.infoDescription}>
-                이동 경로가 포함된 스토리는 '위치' 탭의 기록하기 버튼을 통해
-                만들 수 있어요.
-              </Text>
-            </View>
-          </View>
-        )}
-
         {/* Photo Upload Placeholder */}
         <TouchableOpacity
           style={styles.photoContainer}
@@ -237,11 +243,83 @@ const StoryEditScreen = () => {
           </View>
 
           <View style={styles.metaRow}>
-            <TouchableOpacity style={styles.metaItem}>
-              <Calendar size={20} color={COLORS.primary} strokeWidth={2.5} />
+            <TouchableOpacity
+              style={styles.metaItem}
+              onPress={() => {
+                showModal({
+                  type: 'none',
+                  title: '날짜 선택',
+                  content: (
+                    <View style={styles.calendarContainer}>
+                      <View style={styles.calendarHeader}>
+                        <Text style={styles.calendarTitle}>날짜 선택</Text>
+                        <TouchableOpacity
+                          onPress={() => modalActions.hideModal()}
+                        >
+                          <Text style={styles.closeText}>닫기</Text>
+                        </TouchableOpacity>
+                      </View>
+                      <Calendar
+                        current={date}
+                        onDayPress={day => {
+                          setDate(day.dateString);
+                          modalActions.hideModal();
+                        }}
+                        markedDates={{
+                          [date]: {
+                            selected: true,
+                            selectedColor: COLORS.primary,
+                            selectedTextColor: COLORS.white,
+                          },
+                        }}
+                        theme={{
+                          selectedDayBackgroundColor: COLORS.primary,
+                          todayTextColor: COLORS.primary,
+                          arrowColor: COLORS.primary,
+                          dotColor: COLORS.primary,
+                        }}
+                      />
+                    </View>
+                  ),
+                });
+              }}
+            >
+              <CalendarIcon
+                size={20}
+                color={COLORS.primary}
+                strokeWidth={2.5}
+              />
               <View style={styles.metaTextContainer}>
                 <Text style={styles.metaLabel}>날짜</Text>
                 <Text style={styles.metaValue}>{date}</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.metaItem}
+              onPress={() => {
+                showModal({
+                  type: 'full',
+                  title: '경로 설정',
+                  content: (
+                    <StoryMapPicker
+                      path={path}
+                      pathColor={pathColor}
+                      onSelect={setPath}
+                      onClose={() => modalActions.hideModal()}
+                    />
+                  ),
+                });
+              }}
+            >
+              <MapPin size={20} color={COLORS.primary} strokeWidth={2.5} />
+              <View style={styles.metaTextContainer}>
+                <Text style={styles.metaLabel}>경로</Text>
+                <Text style={styles.metaValue} numberOfLines={1}>
+                  {path.length > 0
+                    ? `${path.length}개의 지점 선택됨`
+                    : '경로 설정'}
+                </Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -452,6 +530,29 @@ const styles = StyleSheet.create({
   modalContent: {
     paddingHorizontal: 20,
     gap: 10,
+  },
+
+  calendarContainer: {
+    backgroundColor: COLORS.white,
+    borderRadius: 24,
+    width: '100%',
+    padding: 16,
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingHorizontal: 8,
+  },
+  calendarTitle: {
+    ...TYPOGRAPHY.header2,
+    color: COLORS.textPrimary,
+  },
+  closeText: {
+    color: COLORS.primary,
+    fontWeight: '700',
+    fontSize: 16,
   },
 });
 

@@ -2,7 +2,7 @@ import { useEffect, useCallback } from 'react';
 
 import { useLocationStore, locationActions } from '@/stores/useLocationStore';
 import { useStoryStore, storyActions } from '@/stores/useStoryStore';
-import { GeolocationService } from '@/businesses/geolocation/geolocationServiceService';
+import { geolocationService } from '@/businesses/geolocation/geolocationService';
 
 export const useGeolocation = () => {
   const { location, error, loading } = useLocationStore();
@@ -15,7 +15,7 @@ export const useGeolocation = () => {
   const updateLocation = useCallback(async () => {
     try {
       setLoading(true);
-      const hasPermission = await GeolocationService.requestPermission();
+      const hasPermission = await geolocationService.requestPermission();
 
       if (!hasPermission) {
         setError('위치 권한이 거부되었습니다.');
@@ -23,7 +23,7 @@ export const useGeolocation = () => {
         return;
       }
 
-      const position = await GeolocationService.getCurrentPosition();
+      const position = await geolocationService.getCurrentPosition();
 
       setLocation({
         latitude: position.coords.latitude,
@@ -44,9 +44,9 @@ export const useGeolocation = () => {
     const init = async () => {
       await updateLocation();
 
-      const hasPermission = await GeolocationService.requestPermission();
+      const hasPermission = await geolocationService.requestPermission();
       if (hasPermission) {
-        watchId = GeolocationService.watchPosition(
+        watchId = geolocationService.watchPosition(
           position => {
             const newLocation = {
               latitude: position.coords.latitude,
@@ -74,7 +74,7 @@ export const useGeolocation = () => {
 
     return () => {
       if (watchId !== null) {
-        GeolocationService.clearWatch(watchId);
+        geolocationService.clearWatch(watchId);
       }
     };
   }, [updateLocation, isRecording, addLocationPoint, setLocation]);

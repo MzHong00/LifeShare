@@ -84,3 +84,22 @@ jest.mock('react-native-mmkv', () => {
     createMMKV: jest.fn().mockImplementation(() => mockMMKV),
   };
 });
+
+// Sentry 가짜 모듈 설정
+jest.mock('@sentry/react-native', () => ({
+  init: jest.fn(),
+  captureException: jest.fn(),
+  captureMessage: jest.fn(),
+  addBreadcrumb: jest.fn(),
+  setUser: jest.fn(),
+  setTag: jest.fn(),
+  setExtra: jest.fn(),
+  setContext: jest.fn(),
+  wrap: jest.fn(c => c),
+  mobileReplayIntegration: jest.fn(),
+  logger: {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+  },
+}));

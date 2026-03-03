@@ -3,7 +3,7 @@ import { Heart } from 'lucide-react-native';
 
 import { APP_BRAND_NAME } from '@/constants/config';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
-import { GoogleOAuthService } from '@/businesses/oauth/google/googleOAuthService';
+import { googleOAuthService } from '@/businesses/oauth/google/googleOAuthService';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { GoogleIcon, KakaoIcon } from '@/components/common/SocialIcons';
 
@@ -34,7 +34,7 @@ const LoginScreen = () => {
           <TouchableOpacity
             style={[styles.socialButton, styles.googleButton]}
             activeOpacity={0.8}
-            onPress={() => GoogleOAuthService.loginGoogleOAuth()}
+            onPress={() => googleOAuthService.loginGoogleOAuth()}
           >
             <GoogleIcon size={22} />
             <Text style={styles.googleButtonText}>Google로 시작하기</Text>
