@@ -73,13 +73,23 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # (5) 안드로이드 앱 빌드 (Develop Release)
+      # (5) 환경 변수 파일 생성 (.env.dev)
+      - name: 📝 .env.dev 생성
+        run: |
+          echo "${{ secrets.ENV_DEV }}" > .env.dev
+
+      # (6) Android 키스토어 복원
+      - name: 🔑 Android 키스토어 복원
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/my-release-key.keystore
+
+      # (7) 안드로이드 앱 빌드 (Develop Release)
       - name: 🔨 Android 빌드 (Develop Release)
         run: |
           cd android
-          ./gradlew assembleDevelopRelease
+          ./gradlew assembleDevelopRelease -PreactNativeArchitectures=arm64-v8a --no-daemon
 
-      # (6) Firebase App Distribution 업로드
+      # (8) Firebase App Distribution 업로드
       - name: 🚀 Firebase App Distribution 업로드
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
