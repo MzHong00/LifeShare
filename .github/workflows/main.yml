@@ -83,13 +83,23 @@ jobs:
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/my-release-key.keystore
 
-      # (7) 안드로이드 앱 빌드 (Develop Release)
+      # (7) Sentry 설정 파일 생성
+      - name: 📝 sentry.properties 생성
+        run: |
+          echo "auth.token=${{ secrets.SENTRY_AUTH_TOKEN }}" > android/sentry.properties
+          echo "defaults.org=${{ secrets.SENTRY_ORG }}" >> android/sentry.properties
+          echo "defaults.project=${{ secrets.SENTRY_PROJECT }}" >> android/sentry.properties
+          echo "defaults.url=https://sentry.io/" >> android/sentry.properties
+
+      # (8) 안드로이드 앱 빌드 (Develop Release)
       - name: 🔨 Android 빌드 (Develop Release)
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
           cd android
           ./gradlew assembleDevelopRelease -PreactNativeArchitectures=arm64-v8a --no-daemon
 
-      # (8) Firebase App Distribution 업로드
+      # (9) Firebase App Distribution 업로드
       - name: 🚀 Firebase App Distribution 업로드
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
