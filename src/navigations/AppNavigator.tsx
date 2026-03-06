@@ -15,8 +15,6 @@ import MainTabScreen from '@/screens/main/MainTabScreen';
 import WorkspaceLandingScreen from '@/screens/workspace/WorkspaceLandingScreen';
 import WorkspaceSetupScreen from '@/screens/workspace/WorkspaceSetupScreen';
 import WorkspaceListScreen from '@/screens/workspace/WorkspaceListScreen';
-import ProUpgradeScreen from '@/screens/upgrade/ProUpgradeScreen';
-import PlanManagementScreen from '@/screens/profile/PlanManagementScreen';
 import StoryEditScreen from '@/screens/stories/StoryEditScreen';
 import StoryDetailScreen from '@/screens/stories/StoryDetailScreen';
 import WorkspaceEditScreen from '@/screens/workspace/WorkspaceEditScreen';
@@ -102,18 +100,12 @@ const AppNavigator = () => {
               name={NAV_ROUTES.WORKSPACE_LIST.NAME}
               component={WorkspaceListScreen}
             />
-            <Stack.Screen
-              name={NAV_ROUTES.PRO_UPGRADE.NAME}
-              component={ProUpgradeScreen}
-            />
+
             <Stack.Screen
               name={NAV_ROUTES.WORKSPACE_EDIT.NAME}
               component={WorkspaceEditScreen}
             />
-            <Stack.Screen
-              name={NAV_ROUTES.PLAN_MANAGEMENT.NAME}
-              component={PlanManagementScreen}
-            />
+
             <Stack.Screen
               name={NAV_ROUTES.PRIVACY_POLICY.NAME}
               component={PrivacyPolicyScreen}

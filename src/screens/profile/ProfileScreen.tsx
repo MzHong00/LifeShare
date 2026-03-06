@@ -18,7 +18,6 @@ import {
   Inbox,
   Check,
   X,
-  Crown,
   Pencil,
   Camera,
   UserCog,
@@ -50,8 +49,7 @@ interface MenuItem {
 
 type RootStackParamList = {
   [NAV_ROUTES.WORKSPACE_SETUP.NAME]: undefined;
-  [NAV_ROUTES.PLAN_MANAGEMENT.NAME]: undefined;
-  [NAV_ROUTES.PRO_UPGRADE.NAME]: undefined;
+
   [NAV_ROUTES.PRIVACY_POLICY.NAME]: undefined;
   [NAV_ROUTES.WORKSPACE_LIST.NAME]: undefined;
   [NAV_ROUTES.PERSONAL_SETTINGS.NAME]: undefined;
@@ -161,19 +159,7 @@ const ProfileScreen = () => {
       icon: <Users size={20} color={COLORS.textPrimary} />,
       onPress: () => navigation.navigate(NAV_ROUTES.WORKSPACE_LIST.NAME as any),
     },
-    {
-      id: 'plan',
-      label: '멤버십 및 플랜',
-      icon: <Crown size={20} color={COLORS.textPrimary} />,
-      onPress: () =>
-        navigation.navigate(NAV_ROUTES.PLAN_MANAGEMENT.NAME as any),
-      badge: (
-        <View style={styles.proBadge}>
-          <Crown size={10} color={COLORS.white} fill={COLORS.white} />
-          <Text style={styles.proBadgeText}>PRO</Text>
-        </View>
-      ),
-    },
+
     {
       id: 'personal_settings',
       label: '개인 설정',
@@ -368,21 +354,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  proBadge: {
-    backgroundColor: '#191F28',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 8,
-    marginRight: 6,
-  },
-  proBadgeText: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: COLORS.white,
-    marginLeft: 2,
-  },
+
   profileInfo: {
     alignItems: 'center',
     width: '100%',

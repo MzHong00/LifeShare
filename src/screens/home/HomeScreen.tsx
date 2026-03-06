@@ -32,7 +32,6 @@ type RootStackParamList = {
   [NAV_ROUTES.STORIES.NAME]: undefined;
   [NAV_ROUTES.PROFILE.NAME]: undefined;
   [NAV_ROUTES.WORKSPACE_SETUP.NAME]: undefined;
-  [NAV_ROUTES.PRO_UPGRADE.NAME]: undefined;
   [NAV_ROUTES.CHAT.NAME]: undefined;
   [NAV_ROUTES.ANNIVERSARY.NAME]: undefined;
 };
@@ -145,22 +144,6 @@ const HomeScreen = () => {
             </View>
           </Card>
         </Section>
-
-        {/* Banner */}
-        <Section>
-          <Card
-            style={styles.banner}
-            activeOpacity={0.8}
-            onPress={() => navigation.navigate(NAV_ROUTES.PRO_UPGRADE.NAME)}
-          >
-            <Text style={styles.bannerText}>
-              가족, 친구와도 스토리를 나누고 싶나요? ✨
-            </Text>
-            <Text style={[styles.bannerSubText, styles.bannerPrimaryText]}>
-              Pro 플랜으로 업그레이드
-            </Text>
-          </Card>
-        </Section>
       </ScrollView>
     </AppSafeAreaView>
   );
@@ -227,22 +210,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  banner: {
-    backgroundColor: COLORS.dark,
-    alignItems: 'center',
-    padding: SPACING.xl,
-    borderRadius: 24,
-  },
-  bannerText: {
-    color: COLORS.white,
-    fontSize: 15,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  bannerSubText: {
-    color: COLORS.textTertiary,
-    fontSize: 12,
-  },
   setupCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -276,9 +243,6 @@ const styles = StyleSheet.create({
   },
   headerSubTitle: {
     color: COLORS.textSecondary,
-  },
-  bannerPrimaryText: {
-    color: COLORS.primary,
   },
 });
 
