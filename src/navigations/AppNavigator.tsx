@@ -7,8 +7,7 @@ import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { NAV_ROUTES } from '@/constants/navigation';
 import LoginScreen from '@/screens/auth/LoginScreen';
 import CalendarScreen from '@/screens/calendar/CalendarScreen';
-import EventCreateScreen from '@/screens/calendar/EventCreateScreen';
-import TodoScreen from '@/screens/todo/TodoScreen';
+
 import TodoCreateScreen from '@/screens/todo/TodoCreateScreen';
 import ProfileScreen from '@/screens/profile/ProfileScreen';
 import MainTabScreen from '@/screens/main/MainTabScreen';
@@ -59,14 +58,7 @@ const AppNavigator = () => {
                   name={NAV_ROUTES.CALENDAR.NAME}
                   component={CalendarScreen}
                 />
-                <Stack.Screen
-                  name={NAV_ROUTES.EVENT_CREATE.NAME}
-                  component={EventCreateScreen}
-                />
-                <Stack.Screen
-                  name={NAV_ROUTES.TODO.NAME}
-                  component={TodoScreen}
-                />
+
                 <Stack.Screen
                   name={NAV_ROUTES.TODO_CREATE.NAME}
                   component={TodoCreateScreen}

@@ -43,14 +43,7 @@ export const NAV_ROUTES = {
     NAME: 'Anniversary',
     TITLE: '기념일',
   },
-  EVENT_CREATE: {
-    NAME: 'EventCreate',
-    TITLE: '일정 생성',
-  },
-  TODO: {
-    NAME: 'Todo',
-    TITLE: '할 일',
-  },
+
   TODO_CREATE: {
     NAME: 'TodoCreate',
     TITLE: '할 일 생성',

@@ -5,6 +5,8 @@ export interface Todo {
   description?: string;
   isCompleted: boolean;
   assigneeId?: string; // Member ID from workspace. If undefined, it might be unassigned or for everyone.
-  dueDate?: string; // ISO string for the date part (YYYY-MM-DD)
+  startDate: string; // ISO string (YYYY-MM-DD)
+  endDate: string; // ISO string (YYYY-MM-DD)
+  color?: string; // Optional color for the todo/event
   createdAt: string;
 }

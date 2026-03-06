@@ -3,10 +3,10 @@ import { ScrollView, StyleSheet } from 'react-native';
 import { APP_COLORS } from '@/constants/theme';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
-import { Section } from '@/components/common/Section';
 import { DDayHero } from '@/components/home/DDayHero';
 import { HomeHeader } from '@/components/home/HomeHeader';
-import { OurDailyMenu } from '@/components/home/OurDailyMenu';
+import { RecentCalendar } from '@/components/home/RecentCalendar';
+import { RecentStories } from '@/components/home/RecentStories';
 
 const HomeScreen = () => {
   const { currentWorkspace } = useWorkspaceStore();
@@ -30,10 +30,11 @@ const HomeScreen = () => {
         {/* D-Day Section */}
         <DDayHero />
 
-        {/* Main Features */}
-        <Section>
-          <OurDailyMenu />
-        </Section>
+        {/* Today's Agenda */}
+        <RecentCalendar />
+
+        {/* Recent Stories */}
+        <RecentStories />
       </ScrollView>
     </AppSafeAreaView>
   );

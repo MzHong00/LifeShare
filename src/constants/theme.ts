@@ -99,6 +99,22 @@ export const PATH_COLORS = [
   THEME_COLORS.magenta,
 ];
 
+/**
+ * 할 일/일정 구분을 위한 10가지 프리미엄 컬러 팔레트
+ */
+export const TODO_COLORS = [
+  THEME_COLORS.blue, // 파랑
+  THEME_COLORS.red, // 빨강
+  THEME_COLORS.orange, // 주황
+  THEME_COLORS.green, // 초록
+  THEME_COLORS.purple, // 보라
+  THEME_COLORS.pink, // 핑크
+  THEME_COLORS.amber, // 노랑
+  THEME_COLORS.teal, // 청록
+  THEME_COLORS.indigo, // 남색
+  THEME_COLORS.magenta, // 마젠타
+];
+
 export const SPACING = {
   xs: 4,
   sm: 8,

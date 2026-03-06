@@ -19,6 +19,8 @@ import {
 } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { useCalendarStore } from '@/stores/useCalendarStore';
+import { useTodoStore, todoActions } from '@/stores/useTodoStore';
+import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import {
   getTodayDateString,
   getIntermediateDates,
@@ -26,6 +28,7 @@ import {
 } from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { Card } from '@/components/common/Card';
+import { TodoItem } from '@/components/todo/TodoItem';
 
 const CalendarScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
@@ -33,8 +36,11 @@ const CalendarScreen = () => {
   const [currentMonth, setCurrentMonth] = useState(getTodayDateString());
 
   const events = useCalendarStore(state => state.events);
+  const todos = useTodoStore(state => state.todos);
+  const currentWorkspace = useWorkspaceStore(state => state.currentWorkspace);
+  const { toggleTodo } = todoActions;
 
-  // Generate markedDates based on store events
+  // Generate markedDates based on store events and todos
   const markedDates = useMemo(() => {
     const marks: any = {
       [selected]: {
@@ -45,52 +51,58 @@ const CalendarScreen = () => {
       },
     };
 
-    events.forEach(event => {
-      // Get full range including start and end
-      const range = [
-        event.startDate,
-        ...getIntermediateDates(event.startDate, event.endDate),
-        event.endDate,
-      ];
-      // Filter out duplicates if startDate equals endDate
-      const uniqueRange = [...new Set(range)];
+    // Helper to add markers for a list of items with range and color
+    const addMarkers = (items: any[]) => {
+      items.forEach(item => {
+        const range = [
+          item.startDate,
+          ...getIntermediateDates(item.startDate, item.endDate),
+          item.endDate,
+        ];
+        const uniqueRange = [...new Set(range)];
 
-      uniqueRange.forEach(date => {
-        if (marks[date]) {
-          marks[date].marked = true;
-          marks[date].dotColor = event.color || APP_COLORS.primary;
-        } else {
-          marks[date] = {
-            marked: true,
-            dotColor: event.color || APP_COLORS.primary,
-          };
-        }
+        uniqueRange.forEach(date => {
+          if (marks[date]) {
+            marks[date].marked = true;
+            // Prioritize orange/red dots or just keep the first one
+            marks[date].dotColor =
+              item.color || marks[date].dotColor || APP_COLORS.primary;
+          } else {
+            marks[date] = {
+              marked: true,
+              dotColor: item.color || APP_COLORS.primary,
+            };
+          }
+        });
       });
-    });
+    };
+
+    addMarkers(events);
+    addMarkers(todos);
 
     return marks;
-  }, [selected, events]);
+  }, [selected, events, todos]);
 
-  const sortedEvents = useMemo(() => {
-    return [...events].sort((a, b) => {
-      if (a.startDate !== b.startDate)
-        return a.startDate.localeCompare(b.startDate);
-      return (a.startTime || '').localeCompare(b.startTime || '');
-    });
-  }, [events]);
+  const selectedDateTodos = useMemo(() => {
+    return todos.filter(
+      todo =>
+        todo.workspaceId === currentWorkspace?.id &&
+        selected >= todo.startDate &&
+        selected <= todo.endDate,
+    );
+  }, [todos, currentWorkspace?.id, selected]);
+
+  const activeTodos = selectedDateTodos.filter(t => !t.isCompleted);
+  const completedTodos = selectedDateTodos.filter(t => t.isCompleted);
 
   const formatHeaderDate = (dateStr: string) => {
     return formatDate(dateStr, 'YYYY년 M월');
   };
 
-  const handleAddEvent = () => {
-    navigation.navigate(NAV_ROUTES.EVENT_CREATE.NAME, {
+  const handleAdd = () => {
+    navigation.navigate(NAV_ROUTES.TODO_CREATE.NAME, {
       initialDate: selected,
     });
-  };
-
-  const handleEditEvent = (eventId: string) => {
-    navigation.navigate(NAV_ROUTES.EVENT_CREATE.NAME, { eventId });
   };
 
   return (
@@ -100,7 +112,7 @@ const CalendarScreen = () => {
         <TouchableOpacity
           style={styles.addIconBtn}
           activeOpacity={0.7}
-          onPress={handleAddEvent}
+          onPress={handleAdd}
         >
           <Plus size={24} color={APP_COLORS.textPrimary} />
         </TouchableOpacity>
@@ -147,34 +159,43 @@ const CalendarScreen = () => {
         </Card>
 
         <View style={styles.eventSection}>
-          <Text style={styles.sectionTitle}>다가오는 일정</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>할 일</Text>
+          </View>
 
-          {sortedEvents.length === 0 ? (
+          {selectedDateTodos.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>등록된 일정이 없습니다.</Text>
+              <Text style={styles.emptyText}>등록된 할 일이 없습니다.</Text>
             </View>
           ) : (
-            sortedEvents.map(event => (
-              <Card
-                key={event.id}
-                style={styles.eventItem}
-                onPress={() => handleEditEvent(event.id)}
-              >
-                <View
-                  style={[styles.eventTag, { backgroundColor: event.color }]}
+            <>
+              {activeTodos.map(todo => (
+                <TodoItem
+                  key={todo.id}
+                  item={todo}
+                  currentWorkspace={currentWorkspace}
+                  onToggle={toggleTodo}
+                  onPress={id =>
+                    navigation.navigate(NAV_ROUTES.TODO_CREATE.NAME, {
+                      todoId: id,
+                    })
+                  }
                 />
-                <View style={styles.eventInfo}>
-                  <Text style={styles.eventTitle}>{event.title}</Text>
-                  <Text style={styles.eventTime}>
-                    {event.startDate === event.endDate
-                      ? event.startDate
-                      : `${event.startDate.slice(5)} ~ ${event.endDate.slice(
-                          5,
-                        )}`}
-                  </Text>
-                </View>
-              </Card>
-            ))
+              ))}
+              {completedTodos.map(todo => (
+                <TodoItem
+                  key={todo.id}
+                  item={todo}
+                  currentWorkspace={currentWorkspace}
+                  onToggle={toggleTodo}
+                  onPress={id =>
+                    navigation.navigate(NAV_ROUTES.TODO_CREATE.NAME, {
+                      todoId: id,
+                    })
+                  }
+                />
+              ))}
+            </>
           )}
         </View>
       </ScrollView>
@@ -222,40 +243,18 @@ const styles = StyleSheet.create({
   calendar: {
     borderRadius: 16,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
+  },
   sectionTitle: {
     ...TYPOGRAPHY.header2,
     fontSize: 17,
-    marginBottom: SPACING.lg,
     color: APP_COLORS.textPrimary,
   },
-  eventItem: {
-    flexDirection: 'row',
-    padding: SPACING.lg,
-    borderRadius: 20,
-    marginBottom: SPACING.md,
-    alignItems: 'center',
-  },
-  eventTag: {
-    width: 4,
-    height: 32,
-    borderRadius: 2,
-    marginRight: SPACING.lg,
-  },
-  eventInfo: {
-    flex: 1,
-  },
-  eventTitle: {
-    ...TYPOGRAPHY.body1,
-    fontSize: 15,
-    fontWeight: '700',
-    color: APP_COLORS.textPrimary,
-    marginBottom: 4,
-  },
-  eventTime: {
-    ...TYPOGRAPHY.caption,
-    color: APP_COLORS.textSecondary,
-    fontSize: 13,
-  },
+
   emptyState: {
     paddingVertical: 40,
     alignItems: 'center',

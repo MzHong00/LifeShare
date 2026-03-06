@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   StyleSheet,
@@ -25,15 +25,12 @@ import {
   THEME_COLORS,
   SPACING,
   TYPOGRAPHY,
+  TODO_COLORS,
 } from '@/constants/theme';
 import { useTodoStore, todoActions } from '@/stores/useTodoStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { modalActions } from '@/stores/useModalStore';
-import {
-  getTodayDateString,
-  getDateWithOffset,
-  formatDate,
-} from '@/utils/date';
+import { getTodayDateString, getDateWithOffset } from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { HeaderButton } from '@/components/common/HeaderButton';
 import { FormField } from '@/components/common/FormField';
@@ -41,9 +38,15 @@ import { Button } from '@/components/common/Button';
 import { FormLabel } from '@/components/common/FormLabel';
 
 type TodoCreateRouteProp = RouteProp<
-  { TodoCreate: { todoId?: string } },
+  { TodoCreate: { todoId?: string; initialDate?: string } },
   'TodoCreate'
 >;
+
+const QUICK_DATES = [
+  { label: '오늘', offset: 0 },
+  { label: '내일', offset: 1 },
+  { label: '다음 주', offset: 7 },
+];
 
 const TodoCreateScreen = () => {
   const navigation = useNavigation();
@@ -58,8 +61,17 @@ const TodoCreateScreen = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [assigneeId, setAssigneeId] = useState<string | undefined>(undefined);
-  const [dueDate, setDueDate] = useState(getTodayDateString());
+  const [startDate, setStartDate] = useState(
+    route.params?.initialDate || getTodayDateString(),
+  );
+  const [endDate, setEndDate] = useState(
+    route.params?.initialDate || getTodayDateString(),
+  );
+  const [selectedColor, setSelectedColor] = useState(TODO_COLORS[0]);
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
+  const [activeDateField, setActiveDateField] = useState<'start' | 'end'>(
+    'start',
+  );
 
   useEffect(() => {
     if (todoId) {
@@ -68,16 +80,57 @@ const TodoCreateScreen = () => {
         setTitle(todo.title);
         setDescription(todo.description || '');
         setAssigneeId(todo.assigneeId);
-        setDueDate(todo.dueDate || getTodayDateString());
+        setStartDate(todo.startDate);
+        setEndDate(todo.endDate);
+        setSelectedColor(todo.color || TODO_COLORS[0]);
       }
     }
   }, [todoId, todos]);
 
+  const handleDayPress = (day: any) => {
+    if (activeDateField === 'start') {
+      setStartDate(day.dateString);
+      // Ends cannot be before start
+      if (day.dateString > endDate) {
+        setEndDate(day.dateString);
+      }
+    } else {
+      setEndDate(day.dateString);
+      // Starts cannot be after end
+      if (day.dateString < startDate) {
+        setStartDate(day.dateString);
+      }
+    }
+    // Close modal after selecting a single date
+    setIsCalendarVisible(false);
+  };
+
+  const setQuickDate = (offset: number) => {
+    const date = getDateWithOffset(offset);
+    setEndDate(date);
+    if (date < startDate) {
+      setStartDate(date);
+    }
+    // Close modal if selection happened via quick buttons
+    setIsCalendarVisible(false);
+  };
+
+  const markedDates = useMemo(() => {
+    const selectedDate = activeDateField === 'start' ? startDate : endDate;
+    return {
+      [selectedDate]: {
+        selected: true,
+        selectedColor: APP_COLORS.primary,
+        selectedTextColor: THEME_COLORS.white,
+      },
+    };
+  }, [startDate, endDate, activeDateField]);
+
   const handleDelete = useCallback(() => {
     showModal({
       type: 'confirm',
-      title: '할 일 삭제',
-      message: '이 할 일을 삭제하시겠습니까?',
+      title: '삭제',
+      message: '이 항목을 삭제하시겠습니까?',
       onConfirm: () => {
         if (todoId) {
           removeTodo(todoId);
@@ -105,7 +158,7 @@ const TodoCreateScreen = () => {
       showModal({
         type: 'alert',
         title: '알림',
-        message: '할 일 제목을 입력해주세요.',
+        message: '제목을 입력해주세요.',
       });
       return;
     }
@@ -119,11 +172,11 @@ const TodoCreateScreen = () => {
       return;
     }
 
-    if (!dueDate.trim()) {
+    if (!startDate || !endDate) {
       showModal({
         type: 'alert',
         title: '알림',
-        message: '마감 기한을 선택해주세요.',
+        message: '기간을 선택해주세요.',
       });
       return;
     }
@@ -134,7 +187,9 @@ const TodoCreateScreen = () => {
       description: description.trim(),
       isCompleted: false,
       assigneeId,
-      dueDate: dueDate.trim(),
+      startDate,
+      endDate,
+      color: selectedColor,
     };
 
     if (todoId) {
@@ -142,7 +197,7 @@ const TodoCreateScreen = () => {
       showModal({
         type: 'alert',
         title: '알림',
-        message: '할 일이 수정되었습니다.',
+        message: '항목이 수정되었습니다.',
       });
     } else {
       addTodo({
@@ -152,7 +207,7 @@ const TodoCreateScreen = () => {
       showModal({
         type: 'alert',
         title: '알림',
-        message: '새로운 할 일이 추가되었습니다.',
+        message: '새로운 항목이 추가되었습니다.',
       });
     }
 
@@ -171,7 +226,7 @@ const TodoCreateScreen = () => {
         >
           <FormField
             label="제목"
-            placeholder="무엇을 해야 하나요?"
+            placeholder="무엇을 하나요? (예: 데이트, 장보기)"
             value={title}
             onChangeText={setTitle}
             required
@@ -187,39 +242,73 @@ const TodoCreateScreen = () => {
           />
 
           <View style={styles.section}>
-            <FormLabel>마감 기한</FormLabel>
-            <View style={styles.dateInputWrapper}>
-              <TouchableOpacity
-                style={styles.dateTouchArea}
-                onPress={() => setIsCalendarVisible(true)}
-                activeOpacity={0.7}
-              >
-                <CalendarIcon
-                  size={20}
-                  color={APP_COLORS.textSecondary}
-                  style={styles.dateIcon}
-                />
-                <View style={styles.dateInput}>
-                  <Text style={styles.dateInputText}>
-                    {dueDate || formatDate(getTodayDateString(), 'YYYY-MM-DD')}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
+            <FormLabel>시작일</FormLabel>
+            <TouchableOpacity
+              style={[
+                styles.dateButton,
+                activeDateField === 'start' && styles.dateButtonActive,
+              ]}
+              activeOpacity={0.7}
+              onPress={() => {
+                setActiveDateField('start');
+                setIsCalendarVisible(true);
+              }}
+            >
+              <CalendarIcon
+                size={20}
+                color={APP_COLORS.primary}
+                style={styles.dateIcon}
+              />
+              <Text style={styles.dateValue}>{startDate}</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.section}>
+            <FormLabel>종료일</FormLabel>
             <View style={styles.quickDateRow}>
-              {['오늘', '내일', '다음주'].map(label => (
+              {QUICK_DATES.map(item => (
                 <TouchableOpacity
-                  key={label}
+                  key={item.label}
                   style={styles.quickDateBtn}
-                  onPress={() => {
-                    let date = getTodayDateString();
-                    if (label === '내일') date = getDateWithOffset(1);
-                    if (label === '다음주') date = getDateWithOffset(7);
-                    setDueDate(date);
-                  }}
+                  onPress={() => setQuickDate(item.offset)}
                 >
-                  <Text style={styles.quickDateText}>{label}</Text>
+                  <Text style={styles.quickDateText}>{item.label}</Text>
                 </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity
+              style={[
+                styles.dateButton,
+                activeDateField === 'end' && styles.dateButtonActive,
+              ]}
+              activeOpacity={0.7}
+              onPress={() => {
+                setActiveDateField('end');
+                setIsCalendarVisible(true);
+              }}
+            >
+              <CalendarIcon
+                size={20}
+                color={APP_COLORS.primary}
+                style={styles.dateIcon}
+              />
+              <Text style={styles.dateValue}>{endDate}</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.section}>
+            <FormLabel>색상 선택</FormLabel>
+            <View style={styles.colorRow}>
+              {TODO_COLORS.map(color => (
+                <TouchableOpacity
+                  key={color}
+                  style={[
+                    styles.colorCircle,
+                    { backgroundColor: color },
+                    selectedColor === color && styles.colorCircleActive,
+                  ]}
+                  onPress={() => setSelectedColor(color)}
+                />
               ))}
             </View>
           </View>
@@ -333,35 +422,27 @@ const TodoCreateScreen = () => {
           activeOpacity={1}
           onPress={() => setIsCalendarVisible(false)}
         >
-          <View style={styles.calendarContainer}>
-            <View style={styles.calendarHeader}>
-              <Text style={styles.calendarTitle}>마감 기한 선택</Text>
+          <View style={styles.calendarModalContent}>
+            <View style={styles.calendarModalHeader}>
+              <Text style={styles.calendarModalTitle}>날짜 선택</Text>
               <TouchableOpacity onPress={() => setIsCalendarVisible(false)}>
                 <Text style={styles.closeText}>닫기</Text>
               </TouchableOpacity>
             </View>
+
             <Calendar
-              current={dueDate || getTodayDateString()}
-              onDayPress={day => {
-                setDueDate(day.dateString);
-                setIsCalendarVisible(false);
-              }}
-              markedDates={
-                dueDate
-                  ? {
-                      [dueDate]: {
-                        selected: true,
-                        selectedColor: APP_COLORS.primary,
-                        selectedTextColor: THEME_COLORS.white,
-                      },
-                    }
-                  : {}
-              }
+              current={activeDateField === 'start' ? startDate : endDate}
+              onDayPress={handleDayPress}
+              markedDates={markedDates}
               theme={{
                 selectedDayBackgroundColor: APP_COLORS.primary,
+                selectedDayTextColor: THEME_COLORS.white,
                 todayTextColor: APP_COLORS.primary,
                 arrowColor: APP_COLORS.primary,
-                dotColor: APP_COLORS.primary,
+                monthTextColor: APP_COLORS.textPrimary,
+                textDayFontWeight: '500',
+                textMonthFontWeight: 'bold',
+                textDayHeaderFontWeight: '700',
               }}
             />
           </View>
@@ -386,47 +467,62 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 28,
   },
-  dateInputWrapper: {
+  quickDateRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  quickDateBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: APP_COLORS.bgGray,
+    borderWidth: 1,
+    borderColor: APP_COLORS.border,
+  },
+  quickDateText: {
+    fontSize: 13,
+    color: APP_COLORS.textSecondary,
+    fontWeight: '600',
+  },
+  dateButton: {
     backgroundColor: APP_COLORS.bgGray,
     borderRadius: 16,
     paddingHorizontal: 16,
-    height: 56,
-  },
-  dateTouchArea: {
-    flex: 1,
+    height: 52,
     flexDirection: 'row',
     alignItems: 'center',
-    height: '100%',
+    borderWidth: 1.5,
+    borderColor: 'transparent',
+  },
+  dateButtonActive: {
+    borderColor: APP_COLORS.primary,
+    backgroundColor: THEME_COLORS.white,
   },
   dateIcon: {
     marginRight: 10,
   },
-  dateInput: {
-    flex: 1,
-    height: '100%',
-    justifyContent: 'center',
-  },
-  dateInputText: {
-    ...TYPOGRAPHY.body2,
+  dateValue: {
+    fontSize: 16,
     color: APP_COLORS.textPrimary,
+    fontWeight: '500',
   },
-  quickDateRow: {
+  smallIconMargin: { marginRight: 8 },
+  colorRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
     marginTop: 10,
-    gap: 8,
   },
-  quickDateBtn: {
-    backgroundColor: APP_COLORS.bgGray,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  quickDateText: {
-    fontSize: 12,
-    color: APP_COLORS.textSecondary,
-    fontWeight: '600',
+  colorCircle: { width: 36, height: 36, borderRadius: 18 },
+  colorCircleActive: {
+    borderWidth: 3,
+    borderColor: THEME_COLORS.white,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   memberList: {
     flexDirection: 'row',
@@ -495,20 +591,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-  calendarContainer: {
+  calendarModalContent: {
     backgroundColor: THEME_COLORS.white,
     borderRadius: 24,
     width: '100%',
     padding: 16,
+    overflow: 'hidden',
   },
-  calendarHeader: {
+  calendarModalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
     paddingHorizontal: 8,
   },
-  calendarTitle: {
+  calendarModalTitle: {
     ...TYPOGRAPHY.header2,
     color: APP_COLORS.textPrimary,
   },
