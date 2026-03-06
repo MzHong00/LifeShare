@@ -1,4 +1,3 @@
-
 import {
   TouchableOpacity,
   View,
@@ -7,7 +6,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { Check } from 'lucide-react-native';
-import { COLORS, TYPOGRAPHY } from '@/constants/theme';
+import { APP_COLORS, THEME_COLORS, TYPOGRAPHY } from '@/constants/theme';
 
 interface CheckboxProps {
   label: string;
@@ -38,7 +37,9 @@ const Checkbox = ({
           disabled && styles.checkboxDisabled,
         ]}
       >
-        {checked && <Check size={14} color={COLORS.white} strokeWidth={3} />}
+        {checked && (
+          <Check size={14} color={THEME_COLORS.white} strokeWidth={3} />
+        )}
       </View>
       <Text style={[styles.label, disabled && styles.labelDisabled]}>
         {label}
@@ -58,27 +59,27 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 6,
     borderWidth: 2,
-    borderColor: COLORS.textTertiary,
+    borderColor: APP_COLORS.textTertiary,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
   },
   checkboxActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
+    borderColor: APP_COLORS.primary,
   },
   checkboxDisabled: {
-    backgroundColor: COLORS.textTertiary,
-    borderColor: COLORS.textTertiary,
+    backgroundColor: APP_COLORS.textTertiary,
+    borderColor: APP_COLORS.textTertiary,
     opacity: 0.6,
   },
   label: {
     ...TYPOGRAPHY.body2,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     fontWeight: '500',
   },
   labelDisabled: {
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
   },
 });
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 
-import { COLORS, SPACING } from '@/constants/theme';
+import { APP_COLORS, SPACING } from '@/constants/theme';
 
 interface SectionProps {
   title?: string;
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 13,
     fontWeight: '800',
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     marginBottom: 10,
     marginLeft: 4,
     textTransform: 'uppercase',

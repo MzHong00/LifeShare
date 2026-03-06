@@ -20,7 +20,12 @@ import {
 } from 'lucide-react-native';
 
 import '@/lib/reactNativeCalendars';
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { useTodoStore, todoActions } from '@/stores/useTodoStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { modalActions } from '@/stores/useModalStore';
@@ -87,7 +92,7 @@ const TodoCreateScreen = () => {
       todoId ? (
         <HeaderButton
           onPress={handleDelete}
-          icon={<Trash2 size={24} color={COLORS.error} />}
+          icon={<Trash2 size={24} color={APP_COLORS.error} />}
         />
       ) : undefined,
     [todoId, handleDelete],
@@ -191,7 +196,7 @@ const TodoCreateScreen = () => {
               >
                 <CalendarIcon
                   size={20}
-                  color={COLORS.textSecondary}
+                  color={APP_COLORS.textSecondary}
                   style={styles.dateIcon}
                 />
                 <View style={styles.dateInput}>
@@ -243,8 +248,8 @@ const TodoCreateScreen = () => {
                     size={20}
                     color={
                       assigneeId === undefined
-                        ? COLORS.white
-                        : COLORS.textTertiary
+                        ? THEME_COLORS.white
+                        : APP_COLORS.textTertiary
                     }
                   />
                 </View>
@@ -282,7 +287,9 @@ const TodoCreateScreen = () => {
                       <Text
                         style={[
                           styles.avatarInitial,
-                          assigneeId === member.id && { color: COLORS.white },
+                          assigneeId === member.id && {
+                            color: THEME_COLORS.white,
+                          },
                         ]}
                       >
                         {member.name.charAt(0)}
@@ -299,7 +306,7 @@ const TodoCreateScreen = () => {
                   </Text>
                   {assigneeId === member.id && (
                     <View style={styles.checkBadge}>
-                      <Check size={10} color={COLORS.white} />
+                      <Check size={10} color={THEME_COLORS.white} />
                     </View>
                   )}
                 </TouchableOpacity>
@@ -344,17 +351,17 @@ const TodoCreateScreen = () => {
                   ? {
                       [dueDate]: {
                         selected: true,
-                        selectedColor: COLORS.primary,
-                        selectedTextColor: COLORS.white,
+                        selectedColor: APP_COLORS.primary,
+                        selectedTextColor: THEME_COLORS.white,
                       },
                     }
                   : {}
               }
               theme={{
-                selectedDayBackgroundColor: COLORS.primary,
-                todayTextColor: COLORS.primary,
-                arrowColor: COLORS.primary,
-                dotColor: COLORS.primary,
+                selectedDayBackgroundColor: APP_COLORS.primary,
+                todayTextColor: APP_COLORS.primary,
+                arrowColor: APP_COLORS.primary,
+                dotColor: APP_COLORS.primary,
               }}
             />
           </View>
@@ -382,7 +389,7 @@ const styles = StyleSheet.create({
   dateInputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     borderRadius: 16,
     paddingHorizontal: 16,
     height: 56,
@@ -403,7 +410,7 @@ const styles = StyleSheet.create({
   },
   dateInputText: {
     ...TYPOGRAPHY.body2,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   quickDateRow: {
     flexDirection: 'row',
@@ -411,14 +418,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   quickDateBtn: {
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
   },
   quickDateText: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     fontWeight: '600',
   },
   memberList: {
@@ -441,45 +448,45 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 20,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
   },
   memberAvatarActive: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
   },
   avatarInitial: {
     fontSize: 18,
     fontWeight: '700',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   memberName: {
     ...TYPOGRAPHY.caption,
     textAlign: 'center',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   memberNameActive: {
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
     fontWeight: '700',
   },
   checkBadge: {
     position: 'absolute',
     top: -2,
     right: 4,
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     width: 18,
     height: 18,
     borderRadius: 9,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: COLORS.white,
+    borderColor: THEME_COLORS.white,
   },
   footer: {
     paddingVertical: SPACING.layout,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: APP_COLORS.border,
   },
   modalOverlay: {
     flex: 1,
@@ -489,7 +496,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   calendarContainer: {
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderRadius: 24,
     width: '100%',
     padding: 16,
@@ -503,10 +510,10 @@ const styles = StyleSheet.create({
   },
   calendarTitle: {
     ...TYPOGRAPHY.header2,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   closeText: {
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     fontWeight: '600',
   },
 });

@@ -21,7 +21,13 @@ import {
 } from 'lucide-react-native';
 import { Calendar } from 'react-native-calendars';
 
-import { COLORS, SPACING, TYPOGRAPHY, PATH_COLORS } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+  PATH_COLORS,
+} from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { modalActions } from '@/stores/useModalStore';
 import { useStoryStore, storyActions } from '@/stores/useStoryStore';
@@ -145,7 +151,10 @@ const StoryEditScreen = () => {
       content: (
         <View style={styles.modalContent}>
           <TouchableOpacity
-            style={[styles.modalButton, { backgroundColor: COLORS.primary }]}
+            style={[
+              styles.modalButton,
+              { backgroundColor: APP_COLORS.primary },
+            ]}
             onPress={() => {
               modalActions.hideModal();
               launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
@@ -158,7 +167,10 @@ const StoryEditScreen = () => {
             <Text style={styles.modalButtonText}>카메라</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.modalButton, { backgroundColor: COLORS.primary }]}
+            style={[
+              styles.modalButton,
+              { backgroundColor: APP_COLORS.primary },
+            ]}
             onPress={() => {
               modalActions.hideModal();
               launchImageLibrary(
@@ -174,11 +186,14 @@ const StoryEditScreen = () => {
             <Text style={styles.modalButtonText}>갤러리</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.modalButton, { backgroundColor: COLORS.bgGray }]}
+            style={[styles.modalButton, { backgroundColor: APP_COLORS.bgGray }]}
             onPress={() => modalActions.hideModal()}
           >
             <Text
-              style={[styles.modalButtonText, { color: COLORS.textSecondary }]}
+              style={[
+                styles.modalButtonText,
+                { color: APP_COLORS.textSecondary },
+              ]}
             >
               취소
             </Text>
@@ -206,12 +221,12 @@ const StoryEditScreen = () => {
             />
           ) : (
             <View style={styles.photoPlaceholder}>
-              <Camera size={32} color={COLORS.textTertiary} />
+              <Camera size={32} color={APP_COLORS.textTertiary} />
               <Text style={styles.photoText}>사진 추가하기</Text>
             </View>
           )}
           <View style={styles.addIconBadge}>
-            <Plus size={16} color={COLORS.white} />
+            <Plus size={16} color={THEME_COLORS.white} />
           </View>
         </TouchableOpacity>
 
@@ -222,7 +237,7 @@ const StoryEditScreen = () => {
             <TextInput
               style={styles.input}
               placeholder="어떤 스토리인가요?"
-              placeholderTextColor={COLORS.textTertiary}
+              placeholderTextColor={APP_COLORS.textTertiary}
               value={title}
               onChangeText={setTitle}
             />
@@ -233,7 +248,7 @@ const StoryEditScreen = () => {
             <TextInput
               style={[styles.input, styles.textArea]}
               placeholder="그날의 이야기를 들려주세요 (선택)"
-              placeholderTextColor={COLORS.textTertiary}
+              placeholderTextColor={APP_COLORS.textTertiary}
               multiline
               numberOfLines={4}
               value={description}
@@ -268,15 +283,15 @@ const StoryEditScreen = () => {
                         markedDates={{
                           [date]: {
                             selected: true,
-                            selectedColor: COLORS.primary,
-                            selectedTextColor: COLORS.white,
+                            selectedColor: APP_COLORS.primary,
+                            selectedTextColor: THEME_COLORS.white,
                           },
                         }}
                         theme={{
-                          selectedDayBackgroundColor: COLORS.primary,
-                          todayTextColor: COLORS.primary,
-                          arrowColor: COLORS.primary,
-                          dotColor: COLORS.primary,
+                          selectedDayBackgroundColor: APP_COLORS.primary,
+                          todayTextColor: APP_COLORS.primary,
+                          arrowColor: APP_COLORS.primary,
+                          dotColor: APP_COLORS.primary,
                         }}
                       />
                     </View>
@@ -286,7 +301,7 @@ const StoryEditScreen = () => {
             >
               <CalendarIcon
                 size={20}
-                color={COLORS.primary}
+                color={APP_COLORS.primary}
                 strokeWidth={2.5}
               />
               <View style={styles.metaTextContainer}>
@@ -312,7 +327,7 @@ const StoryEditScreen = () => {
                 });
               }}
             >
-              <MapPin size={20} color={COLORS.primary} strokeWidth={2.5} />
+              <MapPin size={20} color={APP_COLORS.primary} strokeWidth={2.5} />
               <View style={styles.metaTextContainer}>
                 <Text style={styles.metaLabel}>경로</Text>
                 <Text style={styles.metaValue} numberOfLines={1}>
@@ -330,7 +345,7 @@ const StoryEditScreen = () => {
       <View style={styles.footer}>
         {isEditMode && (
           <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-            <Trash2 size={20} color={COLORS.error} />
+            <Trash2 size={20} color={APP_COLORS.error} />
           </TouchableOpacity>
         )}
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
@@ -346,7 +361,7 @@ const StoryEditScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
   },
   scrollContent: {
     padding: SPACING.layout,
@@ -359,10 +374,10 @@ const styles = StyleSheet.create({
   },
   photoPlaceholder: {
     flex: 1,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: COLORS.skeleton,
+    borderColor: APP_COLORS.skeleton,
     borderStyle: 'dashed',
     alignItems: 'center',
     justifyContent: 'center',
@@ -371,11 +386,11 @@ const styles = StyleSheet.create({
   selectedImage: {
     flex: 1,
     borderRadius: 24,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
   },
   photoText: {
     ...TYPOGRAPHY.body2,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     fontWeight: '600',
   },
   addIconBadge: {
@@ -385,11 +400,11 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 4,
-    shadowColor: COLORS.primary,
+    shadowColor: APP_COLORS.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
@@ -399,20 +414,20 @@ const styles = StyleSheet.create({
   },
   infoBanner: {
     flexDirection: 'row',
-    backgroundColor: COLORS.primaryLight + '40', // 25% 투명도
+    backgroundColor: APP_COLORS.primaryLight + '40', // 25% 투명도
     padding: 16,
     borderRadius: 16,
     gap: 12,
     alignItems: 'flex-start',
     borderWidth: 1,
-    borderColor: COLORS.primaryLight,
+    borderColor: APP_COLORS.primaryLight,
     marginBottom: 20,
   },
   infoIconWrapper: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -422,12 +437,12 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
     marginBottom: 4,
   },
   infoDescription: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     lineHeight: 18,
   },
   inputGroup: {
@@ -436,16 +451,16 @@ const styles = StyleSheet.create({
   label: {
     ...TYPOGRAPHY.body2,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginLeft: 4,
   },
   input: {
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   textArea: {
     height: 120,
@@ -459,7 +474,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     padding: 12,
     borderRadius: 16,
     gap: 10,
@@ -469,39 +484,39 @@ const styles = StyleSheet.create({
   },
   metaLabel: {
     fontSize: 11,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     fontWeight: '600',
     marginBottom: 2,
   },
   metaValue: {
     fontSize: 13,
     fontWeight: '700',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   footer: {
     paddingHorizontal: SPACING.layout,
     paddingTop: SPACING.md,
     paddingBottom: Platform.OS === 'ios' ? 20 : 30,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderTopWidth: 1,
-    borderTopColor: COLORS.skeleton,
+    borderTopColor: APP_COLORS.skeleton,
     flexDirection: 'row',
     gap: 12,
   },
   saveButton: {
     flex: 1,
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     paddingVertical: 18,
     borderRadius: 18,
     alignItems: 'center',
     elevation: 4,
-    shadowColor: COLORS.primary,
+    shadowColor: APP_COLORS.primary,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
   },
   saveButtonText: {
-    color: COLORS.white,
+    color: THEME_COLORS.white,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -509,12 +524,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.error + '10',
+    backgroundColor: APP_COLORS.error + '10',
     paddingHorizontal: 20,
     borderRadius: 18,
     gap: 8,
     borderWidth: 1,
-    borderColor: COLORS.error + '20',
+    borderColor: APP_COLORS.error + '20',
   },
   modalButton: {
     height: 56,
@@ -525,7 +540,7 @@ const styles = StyleSheet.create({
   modalButtonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: COLORS.white,
+    color: THEME_COLORS.white,
   },
   modalContent: {
     paddingHorizontal: 20,
@@ -533,7 +548,7 @@ const styles = StyleSheet.create({
   },
 
   calendarContainer: {
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderRadius: 24,
     width: '100%',
     padding: 16,
@@ -547,10 +562,10 @@ const styles = StyleSheet.create({
   },
   calendarTitle: {
     ...TYPOGRAPHY.header2,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   closeText: {
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
     fontWeight: '700',
     fontSize: 16,
   },

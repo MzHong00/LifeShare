@@ -7,7 +7,12 @@ import {
 } from 'react-native';
 import { Image as ImageIcon, Heart, Users } from 'lucide-react-native';
 import { Card } from '@/components/common/Card';
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 
 interface DDayHeroProps {
   partnerName: string;
@@ -39,14 +44,14 @@ export const DDayHero = ({
           {workspaceType === 'couple' ? (
             <Heart
               size={16}
-              color={COLORS.red}
-              fill={COLORS.red}
+              color={THEME_COLORS.red}
+              fill={THEME_COLORS.red}
               style={styles.nameIcon}
             />
           ) : (
             <Users
               size={16}
-              color={COLORS.textSecondary}
+              color={APP_COLORS.textSecondary}
               style={styles.nameIcon}
             />
           )}
@@ -65,7 +70,9 @@ export const DDayHero = ({
         >
           <ImageIcon
             size={18}
-            color={backgroundImage ? COLORS.white : COLORS.textTertiary}
+            color={
+              backgroundImage ? THEME_COLORS.white : APP_COLORS.textTertiary
+            }
           />
         </TouchableOpacity>
       </View>
@@ -137,7 +144,7 @@ const styles = StyleSheet.create({
     padding: 0, // 이미지 배경을 위해 패딩 제거
     elevation: 0,
     shadowOpacity: 0,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderRadius: 24, // 20에서 24로 살짝 확대
     minHeight: 240,
     overflow: 'hidden',
@@ -168,7 +175,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     justifyContent: 'center',
     alignItems: 'center',
     opacity: 0.8,
@@ -183,7 +190,7 @@ const styles = StyleSheet.create({
   names: {
     fontSize: 16,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     letterSpacing: -0.5,
   },
   main: {
@@ -199,13 +206,13 @@ const styles = StyleSheet.create({
   days: {
     fontSize: 38,
     fontWeight: '800',
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
     letterSpacing: -1,
   },
   suffix: {
     fontSize: 18,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginLeft: 2,
     marginBottom: 4,
   },
@@ -214,7 +221,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   nextEventBadge: {
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 12,
@@ -224,16 +231,16 @@ const styles = StyleSheet.create({
   nextEventText: {
     ...TYPOGRAPHY.body2,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     fontSize: 13,
   },
   dDayHighlight: {
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
     fontWeight: '800',
     marginLeft: 4,
   },
   whiteText: {
-    color: COLORS.white,
+    color: THEME_COLORS.white,
   },
   whiteIconWrapper: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',

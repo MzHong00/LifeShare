@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Route, Calendar, MapPin, Paintbrush } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { APP_COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import type { Story } from '@/types';
 
@@ -21,7 +21,7 @@ export const StoryBriefInfo = ({
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.titleGroup}>
-          <Route size={20} color={COLORS.primary} style={styles.icon} />
+          <Route size={20} color={APP_COLORS.primary} style={styles.icon} />
           <Text style={TYPOGRAPHY.header2}>{story.title}</Text>
         </View>
 
@@ -34,14 +34,14 @@ export const StoryBriefInfo = ({
               })
             }
           >
-            <Paintbrush size={14} color={COLORS.primary} />
+            <Paintbrush size={14} color={APP_COLORS.primary} />
             <Text style={styles.decorateBtnText}>스토리 꾸미기</Text>
           </TouchableOpacity>
         )}
       </View>
 
       <View style={styles.detailRow}>
-        <Calendar size={16} color={COLORS.textTertiary} />
+        <Calendar size={16} color={APP_COLORS.textTertiary} />
         <Text style={styles.detailText}>
           {new Date(story.date).toLocaleDateString()}{' '}
           {new Date(story.date).toLocaleTimeString()}
@@ -49,7 +49,7 @@ export const StoryBriefInfo = ({
       </View>
 
       <View style={styles.detailRow}>
-        <MapPin size={16} color={COLORS.textTertiary} />
+        <MapPin size={16} color={APP_COLORS.textTertiary} />
         <Text style={styles.detailText}>
           총 {story.path.length}개의 위치 포인트 기록됨
         </Text>
@@ -85,12 +85,12 @@ const styles = StyleSheet.create({
   },
   detailText: {
     ...TYPOGRAPHY.body2,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   decorateBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primary + '15',
+    backgroundColor: APP_COLORS.primary + '15',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
@@ -99,6 +99,6 @@ const styles = StyleSheet.create({
   decorateBtnText: {
     fontSize: 13,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
 });

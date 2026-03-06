@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { APP_COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 
 interface HeaderButtonProps {
   label?: string;
@@ -35,6 +35,6 @@ const styles = StyleSheet.create({
   text: {
     ...TYPOGRAPHY.body1,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
 });

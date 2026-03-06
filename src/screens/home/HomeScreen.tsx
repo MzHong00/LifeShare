@@ -10,7 +10,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { User, Calendar, CheckSquare } from 'lucide-react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { MOCK_DATA } from '@/constants/mockData';
 import { calculateDDay } from '@/utils/date';
@@ -72,7 +77,7 @@ const HomeScreen = () => {
             onPress={() => navigation.navigate(NAV_ROUTES.PROFILE.NAME)}
           >
             <View style={styles.avatarPlaceholder}>
-              <User size={24} color={COLORS.primary} />
+              <User size={24} color={APP_COLORS.primary} />
             </View>
           </TouchableOpacity>
         </View>
@@ -131,14 +136,14 @@ const HomeScreen = () => {
             <View style={styles.menuGrid}>
               <MenuButton
                 title={NAV_ROUTES.CALENDAR.TITLE}
-                icon={<Calendar size={18} color={COLORS.red} />}
-                iconBgColor={COLORS.pinkLight}
+                icon={<Calendar size={18} color={THEME_COLORS.red} />}
+                iconBgColor={THEME_COLORS.pinkLight}
                 onPress={() => navigation.navigate(NAV_ROUTES.CALENDAR.NAME)}
               />
               <MenuButton
                 title={NAV_ROUTES.TODO.TITLE}
-                icon={<CheckSquare size={18} color={COLORS.primary} />}
-                iconBgColor={COLORS.primaryLight}
+                icon={<CheckSquare size={18} color={APP_COLORS.primary} />}
+                iconBgColor={APP_COLORS.primaryLight}
                 onPress={() => navigation.navigate(NAV_ROUTES.TODO.NAME)}
               />
             </View>
@@ -152,7 +157,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bgWhite,
+    backgroundColor: APP_COLORS.bgWhite,
   },
   scrollContent: {
     paddingBottom: 40,
@@ -174,7 +179,7 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   header: {
     flexDirection: 'row',
@@ -187,11 +192,11 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: THEME_COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -200,13 +205,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
     fontWeight: '700',
   },
 
@@ -214,16 +219,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: SPACING.lg,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderWidth: 1,
-    borderColor: COLORS.primary,
+    borderColor: APP_COLORS.primary,
     borderStyle: 'dashed',
   },
   setupIconContainer: {
     width: 56,
     height: 56,
     borderRadius: 16,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: SPACING.md,
@@ -234,15 +239,15 @@ const styles = StyleSheet.create({
   setupTitle: {
     ...TYPOGRAPHY.body1,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginBottom: 2,
   },
   setupDescription: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   headerSubTitle: {
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
 });
 

@@ -20,7 +20,12 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { Card } from '@/components/common/Card';
@@ -55,7 +60,11 @@ const StoryItem = ({ item, onPress }: StoryItemProps) => {
           />
         ) : (
           <View style={styles.placeholderContainer}>
-            <Camera size={28} color={COLORS.textTertiary} strokeWidth={1.5} />
+            <Camera
+              size={28}
+              color={APP_COLORS.textTertiary}
+              strokeWidth={1.5}
+            />
           </View>
         )}
       </View>
@@ -93,7 +102,7 @@ const StoriesHeader = ({
         activeOpacity={0.7}
       >
         <View style={styles.avatarPlaceholder}>
-          <Plus size={24} color={COLORS.primary} strokeWidth={2.5} />
+          <Plus size={24} color={APP_COLORS.primary} strokeWidth={2.5} />
         </View>
       </TouchableOpacity>
     </View>
@@ -101,7 +110,7 @@ const StoriesHeader = ({
     <Card style={styles.statsContainer}>
       <View style={styles.statBox}>
         <View style={[styles.statIconWrapper, styles.pinkIconWrapper]}>
-          <Heart size={16} color={COLORS.red} />
+          <Heart size={16} color={THEME_COLORS.red} />
         </View>
         <View style={styles.statTextContainer}>
           <Text style={styles.statLabel}>{storyCount}개</Text>
@@ -111,7 +120,7 @@ const StoriesHeader = ({
       <View style={styles.statDivider} />
       <View style={styles.statBox}>
         <View style={[styles.statIconWrapper, styles.greenIconWrapper]}>
-          <Route size={16} color="#34C759" />
+          <Route size={16} color={THEME_COLORS.green} />
         </View>
         <View style={styles.statTextContainer}>
           <Text style={styles.statLabel}>{pathStoryCount}곳</Text>
@@ -122,11 +131,11 @@ const StoriesHeader = ({
 
     <View style={styles.filterBar}>
       <TouchableOpacity style={styles.filterChip}>
-        <Calendar size={14} color={COLORS.textSecondary} />
+        <Calendar size={14} color={APP_COLORS.textSecondary} />
         <Text style={styles.filterText}>최신순</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.filterChip}>
-        <Filter size={14} color={COLORS.textSecondary} />
+        <Filter size={14} color={APP_COLORS.textSecondary} />
         <Text style={styles.filterText}>카테고리</Text>
       </TouchableOpacity>
     </View>
@@ -137,7 +146,7 @@ const StoriesFooter = ({ loading }: { loading: boolean }) => {
   if (!loading) return <View style={styles.footerSpacer} />;
   return (
     <View style={styles.loaderContainer}>
-      <ActivityIndicator size="small" color={COLORS.primary} />
+      <ActivityIndicator size="small" color={APP_COLORS.primary} />
     </View>
   );
 };
@@ -200,7 +209,7 @@ const StoriesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bgWhite, // 배경색 보정으로 카드 부각
+    backgroundColor: APP_COLORS.bgWhite, // 배경색 보정으로 카드 부각
   },
   headerContainer: {
     paddingHorizontal: SPACING.layout,
@@ -215,18 +224,18 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     ...TYPOGRAPHY.body2,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     marginTop: 4,
   },
   profileButton: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: THEME_COLORS.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
@@ -235,7 +244,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -260,18 +269,18 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 15,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   statSubLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     marginTop: 2,
   },
   statDivider: {
     width: 1,
     height: 24,
-    backgroundColor: COLORS.border,
+    backgroundColor: APP_COLORS.border,
     opacity: 0.6,
   },
   statIconWrapper: {
@@ -283,10 +292,10 @@ const styles = StyleSheet.create({
   },
 
   pinkIconWrapper: {
-    backgroundColor: COLORS.pinkLight,
+    backgroundColor: THEME_COLORS.pinkLight,
   },
   greenIconWrapper: {
-    backgroundColor: COLORS.greenLight,
+    backgroundColor: THEME_COLORS.greenLight,
   },
   filterBar: {
     flexDirection: 'row',
@@ -295,18 +304,18 @@ const styles = StyleSheet.create({
   filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 12,
     gap: 6,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: APP_COLORS.border,
   },
   filterText: {
     fontSize: 13,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   flatListContent: {
     paddingBottom: 40,
@@ -325,7 +334,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
     height: columnWidth * 1.1,
-    backgroundColor: COLORS.skeleton,
+    backgroundColor: APP_COLORS.skeleton,
     position: 'relative',
   },
   cardImage: {
@@ -336,7 +345,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.grey,
+    backgroundColor: THEME_COLORS.grey100,
   },
 
   storyInfo: {
@@ -346,12 +355,12 @@ const styles = StyleSheet.create({
     ...TYPOGRAPHY.body1,
     fontSize: 15,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginBottom: 4,
   },
   storyDate: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     fontWeight: '500',
   },
   loaderContainer: {

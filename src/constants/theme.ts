@@ -38,14 +38,12 @@ export const THEME_COLORS = {
   grey900: '#191F28',
   white: '#FFFFFF',
   black: '#000000',
-  kakao: '#FEE500',
-  google: '#4285F4',
 };
 
 /**
  * Semantic System Colors
  */
-export const COLORS = {
+export const APP_COLORS = {
   // 핵심 포인트 컬러 (LifeShare Blue)
   primary: THEME_COLORS.blue,
   primaryLight: THEME_COLORS.blueLight,
@@ -69,21 +67,10 @@ export const COLORS = {
   skeleton: THEME_COLORS.grey50,
   divider: THEME_COLORS.grey200,
 
-  // 원본 색상 참조
-  red: THEME_COLORS.red,
-  green: THEME_COLORS.green,
-  blue: THEME_COLORS.blue,
-  grey: THEME_COLORS.grey100,
-  white: THEME_COLORS.white,
-  black: THEME_COLORS.black,
-  dark: THEME_COLORS.grey900,
-  pinkLight: THEME_COLORS.pinkLight,
-  greenLight: THEME_COLORS.greenLight,
-
   // 특정 서비스/브랜드 컬러
-  kakao: THEME_COLORS.kakao,
+  kakao: '#FEE500',
   kakaoText: '#3C1E1E',
-  googleBlue: THEME_COLORS.google,
+  google: '#4285F4',
 };
 
 /**
@@ -127,30 +114,30 @@ export const TYPOGRAPHY = {
     fontSize: 26,
     fontWeight: '700' as const,
     lineHeight: 34,
-    color: '#191F28',
+    color: THEME_COLORS.grey900,
   },
   header2: {
     fontSize: 20,
     fontWeight: '700' as const,
     lineHeight: 28,
-    color: '#191F28',
+    color: THEME_COLORS.grey900,
   },
   body1: {
     fontSize: 16,
     fontWeight: '500' as const,
     lineHeight: 24,
-    color: '#4E5968',
+    color: THEME_COLORS.grey700,
   },
   body2: {
     fontSize: 14,
     fontWeight: '400' as const,
     lineHeight: 20,
-    color: '#4E5968',
+    color: THEME_COLORS.grey700,
   },
   caption: {
     fontSize: 13,
     fontWeight: '400' as const,
     lineHeight: 18,
-    color: '#8B95A1',
+    color: THEME_COLORS.grey500,
   },
 };

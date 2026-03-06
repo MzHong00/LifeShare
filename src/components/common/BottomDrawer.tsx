@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { StyleSheet, Animated, PanResponder, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { COLORS } from '@/constants/theme';
+import { APP_COLORS, THEME_COLORS } from '@/constants/theme';
 
 /**
  * [DRAWER_LOGIC]
@@ -175,19 +175,19 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: '100%', // 부모 레이아웃 전체를 가용 범위로 사용합니다.
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     zIndex: 1000, // 다른 UI보다 위에 보이도록 설정
     elevation: 10, // 안드로이드의 레이어 우선순위 및 그림자
-    shadowColor: '#000',
+    shadowColor: THEME_COLORS.black,
     shadowOpacity: 0.1,
     shadowRadius: 10,
   },
   handle: {
     width: 40,
     height: 5,
-    backgroundColor: COLORS.border,
+    backgroundColor: APP_COLORS.border,
     borderRadius: 3,
     alignSelf: 'center',
     marginVertical: 12,

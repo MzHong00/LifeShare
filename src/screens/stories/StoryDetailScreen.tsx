@@ -11,7 +11,7 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Map, Edit3 } from 'lucide-react-native';
 
-import { COLORS, SPACING } from '@/constants/theme';
+import { APP_COLORS, THEME_COLORS, SPACING } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { useStoryStore, storyActions } from '@/stores/useStoryStore';
@@ -54,7 +54,7 @@ const StoryDetailScreen = () => {
     () => (
       <HeaderButton
         onPress={handleEdit}
-        icon={<Edit3 size={20} color={COLORS.textPrimary} />}
+        icon={<Edit3 size={20} color={APP_COLORS.textPrimary} />}
       />
     ),
     [handleEdit],
@@ -87,7 +87,7 @@ const StoryDetailScreen = () => {
             onPress={handleShowOnMap}
           >
             <View style={styles.mapActionIcon}>
-              <Map size={24} color={COLORS.white} />
+              <Map size={24} color={THEME_COLORS.white} />
             </View>
             <View style={styles.mapActionTextContent}>
               <Text style={styles.mapActionTitle}>지도에서 경로 보기</Text>
@@ -105,13 +105,13 @@ const StoryDetailScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
   },
   content: {
     padding: SPACING.layout,
   },
   descriptionSection: {
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     padding: 16,
     borderRadius: 16,
     marginVertical: 24,
@@ -121,22 +121,22 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 24,
     marginTop: 16,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
   },
   descriptionText: {
     fontSize: 15,
     lineHeight: 24,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   mapActionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     padding: 20,
     borderRadius: 20,
     gap: 16,
     elevation: 4,
-    shadowColor: COLORS.primary,
+    shadowColor: THEME_COLORS.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   mapActionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: COLORS.white,
+    color: THEME_COLORS.white,
     marginBottom: 2,
   },
   mapActionSubtitle: {

@@ -9,7 +9,7 @@ import {
 import { Radio } from 'lucide-react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 
-import { COLORS } from '@/constants/theme';
+import { APP_COLORS, THEME_COLORS } from '@/constants/theme';
 import { MAP_CONFIG } from '@/constants/map';
 import { MainMap } from '@/components/map/MainMap';
 import { useGeolocation } from '@/businesses/geolocation/useGeolocation';
@@ -135,7 +135,7 @@ const StoryMapPicker = ({
             onPress={toggleRecording}
             activeOpacity={0.8}
           >
-            <Radio size={20} color={COLORS.white} />
+            <Radio size={20} color={THEME_COLORS.white} />
             <Text style={styles.recordButtonText}>실시간 기록</Text>
           </TouchableOpacity>
 
@@ -155,7 +155,7 @@ const StoryMapPicker = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
   },
   mapWrapper: {
     flex: 1,
@@ -170,11 +170,11 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: COLORS.primary + '30',
+    borderColor: APP_COLORS.primary + '30',
   },
   mapOverlayText: {
     fontSize: 13,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 18,
   },
@@ -189,43 +189,43 @@ const styles = StyleSheet.create({
   recordButton: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: COLORS.textPrimary, // 검은색 계열로 차별화
+    backgroundColor: APP_COLORS.textPrimary, // 검은색 계열로 차별화
     height: 56,
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 8,
     elevation: 4,
-    shadowColor: COLORS.black,
+    shadowColor: THEME_COLORS.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
   },
   recordingActiveButton: {
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderWidth: 2,
-    borderColor: COLORS.error,
+    borderColor: APP_COLORS.error,
   },
   recordButtonText: {
-    color: COLORS.white,
+    color: THEME_COLORS.white,
     fontSize: 15,
     fontWeight: '700',
   },
   mapSubmitButton: {
     flex: 1.5,
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     height: 56,
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
-    shadowColor: COLORS.primary,
+    shadowColor: APP_COLORS.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
   },
   mapSubmitButtonText: {
-    color: COLORS.white,
+    color: THEME_COLORS.white,
     fontSize: 16,
     fontWeight: '700',
   },

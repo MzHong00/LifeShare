@@ -13,7 +13,12 @@ import { MapPin, ChevronDown, ChevronUp, Search } from 'lucide-react-native';
 import MapView from 'react-native-maps';
 import { MainMap } from '@/components/map/MainMap';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { MAP_CONFIG } from '@/constants/map';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { BottomDrawer } from '@/components/common/BottomDrawer';
@@ -153,7 +158,7 @@ const MapScreen = () => {
       )}
       {myLocationLoading && (
         <View style={styles.mapLoadingContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+          <ActivityIndicator size="large" color={APP_COLORS.primary} />
           <Text style={styles.loadingText}>위치 정보를 불러오는 중...</Text>
         </View>
       )}
@@ -167,7 +172,11 @@ const MapScreen = () => {
         <View style={styles.headerContent}>
           <View style={styles.headerTopRow}>
             <View style={styles.statusBadge}>
-              <MapPin size={10} color={COLORS.success} fill={COLORS.success} />
+              <MapPin
+                size={10}
+                color={APP_COLORS.success}
+                fill={APP_COLORS.success}
+              />
               <Text style={styles.statusBadgeText}>실시간 업데이트 중</Text>
             </View>
             <TouchableOpacity
@@ -176,9 +185,9 @@ const MapScreen = () => {
               activeOpacity={0.7}
             >
               {isHeaderMinimized ? (
-                <ChevronDown size={18} color={COLORS.textTertiary} />
+                <ChevronDown size={18} color={APP_COLORS.textTertiary} />
               ) : (
-                <ChevronUp size={18} color={COLORS.textTertiary} />
+                <ChevronUp size={18} color={APP_COLORS.textTertiary} />
               )}
             </TouchableOpacity>
           </View>
@@ -211,7 +220,7 @@ const MapScreen = () => {
                       <View style={styles.locateIconContainer}>
                         <Search
                           size={10}
-                          color={COLORS.white}
+                          color={THEME_COLORS.white}
                           strokeWidth={3}
                         />
                       </View>
@@ -242,7 +251,7 @@ const MapScreen = () => {
           ) : (
             <View style={styles.emptyDrawerContent}>
               <View style={styles.emptyInfoCard}>
-                <MapPin size={24} color={COLORS.textTertiary} />
+                <MapPin size={24} color={APP_COLORS.textTertiary} />
                 <Text style={styles.emptyInfoText}>
                   위의 멤버 아이콘이나 경로를 눌러{'\n'}상세 정보를 확인해보세요
                 </Text>
@@ -256,18 +265,18 @@ const MapScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.bgGray },
+  container: { flex: 1, backgroundColor: APP_COLORS.bgGray },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
   },
   mapLoadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.skeleton,
+    backgroundColor: APP_COLORS.skeleton,
   },
   loadingText: {
     marginTop: 12,
@@ -287,7 +296,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     ...Platform.select({
       ios: {
-        shadowColor: COLORS.black,
+        shadowColor: THEME_COLORS.black,
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.1,
         shadowRadius: 12,
@@ -318,7 +327,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     paddingVertical: 8,
     borderRadius: 12,
     gap: 6,
@@ -326,13 +335,13 @@ const styles = StyleSheet.create({
   headerActionText: {
     fontSize: 12,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    backgroundColor: COLORS.skeleton,
+    backgroundColor: APP_COLORS.skeleton,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 12,
@@ -340,7 +349,7 @@ const styles = StyleSheet.create({
   statusBadgeText: {
     fontSize: 10,
     fontWeight: '700',
-    color: COLORS.success,
+    color: APP_COLORS.success,
     marginLeft: 3,
   },
   userListScroll: {
@@ -356,7 +365,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: COLORS.skeleton,
+    backgroundColor: APP_COLORS.skeleton,
     marginBottom: 4,
     padding: 2,
     borderWidth: 1,
@@ -371,20 +380,20 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.skeleton,
+    backgroundColor: APP_COLORS.skeleton,
     alignItems: 'center',
     justifyContent: 'center',
   },
   userInitialText: {
     ...TYPOGRAPHY.caption,
     fontWeight: '700',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   userNameText: {
     marginTop: 4,
     fontSize: 12,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   avatarContainer: {
     position: 'relative',
@@ -393,14 +402,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -2,
     right: -2,
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     width: 18,
     height: 18,
     borderRadius: 9,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: COLORS.white,
+    borderColor: THEME_COLORS.white,
   },
   markerAvatarImg: {
     width: '100%',
@@ -419,7 +428,7 @@ const styles = StyleSheet.create({
   },
   emptyInfoText: {
     ...TYPOGRAPHY.body2,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     textAlign: 'center',
     lineHeight: 20,
   },

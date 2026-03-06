@@ -6,7 +6,12 @@ import {
   Modal,
   TouchableWithoutFeedback,
 } from 'react-native';
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useModalStore, modalActions } from '@/stores/useModalStore';
 
@@ -116,13 +121,13 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     maxWidth: 340,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderRadius: 40,
     paddingTop: SPACING.xxl,
     paddingBottom: SPACING.lg,
     overflow: 'hidden',
     elevation: 5,
-    shadowColor: '#000',
+    shadowColor: THEME_COLORS.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
@@ -134,13 +139,13 @@ const styles = StyleSheet.create({
   },
   title: {
     ...TYPOGRAPHY.header2,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginBottom: 12,
     textAlign: 'center',
   },
   message: {
     ...TYPOGRAPHY.body1,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
   },
@@ -160,30 +165,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   confirmButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
   },
   cancelButton: {
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
   },
   disabledButton: {
-    backgroundColor: COLORS.bgGray, // 비활성화 시 배경색 변경
+    backgroundColor: APP_COLORS.bgGray, // 비활성화 시 배경색 변경
   },
   confirmButtonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: COLORS.white,
+    color: THEME_COLORS.white,
   },
   cancelButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   disabledButtonText: {
-    color: COLORS.textTertiary, // 비활성화 시 텍스트 색상 변경
+    color: APP_COLORS.textTertiary, // 비활성화 시 텍스트 색상 변경
   },
   fullContainer: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
   },
 });
 

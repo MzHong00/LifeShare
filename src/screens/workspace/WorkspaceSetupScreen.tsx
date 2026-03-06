@@ -10,7 +10,12 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Users, Plus, UserPlus, Heart, Mail, Send } from 'lucide-react-native';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { APP_WORKSPACE } from '@/constants/config';
 import {
@@ -45,7 +50,7 @@ const InitialStage = ({ onNext }: InitialStageProps) => (
   <View style={styles.content}>
     <View style={styles.mainBody}>
       <View style={styles.iconCircle}>
-        <Users size={40} color={COLORS.primary} strokeWidth={2.5} />
+        <Users size={40} color={APP_COLORS.primary} strokeWidth={2.5} />
       </View>
       <Text style={styles.title}>{APP_WORKSPACE.KR} 만들기</Text>
       <Text style={styles.description}>
@@ -56,7 +61,7 @@ const InitialStage = ({ onNext }: InitialStageProps) => (
 
     <View style={styles.footer}>
       <TouchableOpacity style={styles.mainButton} onPress={onNext}>
-        <Plus size={20} color={COLORS.white} style={styles.buttonIcon} />
+        <Plus size={20} color={THEME_COLORS.white} style={styles.buttonIcon} />
         <Text style={styles.mainButtonText}>
           새로운 {APP_WORKSPACE.KR} 만들기
         </Text>
@@ -119,9 +124,13 @@ const CreateStage = ({
               <Heart
                 size={24}
                 color={
-                  roomType === 'couple' ? COLORS.primary : COLORS.textTertiary
+                  roomType === 'couple'
+                    ? APP_COLORS.primary
+                    : APP_COLORS.textTertiary
                 }
-                fill={roomType === 'couple' ? COLORS.primary : 'transparent'}
+                fill={
+                  roomType === 'couple' ? APP_COLORS.primary : 'transparent'
+                }
               />
               <Text
                 style={[
@@ -143,7 +152,9 @@ const CreateStage = ({
               <Users
                 size={24}
                 color={
-                  roomType === 'group' ? COLORS.primary : COLORS.textTertiary
+                  roomType === 'group'
+                    ? APP_COLORS.primary
+                    : APP_COLORS.textTertiary
                 }
               />
               <Text
@@ -169,7 +180,7 @@ const CreateStage = ({
             placeholder={`${APP_WORKSPACE.KR} 이름을 입력하세요`}
             value={workspaceName}
             onChangeText={setWorkspaceName}
-            placeholderTextColor={COLORS.textTertiary}
+            placeholderTextColor={APP_COLORS.textTertiary}
             autoFocus
           />
 
@@ -181,7 +192,7 @@ const CreateStage = ({
             placeholder="YYYY-MM-DD"
             value={startDate}
             onChangeText={setStartDate}
-            placeholderTextColor={COLORS.textTertiary}
+            placeholderTextColor={APP_COLORS.textTertiary}
             keyboardType="numeric"
           />
 
@@ -231,7 +242,7 @@ const InviteStage = ({
   <View style={styles.content}>
     <View style={styles.mainBody}>
       <View style={styles.iconCircle}>
-        <UserPlus size={40} color={COLORS.primary} strokeWidth={2.5} />
+        <UserPlus size={40} color={APP_COLORS.primary} strokeWidth={2.5} />
       </View>
       <Text style={styles.title}>파트너 초대하기</Text>
       <Text style={styles.description}>
@@ -240,7 +251,11 @@ const InviteStage = ({
       </Text>
 
       <View style={styles.inputWrapper}>
-        <Mail size={20} color={COLORS.textTertiary} style={styles.inputIcon} />
+        <Mail
+          size={20}
+          color={APP_COLORS.textTertiary}
+          style={styles.inputIcon}
+        />
         <TextInput
           style={styles.emailInput}
           placeholder="파트너의 이메일 주소"
@@ -248,14 +263,14 @@ const InviteStage = ({
           onChangeText={setInviteeEmail}
           autoCapitalize="none"
           keyboardType="email-address"
-          placeholderTextColor={COLORS.textTertiary}
+          placeholderTextColor={APP_COLORS.textTertiary}
         />
       </View>
     </View>
 
     <View style={styles.footer}>
       <TouchableOpacity style={styles.mainButton} onPress={onSendInvite}>
-        <Send size={20} color={COLORS.white} style={styles.buttonIcon} />
+        <Send size={20} color={THEME_COLORS.white} style={styles.buttonIcon} />
         <Text style={styles.mainButtonText}>초대 이메일 보내기</Text>
       </TouchableOpacity>
 
@@ -385,7 +400,7 @@ const WorkspaceSetupScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
   },
   content: {
     flex: 1,
@@ -403,7 +418,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 20,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SPACING.xl,
@@ -416,7 +431,7 @@ const styles = StyleSheet.create({
   },
   description: {
     ...TYPOGRAPHY.body1,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     textAlign: 'left',
     lineHeight: 24,
     marginBottom: 40,
@@ -424,7 +439,7 @@ const styles = StyleSheet.create({
   mainButton: {
     width: '100%',
     height: 56,
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     borderRadius: 16,
     flexDirection: 'row',
     justifyContent: 'center',
@@ -434,24 +449,24 @@ const styles = StyleSheet.create({
   mainButtonText: {
     fontSize: 18,
     fontWeight: '700',
-    color: COLORS.white,
+    color: THEME_COLORS.white,
   },
   outlineButton: {
     width: '100%',
     height: 56,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderRadius: 16,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: COLORS.primary,
+    borderColor: APP_COLORS.primary,
     marginTop: 8,
   },
   outlineButtonText: {
     fontSize: 18,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
   buttonIcon: {
     marginRight: 8,
@@ -459,19 +474,19 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 60,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     borderRadius: 16,
     paddingHorizontal: 20,
     fontSize: 18,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     textAlign: 'left',
     marginBottom: 12,
   },
   inputLabel: {
     fontSize: 14,
     fontWeight: '700',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     marginBottom: 8,
     marginLeft: 4,
   },
@@ -479,13 +494,13 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   disabledButton: {
-    backgroundColor: COLORS.textTertiary,
+    backgroundColor: APP_COLORS.textTertiary,
   },
   backButton: {
     padding: 16,
   },
   backButtonText: {
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     fontSize: 16,
   },
   checkboxSpace: {
@@ -504,36 +519,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: 'center',
     borderRadius: 18,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderWidth: 1.5,
-    borderColor: COLORS.bgGray,
+    borderColor: APP_COLORS.bgGray,
     gap: 16,
   },
   typeButtonFirst: {
     marginBottom: 12,
   },
   typeButtonActive: {
-    backgroundColor: COLORS.primaryLight,
-    borderColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primaryLight,
+    borderColor: APP_COLORS.primary,
   },
   typeButtonText: {
     fontSize: 17,
     fontWeight: '700',
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
   },
   typeButtonTextActive: {
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
   inviteCard: {
     width: '100%',
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     borderRadius: 20,
     padding: 24,
     marginTop: 8,
   },
   inviteCodeLabel: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     marginBottom: 8,
   },
   inviteCodeRow: {
@@ -544,18 +559,18 @@ const styles = StyleSheet.create({
   inviteCodeText: {
     fontSize: 22,
     fontWeight: '800',
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
     letterSpacing: 1,
   },
   copyText: {
     ...TYPOGRAPHY.body2,
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
     fontWeight: '700',
   },
   inputWrapper: {
     width: '100%',
     height: 60,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -570,7 +585,7 @@ const styles = StyleSheet.create({
     height: '100%',
     fontSize: 17,
     fontWeight: '500',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
 });
 

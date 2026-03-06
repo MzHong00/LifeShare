@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { APP_COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { Card } from '@/components/common/Card';
 
 interface FeatureCardProps {
@@ -54,11 +54,11 @@ const styles = StyleSheet.create({
   title: {
     ...TYPOGRAPHY.body1,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   description: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     marginTop: 2,
   },
 });

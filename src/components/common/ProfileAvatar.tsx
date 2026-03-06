@@ -1,6 +1,5 @@
-
 import { View, Text, Image, StyleSheet, ViewStyle } from 'react-native';
-import { COLORS } from '@/constants/theme';
+import { APP_COLORS } from '@/constants/theme';
 
 interface ProfileAvatarProps {
   uri?: string | null;
@@ -24,7 +23,7 @@ export const ProfileAvatar = ({
       height: size,
       borderRadius: size / 2,
     },
-    !uri && { backgroundColor: COLORS.primary + '15' },
+    !uri && { backgroundColor: APP_COLORS.primary + '15' },
     style,
   ];
 
@@ -46,7 +45,7 @@ export const ProfileAvatar = ({
           styles.initials,
           {
             fontSize: size * 0.35,
-            color: COLORS.primary,
+            color: APP_COLORS.primary,
           },
         ]}
       >

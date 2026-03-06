@@ -23,7 +23,12 @@ import {
 } from 'lucide-react-native';
 
 import { Todo } from '@/types/todo';
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { useTodoStore, todoActions } from '@/stores/useTodoStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
@@ -66,11 +71,11 @@ const TodoItem = ({
         {item.isCompleted ? (
           <CheckCircle2
             size={24}
-            color={COLORS.primary}
-            fill={COLORS.primaryLight}
+            color={APP_COLORS.primary}
+            fill={APP_COLORS.primaryLight}
           />
         ) : (
-          <Circle size={24} color={COLORS.border} />
+          <Circle size={24} color={APP_COLORS.border} />
         )}
       </TouchableOpacity>
 
@@ -100,7 +105,7 @@ const TodoItem = ({
             </View>
           ) : (
             <View style={styles.metaItem}>
-              <Users size={12} color={COLORS.textTertiary} />
+              <Users size={12} color={APP_COLORS.textTertiary} />
               <Text style={styles.assigneeName}>공통</Text>
             </View>
           )}
@@ -120,8 +125,8 @@ const TodoItem = ({
                 size={12}
                 color={
                   !item.isCompleted && isPastDate(item.dueDate)
-                    ? COLORS.error
-                    : COLORS.textTertiary
+                    ? APP_COLORS.error
+                    : APP_COLORS.textTertiary
                 }
               />
               <Text
@@ -138,7 +143,7 @@ const TodoItem = ({
           )}
         </View>
       </View>
-      <ChevronRight size={16} color={COLORS.border} />
+      <ChevronRight size={16} color={APP_COLORS.border} />
     </Card>
   );
 };
@@ -188,8 +193,8 @@ const TodoScreen = () => {
     return {
       [selectedDate]: {
         selected: true,
-        selectedColor: COLORS.primary,
-        selectedTextColor: COLORS.white,
+        selectedColor: APP_COLORS.primary,
+        selectedTextColor: THEME_COLORS.white,
       },
     };
   }, [selectedDate]);
@@ -210,7 +215,7 @@ const TodoScreen = () => {
           </Text>
           <ChevronDown
             size={20}
-            color={COLORS.textPrimary}
+            color={APP_COLORS.textPrimary}
             style={styles.chevronDown}
           />
         </TouchableOpacity>
@@ -222,7 +227,9 @@ const TodoScreen = () => {
           >
             <Users
               size={14}
-              color={showMineOnly ? COLORS.white : COLORS.textSecondary}
+              color={
+                showMineOnly ? THEME_COLORS.white : APP_COLORS.textSecondary
+              }
             />
             <Text
               style={[
@@ -249,10 +256,10 @@ const TodoScreen = () => {
               onDayPress={handleDayPress}
               markedDates={markedDates}
               theme={{
-                selectedDayBackgroundColor: COLORS.primary,
-                todayTextColor: COLORS.primary,
-                arrowColor: COLORS.primary,
-                dotColor: COLORS.primary,
+                selectedDayBackgroundColor: APP_COLORS.primary,
+                todayTextColor: APP_COLORS.primary,
+                arrowColor: APP_COLORS.primary,
+                dotColor: APP_COLORS.primary,
               }}
             />
             <View style={styles.calendarFooter}>
@@ -332,7 +339,7 @@ const TodoScreen = () => {
         onPress={() => navigation.navigate(NAV_ROUTES.TODO_CREATE.NAME)}
       >
         <View style={styles.fabInner}>
-          <Plus size={30} color={COLORS.white} />
+          <Plus size={30} color={THEME_COLORS.white} />
         </View>
       </TouchableOpacity>
     </AppSafeAreaView>
@@ -352,7 +359,7 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     ...TYPOGRAPHY.header1,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   headerDateSelector: {
     flexDirection: 'row',
@@ -372,26 +379,26 @@ const styles = StyleSheet.create({
   filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 20,
     gap: 4,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: APP_COLORS.border,
     maxWidth: '100%',
   },
   filterChipActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
+    borderColor: APP_COLORS.primary,
   },
   filterChipText: {
     fontSize: 12,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   filterChipTextActive: {
-    color: COLORS.white,
+    color: THEME_COLORS.white,
   },
 
   filterCheckbox: {
@@ -408,7 +415,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     ...TYPOGRAPHY.caption,
     fontWeight: '700',
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     marginBottom: 12,
     marginLeft: 4,
   },
@@ -428,12 +435,12 @@ const styles = StyleSheet.create({
   },
   todoTitle: {
     ...TYPOGRAPHY.body1,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     fontWeight: '600',
   },
   completedText: {
     textDecorationLine: 'line-through',
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
   },
   todoFooter: {
     flexDirection: 'row',
@@ -447,12 +454,12 @@ const styles = StyleSheet.create({
   },
   separator: {
     marginHorizontal: 8,
-    color: COLORS.border,
+    color: APP_COLORS.border,
     fontSize: 12,
   },
   assigneeName: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     fontWeight: '500',
   },
   miniAvatar: {
@@ -464,25 +471,25 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 7,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
   initialText: {
     fontSize: 9,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
   dueDateText: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     fontWeight: '500',
   },
   overdueBadgeSubtle: {
     // Subtle hint for overdue in footer
   },
   overdueText: {
-    color: COLORS.error,
+    color: APP_COLORS.error,
     fontWeight: '700',
   },
 
@@ -492,19 +499,19 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     ...TYPOGRAPHY.body2,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     marginBottom: 16,
   },
   emptyAddBtn: {
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     borderRadius: 12,
   },
   emptyAddText: {
     fontSize: 14,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
   fab: {
     position: 'absolute',
@@ -515,11 +522,11 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
-    shadowColor: COLORS.primary,
+    shadowColor: APP_COLORS.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
@@ -545,16 +552,16 @@ const styles = StyleSheet.create({
   },
   calendarTitle: {
     ...TYPOGRAPHY.header2,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   closeText: {
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     fontWeight: '600',
   },
   calendarFooter: {
     marginTop: 16,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: APP_COLORS.border,
     paddingTop: 16,
     alignItems: 'center',
   },
@@ -562,7 +569,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   resetText: {
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
     fontWeight: '700',
     fontSize: 14,
   },

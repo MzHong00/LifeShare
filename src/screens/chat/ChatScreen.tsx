@@ -12,7 +12,12 @@ import {
 import { Image as ImageIcon, Video } from 'lucide-react-native';
 
 import type { ChatMessage } from '@/types';
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { MessageBubble } from '@/components/chat/MessageBubble';
 import { ChatInput } from '@/components/chat/ChatInput';
@@ -81,14 +86,14 @@ const ChatScreen = () => {
     {
       id: 'gallery',
       label: '갤러리',
-      icon: <ImageIcon size={24} color={COLORS.primary} />,
-      bgColor: COLORS.primaryLight,
+      icon: <ImageIcon size={24} color={APP_COLORS.primary} />,
+      bgColor: APP_COLORS.primaryLight,
     },
     {
       id: 'video',
       label: '동영상',
-      icon: <Video size={24} color={COLORS.primary} />,
-      bgColor: COLORS.primaryLight,
+      icon: <Video size={24} color={APP_COLORS.primary} />,
+      bgColor: APP_COLORS.primaryLight,
     },
   ];
 
@@ -185,7 +190,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: APP_COLORS.border,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -200,7 +205,7 @@ const styles = StyleSheet.create({
   },
   headerStatus: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.success,
+    color: APP_COLORS.success,
   },
   listContent: {
     padding: SPACING.layout,
@@ -208,7 +213,7 @@ const styles = StyleSheet.create({
   },
   actionMenu: {
     flexDirection: 'row',
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     paddingVertical: 24,
     paddingHorizontal: 20,
     justifyContent: 'flex-start',
@@ -227,7 +232,7 @@ const styles = StyleSheet.create({
   },
   actionLabel: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     fontWeight: '600',
   },
 });

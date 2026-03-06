@@ -2,7 +2,12 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Heart } from 'lucide-react-native';
 
 import { APP_BRAND_NAME } from '@/constants/config';
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { googleOAuthService } from '@/businesses/oauth/google/googleOAuthService';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { GoogleIcon, KakaoIcon } from '@/components/common/SocialIcons';
@@ -13,7 +18,11 @@ const LoginScreen = () => {
       <View style={styles.inner}>
         <View style={styles.header}>
           <View style={styles.logoContainer}>
-            <Heart size={48} color={COLORS.primary} fill={COLORS.primary} />
+            <Heart
+              size={48}
+              color={APP_COLORS.primary}
+              fill={APP_COLORS.primary}
+            />
           </View>
           <Text style={styles.title}>{APP_BRAND_NAME.KR}</Text>
           <Text style={styles.subtitle}>
@@ -55,7 +64,7 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
   },
   inner: {
     flex: 1,
@@ -71,12 +80,12 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 24,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SPACING.lg,
     // iOS Shadow
-    shadowColor: COLORS.primary,
+    shadowColor: APP_COLORS.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
@@ -86,12 +95,12 @@ const styles = StyleSheet.create({
   title: {
     ...TYPOGRAPHY.header1,
     fontSize: 32,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   subtitle: {
     ...TYPOGRAPHY.body1,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -110,23 +119,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   kakaoButton: {
-    backgroundColor: COLORS.kakao,
+    backgroundColor: APP_COLORS.kakao,
   },
   googleButton: {
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: APP_COLORS.border,
   },
   kakaoButtonText: {
     fontSize: 17,
     fontWeight: '600',
-    color: COLORS.kakaoText,
+    color: APP_COLORS.kakaoText,
     marginLeft: 10,
   },
   googleButtonText: {
     fontSize: 17,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginLeft: 10,
   },
   footer: {
@@ -134,7 +143,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     textAlign: 'center',
     lineHeight: 18,
   },

@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import { COLORS } from '@/constants/theme';
+import { THEME_COLORS } from '@/constants/theme';
 
 interface CardProps {
   children: ReactNode;
@@ -37,11 +37,11 @@ export const Card = ({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderRadius: 24,
     padding: 20,
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: THEME_COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,

@@ -3,7 +3,7 @@ import { Animated, StyleSheet, Text, View, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CheckCircle2, AlertCircle, Info } from 'lucide-react-native';
 
-import { COLORS, SPACING } from '@/constants/theme';
+import { APP_COLORS, THEME_COLORS, SPACING } from '@/constants/theme';
 import { useToastStore } from '@/stores/useToastStore';
 
 export const Toast = () => {
@@ -51,11 +51,11 @@ export const Toast = () => {
 
     switch (options.type) {
       case 'success':
-        return <CheckCircle2 size={iconSize} color={COLORS.success} />;
+        return <CheckCircle2 size={iconSize} color={APP_COLORS.success} />;
       case 'error':
-        return <AlertCircle size={iconSize} color={COLORS.error} />;
+        return <AlertCircle size={iconSize} color={APP_COLORS.error} />;
       default:
-        return <Info size={iconSize} color={COLORS.primary} />;
+        return <Info size={iconSize} color={APP_COLORS.primary} />;
     }
   };
 
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '600',
-    color: COLORS.white,
+    color: THEME_COLORS.white,
     lineHeight: 20,
   },
 });

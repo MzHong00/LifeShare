@@ -22,7 +22,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 import { NAV_ROUTES } from '@/constants/navigation';
 import { APP_WORKSPACE } from '@/constants/config';
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import {
   useWorkspaceStore,
   workspaceActions,
@@ -122,13 +127,21 @@ const WorkspaceListScreen = () => {
                     {ws.type === 'couple' ? (
                       <Heart
                         size={20}
-                        color={isActive ? COLORS.primary : COLORS.textTertiary}
-                        fill={isActive ? COLORS.primary : 'transparent'}
+                        color={
+                          isActive
+                            ? APP_COLORS.primary
+                            : APP_COLORS.textTertiary
+                        }
+                        fill={isActive ? APP_COLORS.primary : 'transparent'}
                       />
                     ) : (
                       <Users
                         size={20}
-                        color={isActive ? COLORS.primary : COLORS.textTertiary}
+                        color={
+                          isActive
+                            ? APP_COLORS.primary
+                            : APP_COLORS.textTertiary
+                        }
                       />
                     )}
                   </View>
@@ -137,7 +150,7 @@ const WorkspaceListScreen = () => {
                       <Text
                         style={[
                           styles.wsName,
-                          isActive && { color: COLORS.primary },
+                          isActive && { color: APP_COLORS.primary },
                         ]}
                       >
                         {ws.name}
@@ -165,7 +178,7 @@ const WorkspaceListScreen = () => {
                     style={styles.manageBtn}
                     onPress={() => handleEditWorkspace(ws.id)}
                   >
-                    <Settings size={18} color={COLORS.textTertiary} />
+                    <Settings size={18} color={APP_COLORS.textTertiary} />
                     <Text style={styles.manageBtnText}>관리</Text>
                   </TouchableOpacity>
                 </View>
@@ -206,7 +219,7 @@ const WorkspaceListScreen = () => {
                                 <View
                                   style={[
                                     styles.miniAvatar,
-                                    { backgroundColor: COLORS.skeleton },
+                                    { backgroundColor: APP_COLORS.skeleton },
                                   ]}
                                 >
                                   <Text style={styles.avatarInitial}>
@@ -236,7 +249,7 @@ const WorkspaceListScreen = () => {
                   <Text style={styles.memberSummary}>
                     {ws.members?.length || 1}명의 멤버가 함께 기록 중
                   </Text>
-                  <ChevronRight size={16} color={COLORS.border} />
+                  <ChevronRight size={16} color={APP_COLORS.border} />
                 </TouchableOpacity>
               </TouchableOpacity>
             );
@@ -248,7 +261,7 @@ const WorkspaceListScreen = () => {
           activeOpacity={0.8}
           onPress={() => navigation.navigate(NAV_ROUTES.WORKSPACE_SETUP.NAME)}
         >
-          <Plus size={24} color={COLORS.white} />
+          <Plus size={24} color={THEME_COLORS.white} />
           <Text style={styles.addButtonText}>
             새로운 {APP_WORKSPACE.KR} 생성
           </Text>
@@ -322,7 +335,7 @@ const WorkspaceListScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
   },
   scrollContent: {
     paddingHorizontal: SPACING.layout,
@@ -343,24 +356,24 @@ const styles = StyleSheet.create({
   },
   resetText: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
     fontWeight: '700',
   },
   description: {
     ...TYPOGRAPHY.body2,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
   },
   listContainer: {
     gap: 12,
     marginBottom: 32,
   },
   workspaceCard: {
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderRadius: 24,
     padding: 20,
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: THEME_COLORS.black,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.05,
         shadowRadius: 12,
@@ -377,7 +390,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 16,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -394,10 +407,10 @@ const styles = StyleSheet.create({
   wsName: {
     fontSize: 17,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   ddayTag: {
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
@@ -405,7 +418,7 @@ const styles = StyleSheet.create({
   ddayTagText: {
     fontSize: 10,
     fontWeight: '800',
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
   wsSubInfo: {
     flexDirection: 'row',
@@ -414,13 +427,13 @@ const styles = StyleSheet.create({
   },
   wsType: {
     fontSize: 13,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     fontWeight: '500',
   },
   activeLabel: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#E8F3FF',
+    backgroundColor: APP_COLORS.primaryLight,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 12,
@@ -429,18 +442,18 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     marginRight: 4,
   },
   activeText: {
     fontSize: 10,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
   manageBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 12,
@@ -449,12 +462,12 @@ const styles = StyleSheet.create({
   manageBtnText: {
     fontSize: 12,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   cardBottom: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.bgGray + '50',
+    backgroundColor: APP_COLORS.bgGray + '50',
     padding: 12,
     borderRadius: 16,
   },
@@ -467,7 +480,7 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: COLORS.white,
+    borderColor: THEME_COLORS.white,
     overflow: 'hidden',
   },
   firstAvatar: {
@@ -489,10 +502,10 @@ const styles = StyleSheet.create({
   avatarInitial: {
     fontSize: 10,
     fontWeight: '700',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   moreBadge: {
-    backgroundColor: COLORS.skeleton,
+    backgroundColor: APP_COLORS.skeleton,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 0,
@@ -500,26 +513,26 @@ const styles = StyleSheet.create({
   moreText: {
     fontSize: 9,
     fontWeight: '700',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   memberSummary: {
     flex: 1,
     fontSize: 13,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     fontWeight: '500',
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     height: 56,
     borderRadius: 18,
     gap: 8,
     marginTop: 8,
     ...Platform.select({
       ios: {
-        shadowColor: COLORS.primary,
+        shadowColor: APP_COLORS.primary,
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.2,
         shadowRadius: 10,
@@ -530,7 +543,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: COLORS.white,
+    color: THEME_COLORS.white,
   },
   modalOverlay: {
     flex: 1,
@@ -540,7 +553,7 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   modalContent: {
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderRadius: 28,
     width: '100%',
     padding: 24,
@@ -564,19 +577,19 @@ const styles = StyleSheet.create({
   modalIndicator: {
     width: 40,
     height: 5,
-    backgroundColor: COLORS.skeleton,
+    backgroundColor: APP_COLORS.skeleton,
     borderRadius: 2.5,
     marginBottom: 16,
   },
   modalTitleInline: {
     fontSize: 18,
     fontWeight: '800',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginBottom: 4,
   },
   modalSubtitle: {
     fontSize: 13,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     fontWeight: '600',
   },
   memberListScroll: {
@@ -587,7 +600,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.bgGray,
+    borderBottomColor: APP_COLORS.bgGray,
   },
   memberAvatarWrapper: {
     width: 44,
@@ -603,14 +616,14 @@ const styles = StyleSheet.create({
   memberAvatarPlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarInitialLarge: {
     fontSize: 18,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
   memberInfoFull: {
     flex: 1,
@@ -620,11 +633,11 @@ const styles = StyleSheet.create({
   memberNameFull: {
     fontSize: 16,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginRight: 8,
   },
   meTag: {
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
@@ -632,10 +645,10 @@ const styles = StyleSheet.create({
   meTagText: {
     fontSize: 10,
     fontWeight: '800',
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
   closeButton: {
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     paddingVertical: 16,
     borderRadius: 16,
     alignItems: 'center',
@@ -644,7 +657,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     fontSize: 15,
     fontWeight: '700',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
 });
 

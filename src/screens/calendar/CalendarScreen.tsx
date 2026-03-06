@@ -11,7 +11,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Calendar } from 'react-native-calendars';
 import { Plus } from 'lucide-react-native';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { useCalendarStore } from '@/stores/useCalendarStore';
 import {
@@ -35,8 +40,8 @@ const CalendarScreen = () => {
       [selected]: {
         selected: true,
         disableTouchEvent: true,
-        selectedColor: COLORS.primary,
-        selectedTextColor: COLORS.white,
+        selectedColor: APP_COLORS.primary,
+        selectedTextColor: THEME_COLORS.white,
       },
     };
 
@@ -53,11 +58,11 @@ const CalendarScreen = () => {
       uniqueRange.forEach(date => {
         if (marks[date]) {
           marks[date].marked = true;
-          marks[date].dotColor = event.color || COLORS.primary;
+          marks[date].dotColor = event.color || APP_COLORS.primary;
         } else {
           marks[date] = {
             marked: true,
-            dotColor: event.color || COLORS.primary,
+            dotColor: event.color || APP_COLORS.primary,
           };
         }
       });
@@ -97,7 +102,7 @@ const CalendarScreen = () => {
           activeOpacity={0.7}
           onPress={handleAddEvent}
         >
-          <Plus size={24} color={COLORS.textPrimary} />
+          <Plus size={24} color={APP_COLORS.textPrimary} />
         </TouchableOpacity>
       </View>
       <ScrollView
@@ -116,19 +121,19 @@ const CalendarScreen = () => {
             renderHeader={() => null}
             hideArrows={true}
             theme={{
-              backgroundColor: COLORS.white,
-              calendarBackground: COLORS.white,
-              textSectionTitleColor: COLORS.textTertiary,
-              selectedDayBackgroundColor: COLORS.primary,
-              selectedDayTextColor: COLORS.white,
-              todayTextColor: COLORS.primary,
-              dayTextColor: COLORS.textPrimary,
-              textDisabledColor: COLORS.border,
-              dotColor: COLORS.primary,
-              selectedDotColor: COLORS.white,
-              arrowColor: COLORS.primary,
-              monthTextColor: COLORS.textPrimary,
-              indicatorColor: COLORS.primary,
+              backgroundColor: THEME_COLORS.white,
+              calendarBackground: THEME_COLORS.white,
+              textSectionTitleColor: APP_COLORS.textTertiary,
+              selectedDayBackgroundColor: APP_COLORS.primary,
+              selectedDayTextColor: THEME_COLORS.white,
+              todayTextColor: APP_COLORS.primary,
+              dayTextColor: APP_COLORS.textPrimary,
+              textDisabledColor: APP_COLORS.border,
+              dotColor: APP_COLORS.primary,
+              selectedDotColor: THEME_COLORS.white,
+              arrowColor: APP_COLORS.primary,
+              monthTextColor: APP_COLORS.textPrimary,
+              indicatorColor: APP_COLORS.primary,
               textDayFontWeight: '500',
               textMonthFontWeight: 'bold',
               textDayHeaderFontWeight: '700',
@@ -187,17 +192,17 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...TYPOGRAPHY.header1,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   addIconBtn: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: APP_COLORS.border,
   },
   flex1: {
     flex: 1,
@@ -221,7 +226,7 @@ const styles = StyleSheet.create({
     ...TYPOGRAPHY.header2,
     fontSize: 17,
     marginBottom: SPACING.lg,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   eventItem: {
     flexDirection: 'row',
@@ -243,12 +248,12 @@ const styles = StyleSheet.create({
     ...TYPOGRAPHY.body1,
     fontSize: 15,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginBottom: 4,
   },
   eventTime: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     fontSize: 13,
   },
   emptyState: {
@@ -258,7 +263,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     ...TYPOGRAPHY.body2,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
   },
 });
 

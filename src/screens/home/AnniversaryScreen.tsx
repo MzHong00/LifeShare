@@ -1,7 +1,12 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Calendar } from 'lucide-react-native';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { Card } from '@/components/common/Card';
 
@@ -52,10 +57,10 @@ const AnniversaryScreen = () => {
                     size={18}
                     color={
                       item.status === 'next'
-                        ? COLORS.primary
+                        ? APP_COLORS.primary
                         : item.status === 'future'
-                        ? COLORS.textPrimary
-                        : COLORS.textTertiary
+                        ? APP_COLORS.textPrimary
+                        : APP_COLORS.textTertiary
                     }
                   />
                 </View>
@@ -102,7 +107,7 @@ const AnniversaryScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
   },
   scrollContent: {
     padding: SPACING.layout,
@@ -116,7 +121,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     ...TYPOGRAPHY.body1,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   list: {
     gap: 12,
@@ -127,14 +132,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 10,
     paddingHorizontal: 8,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#F2F4F6',
+    borderBottomColor: APP_COLORS.border,
     elevation: 0,
     shadowOpacity: 0,
   },
   upcomingCard: {
-    backgroundColor: '#F8FAFF',
+    backgroundColor: APP_COLORS.primaryLight,
     borderRadius: 16,
     borderBottomWidth: 0,
     paddingHorizontal: 14,
@@ -146,7 +151,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   pastText: {
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
   },
   cardLeft: {
     flexDirection: 'row',
@@ -157,24 +162,24 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: '#F2F4F6',
+    backgroundColor: APP_COLORS.bgGray,
     justifyContent: 'center',
     alignItems: 'center',
   },
   upcomingIcon: {
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
   },
   anniversaryTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   upcomingText: {
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
   anniversaryDate: {
     fontSize: 12,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     marginTop: 1,
   },
   cardRight: {
@@ -183,10 +188,10 @@ const styles = StyleSheet.create({
   dDay: {
     fontSize: 13,
     fontWeight: '700',
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
   },
   upcomingDDay: {
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
 });
 

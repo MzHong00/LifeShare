@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, StyleSheet, TextStyle } from 'react-native';
-import { COLORS, TYPOGRAPHY } from '@/constants/theme';
+import { APP_COLORS, TYPOGRAPHY } from '@/constants/theme';
 
 interface FormLabelProps {
   children: string;
@@ -24,11 +24,11 @@ const styles = StyleSheet.create({
   label: {
     ...TYPOGRAPHY.body1,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginBottom: 12,
     marginLeft: 4,
   },
   required: {
-    color: COLORS.error,
+    color: APP_COLORS.error,
   },
 });

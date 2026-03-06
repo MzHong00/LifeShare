@@ -15,7 +15,12 @@ import { Calendar } from 'react-native-calendars';
 import type { DateData } from 'react-native-calendars';
 import { Calendar as CalendarIcon, Trash2 } from 'lucide-react-native';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { useCalendarStore, calendarActions } from '@/stores/useCalendarStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { modalActions } from '@/stores/useModalStore';
@@ -100,7 +105,7 @@ const EventCreateScreen = () => {
       eventId ? (
         <HeaderButton
           onPress={handleDelete}
-          icon={<Trash2 size={24} color={COLORS.error} />}
+          icon={<Trash2 size={24} color={APP_COLORS.error} />}
         />
       ) : undefined,
     [eventId, handleDelete],
@@ -125,22 +130,22 @@ const EventCreateScreen = () => {
     if (startDate) {
       marks[startDate] = {
         startingDay: true,
-        color: COLORS.primary,
-        textColor: COLORS.white,
+        color: APP_COLORS.primary,
+        textColor: THEME_COLORS.white,
       };
     }
     if (endDate) {
       marks[endDate] = {
         endingDay: true,
-        color: COLORS.primary,
-        textColor: COLORS.white,
+        color: APP_COLORS.primary,
+        textColor: THEME_COLORS.white,
       };
 
       const intermediateDates = getIntermediateDates(startDate, endDate);
       intermediateDates.forEach(date => {
         marks[date] = {
-          color: COLORS.primaryLight,
-          textColor: COLORS.primary,
+          color: APP_COLORS.primaryLight,
+          textColor: APP_COLORS.primary,
         };
       });
     }
@@ -228,7 +233,7 @@ const EventCreateScreen = () => {
             >
               <CalendarIcon
                 size={20}
-                color={COLORS.primary}
+                color={APP_COLORS.primary}
                 style={styles.smallIconMargin}
               />
               <Text style={styles.dateSelectorText}>
@@ -297,11 +302,11 @@ const EventCreateScreen = () => {
               markedDates={markedDates}
               onDayPress={handleDayPress}
               theme={{
-                selectedDayBackgroundColor: COLORS.primary,
-                selectedDayTextColor: COLORS.white,
-                todayTextColor: COLORS.primary,
-                arrowColor: COLORS.primary,
-                monthTextColor: COLORS.textPrimary,
+                selectedDayBackgroundColor: APP_COLORS.primary,
+                selectedDayTextColor: THEME_COLORS.white,
+                todayTextColor: APP_COLORS.primary,
+                arrowColor: APP_COLORS.primary,
+                monthTextColor: APP_COLORS.textPrimary,
                 textDayFontWeight: '500',
                 textMonthFontWeight: 'bold',
                 textDayHeaderFontWeight: '700',
@@ -335,14 +340,14 @@ const styles = StyleSheet.create({
   dateSelector: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     borderRadius: 16,
     paddingHorizontal: 16,
     height: 56,
   },
   dateSelectorText: {
     fontSize: 16,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     fontWeight: '500',
   },
   smallIconMargin: { marginRight: 8 },
@@ -350,7 +355,7 @@ const styles = StyleSheet.create({
   colorCircle: { width: 36, height: 36, borderRadius: 18 },
   colorCircleActive: {
     borderWidth: 3,
-    borderColor: COLORS.white,
+    borderColor: THEME_COLORS.white,
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -360,7 +365,7 @@ const styles = StyleSheet.create({
   footer: {
     padding: SPACING.layout,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: APP_COLORS.border,
   },
   modalOverlay: {
     flex: 1,
@@ -370,7 +375,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   calendarModalContent: {
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderRadius: 24,
     width: '100%',
     padding: 16,
@@ -385,14 +390,14 @@ const styles = StyleSheet.create({
   },
   calendarModalTitle: {
     ...TYPOGRAPHY.header2,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   closeText: {
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     fontWeight: '600',
   },
   confirmBtn: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     marginTop: 16,
     height: 52,
     borderRadius: 12,
@@ -400,7 +405,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   confirmBtnText: {
-    color: COLORS.white,
+    color: THEME_COLORS.white,
     fontSize: 16,
     fontWeight: '700',
   },

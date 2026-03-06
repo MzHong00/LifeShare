@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { COLORS } from '@/constants/theme';
+import { APP_COLORS, THEME_COLORS } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import {
   HomeIconWrapper,
@@ -25,15 +25,15 @@ const MainTabScreen = () => {
       backBehavior="initialRoute"
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#191F28',
-        tabBarInactiveTintColor: '#8B95A1',
+        tabBarActiveTintColor: APP_COLORS.textPrimary,
+        tabBarInactiveTintColor: APP_COLORS.textTertiary,
         tabBarStyle: {
           height: 60 + insets.bottom,
           paddingBottom: insets.bottom > 0 ? insets.bottom : 12,
           paddingTop: 8,
           borderTopWidth: 1,
-          borderTopColor: COLORS.border,
-          backgroundColor: COLORS.white,
+          borderTopColor: APP_COLORS.border,
+          backgroundColor: THEME_COLORS.white,
         },
         tabBarLabelStyle: {
           fontSize: 12,

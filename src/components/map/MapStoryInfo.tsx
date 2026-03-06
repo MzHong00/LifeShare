@@ -1,5 +1,5 @@
 import { View, StyleSheet, Image, Text } from 'react-native';
-import { COLORS, SPACING } from '@/constants/theme';
+import { APP_COLORS, SPACING } from '@/constants/theme';
 import { StoryBriefInfo } from '@/components/stories/StoryBriefInfo';
 import type { Story } from '@/types';
 
@@ -39,10 +39,10 @@ const styles = StyleSheet.create({
     aspectRatio: 1.5,
     borderRadius: 20,
     marginTop: 8,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
   },
   descriptionSection: {
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     padding: 16,
     borderRadius: 16,
     marginTop: 16,
@@ -51,6 +51,6 @@ const styles = StyleSheet.create({
   descriptionText: {
     fontSize: 14,
     lineHeight: 22,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
 });

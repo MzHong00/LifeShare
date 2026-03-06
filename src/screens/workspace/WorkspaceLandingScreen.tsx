@@ -3,9 +3,14 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Heart, User } from 'lucide-react-native';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { APP_WORKSPACE } from '@/constants/config';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
 type RootStackParamList = {
@@ -28,7 +33,7 @@ const WorkspaceLandingScreen = () => {
           onPress={() => navigation.navigate(NAV_ROUTES.PROFILE.NAME)}
         >
           <View style={styles.avatarPlaceholder}>
-            <User size={24} color={COLORS.primary} />
+            <User size={24} color={APP_COLORS.primary} />
           </View>
         </TouchableOpacity>
       </View>
@@ -36,7 +41,11 @@ const WorkspaceLandingScreen = () => {
       <View style={styles.content}>
         <View style={styles.illustrationWrapper}>
           <View style={styles.logoContainer}>
-            <Heart size={48} color={COLORS.primary} fill={COLORS.primary} />
+            <Heart
+              size={48}
+              color={APP_COLORS.primary}
+              fill={APP_COLORS.primary}
+            />
           </View>
         </View>
 
@@ -67,7 +76,7 @@ const WorkspaceLandingScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
   },
   header: {
     paddingHorizontal: SPACING.layout,
@@ -78,11 +87,11 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: THEME_COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -91,7 +100,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -109,10 +118,10 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 24,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: COLORS.primary,
+    shadowColor: APP_COLORS.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
@@ -127,22 +136,22 @@ const styles = StyleSheet.create({
     fontSize: 26,
     textAlign: 'center',
     marginBottom: 16,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   emptyDescription: {
     ...TYPOGRAPHY.body1,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     textAlign: 'center',
     lineHeight: 24,
   },
   actionButton: {
     width: '100%',
     height: 58,
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: COLORS.primary,
+    shadowColor: APP_COLORS.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -151,7 +160,7 @@ const styles = StyleSheet.create({
   actionButtonText: {
     fontSize: 17,
     fontWeight: '700',
-    color: COLORS.white,
+    color: THEME_COLORS.white,
   },
 });
 

@@ -1,6 +1,5 @@
-
 import { View, Text, StyleSheet } from 'react-native';
-import { COLORS, TYPOGRAPHY } from '@/constants/theme';
+import { APP_COLORS, THEME_COLORS, TYPOGRAPHY } from '@/constants/theme';
 import { ProfileAvatar } from '@/components/common/ProfileAvatar';
 
 interface MessageBubbleProps {
@@ -71,17 +70,17 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 20,
     elevation: 1,
-    shadowColor: '#000',
+    shadowColor: THEME_COLORS.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
   myBubble: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     borderBottomRightRadius: 4,
   },
   partnerBubble: {
-    backgroundColor: COLORS.skeleton,
+    backgroundColor: APP_COLORS.skeleton,
     borderBottomLeftRadius: 4,
   },
   messageText: {
@@ -89,14 +88,14 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   myMessageText: {
-    color: COLORS.white,
+    color: THEME_COLORS.white,
   },
   partnerMessageText: {
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   timeText: {
     fontSize: 10,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     marginHorizontal: 8,
     marginBottom: 4,
   },

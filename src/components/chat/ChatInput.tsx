@@ -6,7 +6,12 @@ import {
   Platform,
 } from 'react-native';
 import { Plus, Send, X } from 'lucide-react-native';
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 
 interface ChatInputProps {
   value: string;
@@ -27,9 +32,9 @@ export const ChatInput = ({
     <View style={styles.inputWrapper}>
       <TouchableOpacity style={styles.plusButton} onPress={onPlusPress}>
         {isActionMenuVisible ? (
-          <X size={24} color={COLORS.textSecondary} />
+          <X size={24} color={APP_COLORS.textSecondary} />
         ) : (
-          <Plus size={24} color={COLORS.textSecondary} />
+          <Plus size={24} color={APP_COLORS.textSecondary} />
         )}
       </TouchableOpacity>
       <View style={styles.inputContainer}>
@@ -48,7 +53,7 @@ export const ChatInput = ({
           onPress={onSend}
           disabled={!value.trim()}
         >
-          <Send size={20} color={COLORS.white} />
+          <Send size={20} color={THEME_COLORS.white} />
         </TouchableOpacity>
       </View>
     </View>
@@ -61,9 +66,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: SPACING.md,
     paddingBottom: Platform.OS === 'ios' ? 0 : SPACING.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: APP_COLORS.border,
   },
   plusButton: {
     marginRight: 8,
@@ -72,7 +77,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     borderRadius: 24,
     paddingLeft: 16,
     paddingRight: 8,
@@ -84,18 +89,18 @@ const styles = StyleSheet.create({
     maxHeight: 100,
     paddingTop: Platform.OS === 'ios' ? 8 : 4,
     paddingBottom: Platform.OS === 'ios' ? 8 : 4,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   sendButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 8,
   },
   sendButtonDisabled: {
-    backgroundColor: COLORS.textTertiary,
+    backgroundColor: APP_COLORS.textTertiary,
   },
 });

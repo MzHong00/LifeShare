@@ -1,4 +1,3 @@
-
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import {
   Battery,
@@ -7,7 +6,7 @@ import {
   Navigation,
   ChevronRight,
 } from 'lucide-react-native';
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { APP_COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 
 interface MapPartnerInfoProps {
   selectedUser: {
@@ -34,16 +33,16 @@ export const MapPartnerInfo = ({
         <View style={styles.partnerInfo}>
           <Text style={TYPOGRAPHY.header2}>{selectedUser?.name}</Text>
           <View style={styles.batteryInfo}>
-            <Battery size={16} color={COLORS.textTertiary} />
+            <Battery size={16} color={APP_COLORS.textTertiary} />
             <Text style={styles.batteryText}>85%</Text>
           </View>
         </View>
         <View style={styles.locationDetail}>
-          <MapPin size={20} color={COLORS.primary} />
+          <MapPin size={20} color={APP_COLORS.primary} />
           <Text style={styles.addressText}>서울특별시 강남구 역삼동</Text>
         </View>
         <View style={styles.timeInfo}>
-          <Clock size={16} color={COLORS.textTertiary} />
+          <Clock size={16} color={APP_COLORS.textTertiary} />
           <Text style={styles.timeText}>10분 전 확인됨</Text>
         </View>
       </View>
@@ -53,7 +52,7 @@ export const MapPartnerInfo = ({
           style={styles.actionButton}
           onPress={onOpenDirections}
         >
-          <Navigation size={20} color={COLORS.primary} />
+          <Navigation size={20} color={APP_COLORS.primary} />
           <Text style={styles.actionButtonText}>경로 찾기</Text>
         </TouchableOpacity>
       </View>
@@ -63,13 +62,13 @@ export const MapPartnerInfo = ({
         {recentPlaces.map(place => (
           <TouchableOpacity key={place.id} style={styles.placeItem}>
             <View style={styles.placeIcon}>
-              <MapPin size={20} color={COLORS.textSecondary} />
+              <MapPin size={20} color={APP_COLORS.textSecondary} />
             </View>
             <View style={styles.placeInfo}>
               <Text style={TYPOGRAPHY.body1}>{place.name}</Text>
               <Text style={TYPOGRAPHY.caption}>{place.date}</Text>
             </View>
-            <ChevronRight size={18} color={COLORS.textTertiary} />
+            <ChevronRight size={18} color={APP_COLORS.textTertiary} />
           </TouchableOpacity>
         ))}
       </View>
@@ -90,7 +89,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   batteryInfo: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  batteryText: { ...TYPOGRAPHY.caption, color: COLORS.textTertiary },
+  batteryText: { ...TYPOGRAPHY.caption, color: APP_COLORS.textTertiary },
   locationDetail: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -100,10 +99,10 @@ const styles = StyleSheet.create({
   addressText: {
     ...TYPOGRAPHY.body1,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   timeInfo: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  timeText: { ...TYPOGRAPHY.caption, color: COLORS.textTertiary },
+  timeText: { ...TYPOGRAPHY.caption, color: APP_COLORS.textTertiary },
   buttonRow: {
     flexDirection: 'row',
     paddingHorizontal: SPACING.layout,
@@ -115,7 +114,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     paddingVertical: 14,
     borderRadius: 16,
     gap: 8,
@@ -123,7 +122,7 @@ const styles = StyleSheet.create({
   actionButtonText: {
     ...TYPOGRAPHY.body2,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   recentSection: {
     paddingHorizontal: SPACING.layout,
@@ -143,7 +142,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SPACING.md,

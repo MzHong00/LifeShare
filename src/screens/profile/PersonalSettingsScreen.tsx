@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Switch } from 'react-native';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { toastActions } from '@/stores/useToastStore';
 
@@ -54,8 +59,11 @@ const PersonalSettingsScreen = () => {
               <Switch
                 value={pushEnabled}
                 onValueChange={handlePushToggle}
-                trackColor={{ false: '#E5E8EB', true: COLORS.primary }}
-                thumbColor={COLORS.white}
+                trackColor={{
+                  false: APP_COLORS.border,
+                  true: APP_COLORS.primary,
+                }}
+                thumbColor={THEME_COLORS.white}
               />
             </View>
             <View style={styles.divider} />
@@ -69,8 +77,11 @@ const PersonalSettingsScreen = () => {
               <Switch
                 value={marketingEnabled}
                 onValueChange={handleMarketingToggle}
-                trackColor={{ false: '#E5E8EB', true: COLORS.primary }}
-                thumbColor={COLORS.white}
+                trackColor={{
+                  false: APP_COLORS.border,
+                  true: APP_COLORS.primary,
+                }}
+                thumbColor={THEME_COLORS.white}
               />
             </View>
           </View>
@@ -89,8 +100,11 @@ const PersonalSettingsScreen = () => {
               <Switch
                 value={inviteRefusalEnabled}
                 onValueChange={handleInviteToggle}
-                trackColor={{ false: '#E5E8EB', true: COLORS.primary }}
-                thumbColor={COLORS.white}
+                trackColor={{
+                  false: APP_COLORS.border,
+                  true: APP_COLORS.primary,
+                }}
+                thumbColor={THEME_COLORS.white}
               />
             </View>
           </View>
@@ -103,7 +117,7 @@ const PersonalSettingsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
   },
   scrollView: {
     flex: 1,
@@ -118,12 +132,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     marginBottom: 10,
     marginLeft: 4,
   },
   card: {
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderRadius: 24,
     overflow: 'hidden',
   },
@@ -139,18 +153,18 @@ const styles = StyleSheet.create({
   },
   settingLabel: {
     ...TYPOGRAPHY.body1,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     fontWeight: '600',
     marginBottom: 4,
   },
   settingDesc: {
     fontSize: 13,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     opacity: 0.8,
   },
   divider: {
     height: 1,
-    backgroundColor: COLORS.border,
+    backgroundColor: APP_COLORS.border,
     marginHorizontal: 20,
     opacity: 0.5,
   },

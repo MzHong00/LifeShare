@@ -1,5 +1,10 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
 const PrivacyPolicyScreen = () => {
@@ -78,7 +83,7 @@ const PrivacyPolicyScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
   },
   scrollView: {
     flex: 1,
@@ -92,23 +97,23 @@ const styles = StyleSheet.create({
   },
   title: {
     ...TYPOGRAPHY.header1,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginBottom: 8,
   },
   date: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     marginBottom: 20,
   },
   subTitle: {
     ...TYPOGRAPHY.body1,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginBottom: 12,
   },
   paragraph: {
     ...TYPOGRAPHY.body2,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     lineHeight: 22,
   },
   bulletList: {
@@ -117,19 +122,19 @@ const styles = StyleSheet.create({
   },
   bulletItem: {
     ...TYPOGRAPHY.body2,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     lineHeight: 24,
     marginBottom: 4,
   },
   footer: {
     marginTop: 20,
     padding: 20,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     borderRadius: 16,
   },
   footerText: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 18,
   },

@@ -23,7 +23,7 @@ import {
   UserCog,
 } from 'lucide-react-native';
 
-import { COLORS, SPACING } from '@/constants/theme';
+import { APP_COLORS, THEME_COLORS, SPACING } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { authActions } from '@/stores/useAuthStore';
 import { useUserStore, userActions } from '@/stores/useUserStore';
@@ -156,27 +156,27 @@ const ProfileScreen = () => {
     {
       id: 'workspace',
       label: `${APP_WORKSPACE.KR} 관리 및 초대`,
-      icon: <Users size={20} color={COLORS.textPrimary} />,
+      icon: <Users size={20} color={APP_COLORS.textPrimary} />,
       onPress: () => navigation.navigate(NAV_ROUTES.WORKSPACE_LIST.NAME as any),
     },
 
     {
       id: 'personal_settings',
       label: '개인 설정',
-      icon: <UserCog size={20} color={COLORS.textPrimary} />,
+      icon: <UserCog size={20} color={APP_COLORS.textPrimary} />,
       onPress: () =>
         navigation.navigate(NAV_ROUTES.PERSONAL_SETTINGS.NAME as any),
     },
     {
       id: 'privacy',
       label: '개인정보 처리방침',
-      icon: <ShieldCheck size={20} color={COLORS.textPrimary} />,
+      icon: <ShieldCheck size={20} color={APP_COLORS.textPrimary} />,
       onPress: () => navigation.navigate(NAV_ROUTES.PRIVACY_POLICY.NAME as any),
     },
     {
       id: 'logout',
       label: '로그아웃',
-      icon: <LogOut size={20} color={COLORS.error} />,
+      icon: <LogOut size={20} color={APP_COLORS.error} />,
       onPress: handleLogout,
       isCritical: true,
     },
@@ -204,7 +204,11 @@ const ProfileScreen = () => {
                 />
               </View>
               <View style={styles.avatarEditBadge}>
-                <Camera size={14} color={COLORS.white} strokeWidth={2.5} />
+                <Camera
+                  size={14}
+                  color={THEME_COLORS.white}
+                  strokeWidth={2.5}
+                />
               </View>
             </TouchableOpacity>
 
@@ -217,7 +221,7 @@ const ProfileScreen = () => {
                 <Text style={styles.userName}>{displayUserName}</Text>
                 <Pencil
                   size={14}
-                  color={COLORS.textTertiary}
+                  color={APP_COLORS.textTertiary}
                   style={styles.pencilIcon}
                 />
               </TouchableOpacity>
@@ -238,7 +242,7 @@ const ProfileScreen = () => {
               >
                 <View style={styles.invitationInfo}>
                   <View style={styles.invitationIcon}>
-                    <Inbox size={20} color={COLORS.primary} />
+                    <Inbox size={20} color={APP_COLORS.primary} />
                   </View>
                   <View>
                     <Text style={styles.invitationText}>
@@ -261,7 +265,7 @@ const ProfileScreen = () => {
                       )
                     }
                   >
-                    <X size={18} color={COLORS.textSecondary} />
+                    <X size={18} color={APP_COLORS.textSecondary} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.actionBtn, styles.acceptBtn]}
@@ -273,7 +277,7 @@ const ProfileScreen = () => {
                       )
                     }
                   >
-                    <Check size={18} color={COLORS.white} />
+                    <Check size={18} color={THEME_COLORS.white} />
                   </TouchableOpacity>
                 </View>
               </Card>
@@ -296,7 +300,7 @@ const ProfileScreen = () => {
                     <Text
                       style={[
                         styles.menuItemLabel,
-                        item.isCritical && { color: COLORS.error },
+                        item.isCritical && { color: APP_COLORS.error },
                       ]}
                     >
                       {item.label}
@@ -304,7 +308,7 @@ const ProfileScreen = () => {
                   </View>
                   <View style={styles.menuItemRight}>
                     {item.badge}
-                    <ChevronRight size={18} color={COLORS.textTertiary} />
+                    <ChevronRight size={18} color={APP_COLORS.textTertiary} />
                   </View>
                 </TouchableOpacity>
                 {index < menuItems.length - 1 && (
@@ -326,13 +330,13 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bgGray, // 바탕을 연한 그레이로 처리하여 카드 부각
+    backgroundColor: APP_COLORS.bgGray, // 바탕을 연한 그레이로 처리하여 카드 부각
   },
   scrollContent: {
     paddingBottom: 60,
   },
   profileSection: {
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     paddingHorizontal: 32,
     paddingTop: 32,
     paddingBottom: 24,
@@ -350,7 +354,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 32,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -371,11 +375,11 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 22,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   userEmail: {
     fontSize: 14,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
   },
   avatarEditBadge: {
     position: 'absolute',
@@ -384,13 +388,13 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
     borderRadius: 13,
-    backgroundColor: COLORS.primary, // 토스 블루 포인트 컬러 적용
+    backgroundColor: APP_COLORS.primary, // 토스 블루 포인트 컬러 적용
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: COLORS.white, // 아바타와 경계를 명확히 하는 화이트 보더
+    borderColor: THEME_COLORS.white, // 아바타와 경계를 명확히 하는 화이트 보더
     // 입체감을 위한 그림자 추가
-    shadowColor: COLORS.black,
+    shadowColor: THEME_COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -403,11 +407,11 @@ const styles = StyleSheet.create({
   nameInput: {
     width: '100%',
     height: 56,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     borderRadius: 16,
     paddingHorizontal: 16,
     fontSize: 16,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     fontWeight: '600',
   },
   photoOptions: {
@@ -424,11 +428,11 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     fontSize: 16,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   photoDivider: {
     height: 1,
-    backgroundColor: COLORS.border,
+    backgroundColor: APP_COLORS.border,
     marginHorizontal: 10,
     opacity: 0.5,
   },
@@ -439,7 +443,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     marginBottom: 10,
     marginLeft: 4,
   },
@@ -461,7 +465,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -469,7 +473,7 @@ const styles = StyleSheet.create({
   menuItemLabel: {
     fontSize: 16,
     fontWeight: '500',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   menuItemRight: {
     flexDirection: 'row',
@@ -477,7 +481,7 @@ const styles = StyleSheet.create({
   },
   menuDivider: {
     height: 1,
-    backgroundColor: COLORS.border,
+    backgroundColor: APP_COLORS.border,
     marginHorizontal: 18,
     opacity: 0.5,
   },
@@ -487,7 +491,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   invitationCard: {
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
     borderRadius: 20,
     padding: 18,
     flexDirection: 'row',
@@ -504,24 +508,24 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 14,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
   },
   invitationText: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
     marginBottom: 2,
   },
   inviterName: {
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   invitationWorkspace: {
     fontSize: 15,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   invitationActions: {
     flexDirection: 'row',
@@ -535,10 +539,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   declineBtn: {
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
   },
   acceptBtn: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
   },
   footer: {
     alignItems: 'center',
@@ -546,7 +550,7 @@ const styles = StyleSheet.create({
   },
   version: {
     fontSize: 13,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
   },
 });
 

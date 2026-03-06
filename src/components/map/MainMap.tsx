@@ -7,7 +7,7 @@ import MapView, {
   Region,
 } from 'react-native-maps';
 
-import { COLORS } from '@/constants/theme';
+import { APP_COLORS, THEME_COLORS } from '@/constants/theme';
 import { ProfileAvatar } from '@/components/common/ProfileAvatar';
 import type { Story } from '@/types';
 
@@ -125,7 +125,7 @@ export const MainMap = ({
             <View
               style={[
                 styles.avatarMarker,
-                member.id === 'user-1' && { borderColor: COLORS.primary },
+                member.id === 'user-1' && { borderColor: APP_COLORS.primary },
               ]}
             >
               <ProfileAvatar uri={member.avatar} name={member.name} size={44} />
@@ -147,20 +147,20 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     opacity: 0.15,
   },
   avatarMarker: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderWidth: 2,
-    borderColor: COLORS.primary,
+    borderColor: APP_COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: THEME_COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,

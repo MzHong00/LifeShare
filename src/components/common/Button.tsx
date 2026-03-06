@@ -7,7 +7,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import { COLORS, TYPOGRAPHY } from '@/constants/theme';
+import { APP_COLORS, THEME_COLORS, TYPOGRAPHY } from '@/constants/theme';
 
 interface ButtonProps {
   title: string;
@@ -51,7 +51,7 @@ export const Button = ({
     >
       {loading ? (
         <ActivityIndicator
-          color={isPrimary || isError ? COLORS.white : COLORS.primary}
+          color={isPrimary || isError ? THEME_COLORS.white : APP_COLORS.primary}
         />
       ) : (
         <Text style={[styles.textBase, styles[`${variant}Text`], textStyle]}>
@@ -78,26 +78,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   primary: {
-    backgroundColor: COLORS.primary,
-    shadowColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
+    shadowColor: APP_COLORS.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 10,
     elevation: 4,
   },
   secondary: {
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: APP_COLORS.primaryLight,
   },
   error: {
-    backgroundColor: COLORS.error,
+    backgroundColor: APP_COLORS.error,
   },
   outline: {
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: APP_COLORS.border,
   },
   disabled: {
-    backgroundColor: COLORS.border,
+    backgroundColor: APP_COLORS.border,
     shadowOpacity: 0,
     elevation: 0,
   },
@@ -106,15 +106,15 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   primaryText: {
-    color: COLORS.white,
+    color: THEME_COLORS.white,
   },
   secondaryText: {
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
   errorText: {
-    color: COLORS.white,
+    color: THEME_COLORS.white,
   },
   outlineText: {
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
 });

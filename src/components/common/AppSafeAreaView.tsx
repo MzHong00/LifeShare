@@ -3,7 +3,7 @@ import { StyleSheet, ViewProps } from 'react-native';
 import { SafeAreaView, Edge } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
-import { COLORS } from '@/constants/theme';
+import { THEME_COLORS } from '@/constants/theme';
 
 interface AppSafeAreaViewProps extends ViewProps {
   children: ReactNode;
@@ -35,7 +35,7 @@ export const AppSafeAreaView = ({
 
   useLayoutEffect(() => {
     const flattenedStyle = StyleSheet.flatten(style);
-    const bgColor = flattenedStyle?.backgroundColor || COLORS.white;
+    const bgColor = flattenedStyle?.backgroundColor || THEME_COLORS.white;
 
     navigation.setOptions({
       headerShown,

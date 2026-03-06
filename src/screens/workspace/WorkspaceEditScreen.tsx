@@ -13,7 +13,12 @@ import { ChevronRight, Trash2, User, UserPlus } from 'lucide-react-native';
 import { Calendar } from 'react-native-calendars';
 import type { DateData } from 'react-native-calendars';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
 import { APP_WORKSPACE } from '@/constants/config';
 import {
   useWorkspaceStore,
@@ -211,15 +216,15 @@ const WorkspaceEditScreen = () => {
             markedDates={{
               [currentStartDate || '']: {
                 selected: true,
-                selectedColor: COLORS.primary,
+                selectedColor: APP_COLORS.primary,
               },
             }}
             theme={{
-              selectedDayBackgroundColor: COLORS.primary,
-              selectedDayTextColor: COLORS.white,
-              todayTextColor: COLORS.primary,
-              arrowColor: COLORS.primary,
-              monthTextColor: COLORS.textPrimary,
+              selectedDayBackgroundColor: APP_COLORS.primary,
+              selectedDayTextColor: THEME_COLORS.white,
+              todayTextColor: APP_COLORS.primary,
+              arrowColor: APP_COLORS.primary,
+              monthTextColor: APP_COLORS.textPrimary,
               textDayFontWeight: '500',
               textMonthFontWeight: 'bold',
               textDayHeaderFontWeight: '700',
@@ -279,7 +284,7 @@ const WorkspaceEditScreen = () => {
                 <Text
                   style={[
                     styles.textInput,
-                    !currentName && { color: COLORS.textTertiary },
+                    !currentName && { color: APP_COLORS.textTertiary },
                   ]}
                 >
                   {currentName || '제목 입력'}
@@ -295,7 +300,7 @@ const WorkspaceEditScreen = () => {
                 <Text
                   style={[
                     styles.textInput,
-                    !currentStartDate && { color: COLORS.textTertiary },
+                    !currentStartDate && { color: APP_COLORS.textTertiary },
                   ]}
                 >
                   {currentStartDate || '날짜 선택'}
@@ -313,10 +318,10 @@ const WorkspaceEditScreen = () => {
                 onPress={openProfileEditModal}
               >
                 <View style={[styles.menuIcon, styles.menuIconProfile]}>
-                  <User size={18} color={COLORS.primary} />
+                  <User size={18} color={APP_COLORS.primary} />
                 </View>
                 <Text style={styles.menuText}>내 활동 프로필 설정</Text>
-                <ChevronRight size={18} color={COLORS.border} />
+                <ChevronRight size={18} color={APP_COLORS.border} />
               </TouchableOpacity>
               <View style={styles.divider} />
               <TouchableOpacity
@@ -331,7 +336,7 @@ const WorkspaceEditScreen = () => {
                 <Text style={styles.menuSubText}>
                   {workspace?.members?.length || 0}명 참여 중
                 </Text>
-                <ChevronRight size={18} color={COLORS.border} />
+                <ChevronRight size={18} color={APP_COLORS.border} />
               </TouchableOpacity>
             </View>
           </Section>
@@ -352,7 +357,7 @@ const WorkspaceEditScreen = () => {
                     데이터는 유지되지만 리스트에서 사라집니다.
                   </Text>
                 </View>
-                <Trash2 size={18} color={COLORS.error} />
+                <Trash2 size={18} color={APP_COLORS.error} />
               </TouchableOpacity>
             </View>
           </Section>
@@ -372,7 +377,7 @@ const WorkspaceEditScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
   },
   contentWrapper: {
     flex: 1,
@@ -392,31 +397,31 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   typeBadgeCouple: {
-    backgroundColor: '#FFF0F0',
+    backgroundColor: THEME_COLORS.pinkLight,
   },
   typeBadgeGroup: {
-    backgroundColor: '#F0F4FF',
+    backgroundColor: APP_COLORS.primaryLight,
   },
   typeBadgeText: {
     fontSize: 11,
     fontWeight: '800',
   },
   typeTextCouple: {
-    color: '#FF4D4D',
+    color: THEME_COLORS.red,
   },
   typeTextGroup: {
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
   headerMainTitle: {
     ...TYPOGRAPHY.header1,
     fontSize: 26,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginBottom: 8,
   },
   activeLabel: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#E8F3FF',
+    backgroundColor: APP_COLORS.primaryLight,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 20,
@@ -425,19 +430,19 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
     marginRight: 6,
   },
   activeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: APP_COLORS.primary,
   },
   sectionOverride: {
     paddingHorizontal: 0, // Section 컴포넌트 내부 패딩 상쇄 (필요시)
   },
   card: {
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderRadius: 24,
     padding: 4,
     ...Platform.select({
@@ -462,13 +467,13 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     fontSize: 15,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     fontWeight: '400',
     textAlign: 'right',
   },
   divider: {
     height: 1,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     marginHorizontal: 16,
   },
   menuItem: {
@@ -485,13 +490,13 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   menuIconProfile: {
-    backgroundColor: '#F0F4FF',
+    backgroundColor: APP_COLORS.primaryLight,
   },
   menuIconInvite: {
     backgroundColor: '#F0FFF4',
   },
   menuIconSwitch: {
-    backgroundColor: '#F4F4F4',
+    backgroundColor: APP_COLORS.bgGray,
   },
   menuText: {
     flex: 1,
@@ -500,7 +505,7 @@ const styles = StyleSheet.create({
   },
   menuSubText: {
     fontSize: 13,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     marginRight: 8,
   },
   dangerHeader: {
@@ -509,7 +514,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   dangerCard: {
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderRadius: 24,
     padding: 4,
     borderColor: '#FFEBEB',
@@ -535,12 +540,12 @@ const styles = StyleSheet.create({
   dangerTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: COLORS.error,
+    color: APP_COLORS.error,
     marginBottom: 4,
   },
   dangerDesc: {
     fontSize: 12,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     lineHeight: 18,
   },
   footerInfo: {
@@ -549,7 +554,7 @@ const styles = StyleSheet.create({
   },
   footerNote: {
     fontSize: 12,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     textAlign: 'center',
     lineHeight: 18,
   },
@@ -562,7 +567,7 @@ const styles = StyleSheet.create({
   },
   calendarCard: {
     width: '100%',
-    backgroundColor: COLORS.white,
+    backgroundColor: THEME_COLORS.white,
     borderRadius: 24,
     padding: 20,
     overflow: 'hidden',
@@ -574,7 +579,7 @@ const styles = StyleSheet.create({
   calendarTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
   },
   modalContentWrapper: {
     width: '100%',
@@ -583,23 +588,23 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     ...TYPOGRAPHY.header2,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     marginBottom: 8,
   },
   modalDesc: {
     fontSize: 14,
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     lineHeight: 20,
     marginBottom: 20,
     textAlign: 'center',
   },
   modalInput: {
     height: 60,
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     borderRadius: 18,
     paddingHorizontal: 20,
     fontSize: 16,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     fontWeight: '600',
     marginBottom: 20,
     width: '100%',
@@ -618,20 +623,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalCancelBtn: {
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
   },
   modalConfirmBtn: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: APP_COLORS.primary,
   },
   modalCancelBtnText: {
     fontSize: 15,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: APP_COLORS.textSecondary,
   },
   modalConfirmBtnText: {
     fontSize: 15,
     fontWeight: '700',
-    color: COLORS.white,
+    color: THEME_COLORS.white,
   },
 });
 

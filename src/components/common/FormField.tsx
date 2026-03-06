@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TextInput, StyleSheet, TextInputProps } from 'react-native';
-import { COLORS } from '@/constants/theme';
+import { APP_COLORS } from '@/constants/theme';
 import { FormLabel } from './FormLabel';
 
 interface FormFieldProps extends TextInputProps {
@@ -33,7 +33,7 @@ export const FormField = ({
         onChangeText={onChangeText}
         maxLength={maxLength}
         multiline={multiline}
-        placeholderTextColor={COLORS.textTertiary}
+        placeholderTextColor={APP_COLORS.textTertiary}
         textAlignVertical={multiline ? 'top' : 'center'}
         {...props}
       />
@@ -53,12 +53,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   input: {
-    backgroundColor: COLORS.bgGray,
+    backgroundColor: APP_COLORS.bgGray,
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: COLORS.textPrimary,
+    color: APP_COLORS.textPrimary,
     fontWeight: '500',
   },
   textArea: {
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   charCount: {
     fontSize: 13,
     fontWeight: '400',
-    color: COLORS.textTertiary,
+    color: APP_COLORS.textTertiary,
     marginBottom: 0,
     marginRight: 4,
   },
