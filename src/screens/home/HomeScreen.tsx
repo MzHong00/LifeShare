@@ -1,51 +1,15 @@
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { User, Calendar, CheckSquare } from 'lucide-react-native';
-import { launchImageLibrary } from 'react-native-image-picker';
+import { ScrollView, StyleSheet } from 'react-native';
 
-import {
-  APP_COLORS,
-  THEME_COLORS,
-  SPACING,
-  TYPOGRAPHY,
-} from '@/constants/theme';
-import { NAV_ROUTES } from '@/constants/navigation';
-import { MOCK_DATA } from '@/constants/mockData';
-import { calculateDDay } from '@/utils/date';
-import {
-  useWorkspaceStore,
-  workspaceActions,
-} from '@/stores/useWorkspaceStore';
-import { modalActions } from '@/stores/useModalStore';
-import { Section } from '@/components/common/Section';
-import { Card } from '@/components/common/Card';
+import { APP_COLORS } from '@/constants/theme';
+import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import { Section } from '@/components/common/Section';
 import { DDayHero } from '@/components/home/DDayHero';
-import { MenuButton } from '@/components/home/MenuButton';
-
-type RootStackParamList = {
-  [NAV_ROUTES.MAIN_TABS.NAME]: undefined;
-  [NAV_ROUTES.CALENDAR.NAME]: undefined;
-  [NAV_ROUTES.TODO.NAME]: undefined;
-  [NAV_ROUTES.STORIES.NAME]: undefined;
-  [NAV_ROUTES.PROFILE.NAME]: undefined;
-  [NAV_ROUTES.WORKSPACE_SETUP.NAME]: undefined;
-  [NAV_ROUTES.CHAT.NAME]: undefined;
-  [NAV_ROUTES.ANNIVERSARY.NAME]: undefined;
-};
+import { HomeHeader } from '@/components/home/HomeHeader';
+import { OurDailyMenu } from '@/components/home/OurDailyMenu';
 
 const HomeScreen = () => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { currentWorkspace } = useWorkspaceStore();
-  const { updateWorkspaceBackground } = workspaceActions;
-  const { showModal } = modalActions;
 
   // currentWorkspace는 AppNavigator에서 보장됨
   if (!currentWorkspace) return null;
@@ -53,7 +17,7 @@ const HomeScreen = () => {
   return (
     <AppSafeAreaView
       style={styles.container}
-      edges={['top', 'bottom']}
+      edges={['top']}
       headerShown={false}
     >
       <ScrollView
@@ -61,93 +25,14 @@ const HomeScreen = () => {
         contentContainerStyle={styles.scrollContent}
       >
         {/* Header Section */}
-        <View style={styles.header}>
-          <View>
-            <Text style={TYPOGRAPHY.header1}>{currentWorkspace.name}</Text>
-            <Text style={[TYPOGRAPHY.body2, styles.headerSubTitle]}>
-              {currentWorkspace.startDate
-                ? `함께 기록을 시작한 지 ${calculateDDay(
-                    currentWorkspace.startDate,
-                  )}일`
-                : '소중한 일상을 기록해보세요'}
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={styles.profileButton}
-            onPress={() => navigation.navigate(NAV_ROUTES.PROFILE.NAME)}
-          >
-            <View style={styles.avatarPlaceholder}>
-              <User size={24} color={APP_COLORS.primary} />
-            </View>
-          </TouchableOpacity>
-        </View>
+        <HomeHeader />
 
         {/* D-Day Section */}
-        <DDayHero
-          partnerName={currentWorkspace.partnerName || MOCK_DATA.partner.name}
-          myName={MOCK_DATA.user.name}
-          days={
-            currentWorkspace.startDate
-              ? calculateDDay(currentWorkspace.startDate)
-              : 0
-          }
-          nextEventTitle={MOCK_DATA.workspace.nextEvent.title}
-          nextDDay={MOCK_DATA.workspace.nextEvent.remainingDays}
-          backgroundImage={currentWorkspace.backgroundImage}
-          workspaceType={currentWorkspace.type}
-          onPress={() =>
-            showModal({
-              type: 'confirm',
-              title: '배경 변경',
-              message: '앨범에서 사진을 선택하여 배경을 변경하시겠습니까?',
-              confirmText: '앨범에서 선택',
-              cancelText: '취소',
-              onConfirm: async () => {
-                const result = await launchImageLibrary({
-                  mediaType: 'photo',
-                  quality: 0.8,
-                });
-
-                if (result.assets && result.assets[0].uri) {
-                  updateWorkspaceBackground(
-                    currentWorkspace.id,
-                    result.assets[0].uri,
-                  );
-                  showModal({
-                    type: 'alert',
-                    title: '알림',
-                    message: '배경 이미지가 변경되었습니다.',
-                  });
-                }
-              },
-            })
-          }
-          onPressNextEvent={() =>
-            navigation.navigate(NAV_ROUTES.ANNIVERSARY.NAME)
-          }
-        />
+        <DDayHero />
 
         {/* Main Features */}
         <Section>
-          <Card style={styles.menuCard}>
-            <View style={styles.menuHeader}>
-              <Text style={styles.menuTitle}>우리의 일상</Text>
-            </View>
-            <View style={styles.menuGrid}>
-              <MenuButton
-                title={NAV_ROUTES.CALENDAR.TITLE}
-                icon={<Calendar size={18} color={THEME_COLORS.red} />}
-                iconBgColor={THEME_COLORS.pinkLight}
-                onPress={() => navigation.navigate(NAV_ROUTES.CALENDAR.NAME)}
-              />
-              <MenuButton
-                title={NAV_ROUTES.TODO.TITLE}
-                icon={<CheckSquare size={18} color={APP_COLORS.primary} />}
-                iconBgColor={APP_COLORS.primaryLight}
-                onPress={() => navigation.navigate(NAV_ROUTES.TODO.NAME)}
-              />
-            </View>
-          </Card>
+          <OurDailyMenu />
         </Section>
       </ScrollView>
     </AppSafeAreaView>
@@ -160,94 +45,7 @@ const styles = StyleSheet.create({
     backgroundColor: APP_COLORS.bgWhite,
   },
   scrollContent: {
-    paddingBottom: 40,
-  },
-  menuCard: {
-    padding: 0,
-    paddingTop: SPACING.lg,
-    paddingBottom: SPACING.md,
-  },
-  menuGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  menuHeader: {
-    width: '100%',
-    paddingHorizontal: SPACING.lg,
-    marginBottom: SPACING.sm,
-  },
-  menuTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: APP_COLORS.textPrimary,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.layout,
-    paddingVertical: SPACING.xl,
-  },
-  profileButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: THEME_COLORS.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 2,
-    shadowColor: THEME_COLORS.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  avatarPlaceholder: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: APP_COLORS.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    ...TYPOGRAPHY.caption,
-    color: APP_COLORS.primary,
-    fontWeight: '700',
-  },
-
-  setupCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: SPACING.lg,
-    backgroundColor: THEME_COLORS.white,
-    borderWidth: 1,
-    borderColor: APP_COLORS.primary,
-    borderStyle: 'dashed',
-  },
-  setupIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
-    backgroundColor: APP_COLORS.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: SPACING.md,
-  },
-  setupTextContainer: {
-    flex: 1,
-  },
-  setupTitle: {
-    ...TYPOGRAPHY.body1,
-    fontWeight: '700',
-    color: APP_COLORS.textPrimary,
-    marginBottom: 2,
-  },
-  setupDescription: {
-    ...TYPOGRAPHY.caption,
-    color: APP_COLORS.textSecondary,
-  },
-  headerSubTitle: {
-    color: APP_COLORS.textSecondary,
+    paddingBottom: 24,
   },
 });
 

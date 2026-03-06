@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { useShallow } from 'zustand/react/shallow';
 
 import { mmkvStorage } from '@/lib/storage';
+import { MOCK_DATA } from '@/constants/mockData';
 import type { UserProfile } from '@/types/user';
 
 interface UserState {
@@ -35,4 +36,5 @@ export const userActions = {
       user: state.user ? { ...state.user, ...updates } : null,
     })),
   clearUser: () => userStore.setState({ user: null }),
+  initMockData: () => userStore.setState({ user: MOCK_DATA.user }),
 };

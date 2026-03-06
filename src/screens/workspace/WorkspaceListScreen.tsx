@@ -32,6 +32,7 @@ import {
   useWorkspaceStore,
   workspaceActions,
 } from '@/stores/useWorkspaceStore';
+import { userActions } from '@/stores/useUserStore';
 import { modalActions } from '@/stores/useModalStore';
 import { calculateDDay } from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
@@ -91,6 +92,7 @@ const WorkspaceListScreen = () => {
             <Text style={styles.title}>내 {APP_WORKSPACE.KR} 목록</Text>
             <TouchableOpacity
               onPress={() => {
+                userActions.initMockData();
                 initMockData();
                 showModal({
                   type: 'alert',

@@ -5,38 +5,78 @@ import {
   ImageBackground,
   TouchableOpacity,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { Image as ImageIcon, Heart, Users } from 'lucide-react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
+
 import { Card } from '@/components/common/Card';
+import {
+  useWorkspaceStore,
+  workspaceActions,
+} from '@/stores/useWorkspaceStore';
+import { modalActions } from '@/stores/useModalStore';
 import {
   APP_COLORS,
   THEME_COLORS,
   SPACING,
   TYPOGRAPHY,
 } from '@/constants/theme';
+import { calculateDDay } from '@/utils/date';
+import { NAV_ROUTES } from '@/constants/navigation';
+import { MOCK_DATA } from '@/constants/mockData';
 
-interface DDayHeroProps {
-  partnerName: string;
-  myName: string;
-  days: number;
-  nextEventTitle: string;
-  nextDDay: number;
-  backgroundImage?: string;
-  workspaceType?: 'couple' | 'group';
-  onPress?: () => void;
-  onPressNextEvent?: () => void;
-}
+export const DDayHero = () => {
+  const navigation = useNavigation<StackNavigationProp<any>>();
+  const { currentWorkspace } = useWorkspaceStore();
+  const { updateWorkspaceBackground } = workspaceActions;
+  const { showModal } = modalActions;
 
-export const DDayHero = ({
-  partnerName,
-  myName,
-  days,
-  nextEventTitle,
-  nextDDay,
-  backgroundImage,
-  workspaceType,
-  onPress,
-  onPressNextEvent,
-}: DDayHeroProps) => {
+  if (!currentWorkspace) return null;
+
+  const partnerName = currentWorkspace.partnerName || MOCK_DATA.partner.name;
+  const myName = MOCK_DATA.user.name;
+  const days = currentWorkspace.startDate
+    ? calculateDDay(currentWorkspace.startDate)
+    : 0;
+  const backgroundImage = currentWorkspace.backgroundImage;
+  const workspaceType = currentWorkspace.type;
+
+  // 내부적으로 다음 일정 데이터 가져오기 (추후 스토어로 대체 가능)
+  const nextEventTitle = MOCK_DATA.workspace.nextEvent.title;
+  const nextDDay = MOCK_DATA.workspace.nextEvent.remainingDays;
+
+  const handleNextEventPress = () => {
+    navigation.navigate(NAV_ROUTES.ANNIVERSARY.NAME);
+  };
+
+  const handleBackgroundChange = () => {
+    if (!currentWorkspace) return;
+
+    showModal({
+      type: 'confirm',
+      title: '배경 변경',
+      message: '앨범에서 사진을 선택하여 배경을 변경하시겠습니까?',
+      confirmText: '앨범에서 선택',
+      cancelText: '취소',
+      onConfirm: async () => {
+        const result = await launchImageLibrary({
+          mediaType: 'photo',
+          quality: 0.8,
+        });
+
+        if (result.assets && result.assets[0].uri) {
+          updateWorkspaceBackground(currentWorkspace.id, result.assets[0].uri);
+          showModal({
+            type: 'alert',
+            title: '알림',
+            message: '배경 이미지가 변경되었습니다.',
+          });
+        }
+      },
+    });
+  };
+
   const content = (
     <View style={styles.contentContainer}>
       <View style={styles.topRow}>
@@ -60,7 +100,7 @@ export const DDayHero = ({
           </Text>
         </View>
         <TouchableOpacity
-          onPress={onPress}
+          onPress={handleBackgroundChange}
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           style={[
@@ -91,7 +131,7 @@ export const DDayHero = ({
       <View style={styles.footer}>
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={onPressNextEvent}
+          onPress={handleNextEventPress}
           style={[
             styles.nextEventBadge,
             backgroundImage && styles.whiteBadgeWrapper,
