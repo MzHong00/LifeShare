@@ -125,23 +125,25 @@ const HomeScreen = () => {
 
         {/* Main Features */}
         <Section>
-          <View style={styles.menuGrid}>
+          <Card style={styles.menuCard}>
             <View style={styles.menuHeader}>
               <Text style={styles.menuTitle}>우리의 일상</Text>
             </View>
-            <MenuButton
-              title={NAV_ROUTES.CALENDAR.TITLE}
-              icon={<Calendar size={18} color={COLORS.textPrimary} />}
-              iconBgColor={COLORS.grey}
-              onPress={() => navigation.navigate(NAV_ROUTES.CALENDAR.NAME)}
-            />
-            <MenuButton
-              title={NAV_ROUTES.TODO.TITLE}
-              icon={<CheckSquare size={18} color={COLORS.primary} />}
-              iconBgColor={COLORS.primaryLight}
-              onPress={() => navigation.navigate(NAV_ROUTES.TODO.NAME)}
-            />
-          </View>
+            <View style={styles.menuGrid}>
+              <MenuButton
+                title={NAV_ROUTES.CALENDAR.TITLE}
+                icon={<Calendar size={18} color={COLORS.red} />}
+                iconBgColor={COLORS.pinkLight}
+                onPress={() => navigation.navigate(NAV_ROUTES.CALENDAR.NAME)}
+              />
+              <MenuButton
+                title={NAV_ROUTES.TODO.TITLE}
+                icon={<CheckSquare size={18} color={COLORS.primary} />}
+                iconBgColor={COLORS.primaryLight}
+                onPress={() => navigation.navigate(NAV_ROUTES.TODO.NAME)}
+              />
+            </View>
+          </Card>
         </Section>
 
         {/* Banner */}
@@ -167,18 +169,19 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgWhite,
   },
   scrollContent: {
     paddingBottom: 40,
   },
+  menuCard: {
+    padding: 0,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.md,
+  },
   menuGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    backgroundColor: COLORS.white,
-    borderRadius: 24,
-    paddingTop: SPACING.lg,
-    paddingBottom: SPACING.md,
   },
   menuHeader: {
     width: '100%',

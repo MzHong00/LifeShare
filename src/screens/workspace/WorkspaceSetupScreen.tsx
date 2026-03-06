@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 60,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     borderRadius: 16,
     paddingHorizontal: 20,
     fontSize: 18,
@@ -506,7 +506,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     backgroundColor: COLORS.white,
     borderWidth: 1.5,
-    borderColor: COLORS.background,
+    borderColor: COLORS.bgGray,
     gap: 16,
   },
   typeButtonFirst: {
@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
   },
   inviteCard: {
     width: '100%',
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     borderRadius: 20,
     padding: 24,
     marginTop: 8,
@@ -555,7 +555,7 @@ const styles = StyleSheet.create({
   inputWrapper: {
     width: '100%',
     height: 60,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',

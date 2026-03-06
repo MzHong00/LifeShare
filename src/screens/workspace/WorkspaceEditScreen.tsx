@@ -372,7 +372,7 @@ const WorkspaceEditScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
   },
   contentWrapper: {
     flex: 1,
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     marginHorizontal: 16,
   },
   menuItem: {
@@ -595,7 +595,7 @@ const styles = StyleSheet.create({
   },
   modalInput: {
     height: 60,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     borderRadius: 18,
     paddingHorizontal: 20,
     fontSize: 16,
@@ -618,7 +618,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalCancelBtn: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
   },
   modalConfirmBtn: {
     backgroundColor: COLORS.primary,

@@ -36,6 +36,7 @@ import { modalActions } from '@/stores/useModalStore';
 import { toastActions } from '@/stores/useToastStore';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { ProfileAvatar } from '@/components/common/ProfileAvatar';
+import { Card } from '@/components/common/Card';
 import { APP_WORKSPACE } from '@/constants/config';
 
 interface MenuItem {
@@ -244,7 +245,11 @@ const ProfileScreen = () => {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>도착한 초대</Text>
             {pendingInvitations.map(inv => (
-              <View key={inv.id} style={styles.invitationCard}>
+              <Card
+                key={inv.id}
+                style={styles.invitationCard}
+                activeOpacity={1}
+              >
                 <View style={styles.invitationInfo}>
                   <View style={styles.invitationIcon}>
                     <Inbox size={20} color={COLORS.primary} />
@@ -285,14 +290,14 @@ const ProfileScreen = () => {
                     <Check size={18} color={COLORS.white} />
                   </TouchableOpacity>
                 </View>
-              </View>
+              </Card>
             ))}
           </View>
         )}
 
         {/* Single Menu Card */}
         <View style={styles.menuGroups}>
-          <View style={styles.menuCard}>
+          <Card style={styles.menuCard}>
             {menuItems.map((item, index) => (
               <View key={item.id}>
                 <TouchableOpacity
@@ -321,7 +326,7 @@ const ProfileScreen = () => {
                 )}
               </View>
             ))}
-          </View>
+          </Card>
         </View>
 
         <View style={styles.footer}>
@@ -335,13 +340,13 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background, // 바탕을 연한 그레이로 처리하여 카드 부각
+    backgroundColor: COLORS.bgGray, // 바탕을 연한 그레이로 처리하여 카드 부각
   },
   scrollContent: {
     paddingBottom: 60,
   },
   profileSection: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     paddingHorizontal: 32,
     paddingTop: 32,
     paddingBottom: 24,
@@ -426,7 +431,7 @@ const styles = StyleSheet.create({
   nameInput: {
     width: '100%',
     height: 56,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     borderRadius: 16,
     paddingHorizontal: 16,
     fontSize: 16,
@@ -467,14 +472,8 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   menuCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 24,
+    padding: 0,
     overflow: 'hidden',
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.02,
-    shadowRadius: 8,
-    elevation: 1,
   },
   menuItem: {
     flexDirection: 'row',
@@ -490,7 +489,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,

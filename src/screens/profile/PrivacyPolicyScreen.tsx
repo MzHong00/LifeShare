@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   footer: {
     marginTop: 20,
     padding: 20,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     borderRadius: 16,
   },
   footerText: {

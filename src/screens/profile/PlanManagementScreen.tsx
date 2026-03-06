@@ -168,7 +168,7 @@ const PlanManagementScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
   },
   scrollContent: {
     padding: SPACING.layout,
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   planBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,

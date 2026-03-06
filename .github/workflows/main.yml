@@ -43,12 +43,12 @@ jobs:
         run: npx tsc --noEmit
 
   # [두 번째 작업: Firebase App Distribution 배포 (CD)]
-  # 이 작업은 main 브랜치에 코드가 push(머지)되었을 때만 실행됩니다.
+  # 이 작업은 develop 브랜치에 코드가 push(머지)되었을 때만 실행됩니다.
   distribute-android:
     name: Android 베타 배포
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    if: github.ref == 'refs/heads/develop' || github.event_name == 'workflow_dispatch'
 
     steps:
       # (1) 소스코드 체크아웃

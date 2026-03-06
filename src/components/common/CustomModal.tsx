@@ -163,10 +163,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
   cancelButton: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
   },
   disabledButton: {
-    backgroundColor: COLORS.background, // 비활성화 시 배경색 변경
+    backgroundColor: COLORS.bgGray, // 비활성화 시 배경색 변경
   },
   confirmButtonText: {
     fontSize: 16,

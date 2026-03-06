@@ -20,6 +20,7 @@ import {
   formatDate,
 } from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import { Card } from '@/components/common/Card';
 
 const CalendarScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
@@ -104,7 +105,7 @@ const CalendarScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.calendarWrapper}>
+        <Card style={styles.calendarWrapper}>
           <Calendar
             current={selected}
             onDayPress={day => setSelected(day.dateString)}
@@ -138,7 +139,7 @@ const CalendarScreen = () => {
             enableSwipeMonths={true}
             style={styles.calendar}
           />
-        </View>
+        </Card>
 
         <View style={styles.eventSection}>
           <Text style={styles.sectionTitle}>다가오는 일정</Text>
@@ -149,10 +150,9 @@ const CalendarScreen = () => {
             </View>
           ) : (
             sortedEvents.map(event => (
-              <TouchableOpacity
+              <Card
                 key={event.id}
                 style={styles.eventItem}
-                activeOpacity={0.7}
                 onPress={() => handleEditEvent(event.id)}
               >
                 <View
@@ -168,7 +168,7 @@ const CalendarScreen = () => {
                         )}`}
                   </Text>
                 </View>
-              </TouchableOpacity>
+              </Card>
             ))
           )}
         </View>
@@ -210,15 +210,8 @@ const styles = StyleSheet.create({
     marginTop: SPACING.sm,
   },
   calendarWrapper: {
-    backgroundColor: COLORS.white,
-    borderRadius: 24,
     padding: 8,
     marginVertical: SPACING.lg,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
     overflow: 'hidden',
   },
   calendar: {
@@ -232,16 +225,10 @@ const styles = StyleSheet.create({
   },
   eventItem: {
     flexDirection: 'row',
-    backgroundColor: COLORS.white,
     padding: SPACING.lg,
     borderRadius: 20,
     marginBottom: SPACING.md,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 5,
-    elevation: 1,
   },
   eventTag: {
     width: 4,

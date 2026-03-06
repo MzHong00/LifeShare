@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
   dateSelector: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     borderRadius: 16,
     paddingHorizontal: 16,
     height: 56,

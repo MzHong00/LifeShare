@@ -174,7 +174,7 @@ const StoryEditScreen = () => {
             <Text style={styles.modalButtonText}>갤러리</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.modalButton, { backgroundColor: COLORS.background }]}
+            style={[styles.modalButton, { backgroundColor: COLORS.bgGray }]}
             onPress={() => modalActions.hideModal()}
           >
             <Text
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   },
   photoPlaceholder: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     borderRadius: 24,
     borderWidth: 1,
     borderColor: COLORS.skeleton,
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
   selectedImage: {
     flex: 1,
     borderRadius: 24,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
   },
   photoText: {
     ...TYPOGRAPHY.body2,
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   input: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     padding: 12,
     borderRadius: 16,
     gap: 10,

@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     padding: SPACING.layout,
   },
   descriptionSection: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     padding: 16,
     borderRadius: 16,
     marginVertical: 24,
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 24,
     marginTop: 16,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
   },
   descriptionText: {
     fontSize: 15,

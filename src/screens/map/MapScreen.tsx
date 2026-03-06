@@ -256,7 +256,7 @@ const MapScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+  container: { flex: 1, backgroundColor: COLORS.bgGray },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     paddingVertical: 8,
     borderRadius: 12,
     gap: 6,

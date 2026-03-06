@@ -39,10 +39,10 @@ const styles = StyleSheet.create({
     aspectRatio: 1.5,
     borderRadius: 20,
     marginTop: 8,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
   },
   descriptionSection: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     padding: 16,
     borderRadius: 16,
     marginTop: 16,

@@ -322,7 +322,7 @@ const WorkspaceListScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
   },
   scrollContent: {
     paddingHorizontal: SPACING.layout,
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 16,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
   manageBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 12,
@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
   cardBottom: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background + '50',
+    backgroundColor: COLORS.bgGray + '50',
     padding: 12,
     borderRadius: 16,
   },
@@ -587,7 +587,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.background,
+    borderBottomColor: COLORS.bgGray,
   },
   memberAvatarWrapper: {
     width: 44,
@@ -635,7 +635,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   closeButton: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     paddingVertical: 16,
     borderRadius: 16,
     alignItems: 'center',

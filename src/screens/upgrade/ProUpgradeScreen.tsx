@@ -98,7 +98,7 @@ const ProUpgradeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
   },
   scrollContent: {
     padding: SPACING.layout,
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 16,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: SPACING.md,

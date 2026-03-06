@@ -50,8 +50,9 @@ export const COLORS = {
   primary: THEME_COLORS.blue,
   primaryLight: THEME_COLORS.blueLight,
 
-  // 배경색 (차분한 라이트 그레이)
-  background: THEME_COLORS.grey100,
+  // 배경색 (직관적인 네이밍)
+  bgWhite: THEME_COLORS.white,
+  bgGray: THEME_COLORS.grey100,
 
   // 텍스트 컬러 (차분하고 명확한 위계)
   textPrimary: THEME_COLORS.grey900, // 제목, 강조 텍스트

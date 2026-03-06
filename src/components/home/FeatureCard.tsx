@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { Card } from '@/components/common/Card';
 
 interface FeatureCardProps {
   title: string;
@@ -19,11 +20,7 @@ export const FeatureCard = ({
   onPress,
 }: FeatureCardProps) => {
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={onPress}
-      activeOpacity={0.7}
-    >
+    <Card style={styles.card} onPress={onPress}>
       <View style={[styles.iconContainer, { backgroundColor: iconBgColor }]}>
         {icon}
       </View>
@@ -31,15 +28,14 @@ export const FeatureCard = ({
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.description}>{description}</Text>
       </View>
-    </TouchableOpacity>
+    </Card>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
     padding: SPACING.lg,
     borderRadius: 20,
     marginBottom: SPACING.md,

@@ -34,6 +34,7 @@ import {
   formatDate,
 } from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import { Card } from '@/components/common/Card';
 
 interface TodoItemProps {
   item: Todo;
@@ -53,7 +54,7 @@ const TodoItem = ({
   );
 
   return (
-    <TouchableOpacity
+    <Card
       style={styles.todoItem}
       onPress={() => onPress(item.id)}
       activeOpacity={0.7}
@@ -138,7 +139,7 @@ const TodoItem = ({
         </View>
       </View>
       <ChevronRight size={16} color={COLORS.border} />
-    </TouchableOpacity>
+    </Card>
   );
 };
 
@@ -237,7 +238,7 @@ const TodoScreen = () => {
 
       <Modal visible={isCalendarVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
-          <View style={styles.calendarContainer}>
+          <Card style={styles.calendarContainer}>
             <View style={styles.calendarHeader}>
               <Text style={styles.calendarTitle}>기간 선택</Text>
               <TouchableOpacity onPress={() => setIsCalendarVisible(false)}>
@@ -265,7 +266,7 @@ const TodoScreen = () => {
                 <Text style={styles.resetText}>전체보기로 초기화</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </Card>
         </View>
       </Modal>
 
@@ -371,7 +372,7 @@ const styles = StyleSheet.create({
   filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 20,
@@ -414,15 +415,9 @@ const styles = StyleSheet.create({
   todoItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
     padding: 16,
     borderRadius: 18,
     marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
   },
   checkboxArea: {
     padding: 4,
@@ -537,8 +532,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   calendarContainer: {
-    backgroundColor: COLORS.white,
-    borderRadius: 24,
     width: '100%',
     padding: 16,
     overflow: 'hidden',

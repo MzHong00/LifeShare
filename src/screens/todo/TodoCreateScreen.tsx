@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   dateInputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     borderRadius: 16,
     paddingHorizontal: 16,
     height: 56,
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   quickDateBtn: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 20,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,

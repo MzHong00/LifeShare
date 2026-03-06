@@ -67,7 +67,7 @@ const WorkspaceLandingScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
   },
   header: {
     paddingHorizontal: SPACING.layout,

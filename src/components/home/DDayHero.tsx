@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     justifyContent: 'center',
     alignItems: 'center',
     opacity: 0.8,
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   nextEventBadge: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgGray,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 12,

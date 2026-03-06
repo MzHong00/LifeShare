@@ -23,6 +23,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import { Card } from '@/components/common/Card';
 import { useStoryStore } from '@/stores/useStoryStore';
 import { formatDate } from '@/utils/date';
 import type { Story } from '@/types';
@@ -40,7 +41,7 @@ interface StoryItemProps {
  */
 const StoryItem = ({ item, onPress }: StoryItemProps) => {
   return (
-    <TouchableOpacity
+    <Card
       style={styles.storyCard}
       onPress={() => onPress(item.id)}
       activeOpacity={0.9}
@@ -64,7 +65,7 @@ const StoryItem = ({ item, onPress }: StoryItemProps) => {
         </Text>
         <Text style={styles.storyDate}>{formatDate(item.date)}</Text>
       </View>
-    </TouchableOpacity>
+    </Card>
   );
 };
 
@@ -97,7 +98,7 @@ const StoriesHeader = ({
       </TouchableOpacity>
     </View>
 
-    <View style={styles.statsContainer}>
+    <Card style={styles.statsContainer}>
       <View style={styles.statBox}>
         <View style={[styles.statIconWrapper, styles.pinkIconWrapper]}>
           <Heart size={16} color={COLORS.red} />
@@ -117,7 +118,7 @@ const StoriesHeader = ({
           <Text style={styles.statSubLabel}>경로 기록</Text>
         </View>
       </View>
-    </View>
+    </Card>
 
     <View style={styles.filterBar}>
       <TouchableOpacity style={styles.filterChip}>
@@ -199,7 +200,7 @@ const StoriesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background, // 배경색 보정으로 카드 부각
+    backgroundColor: COLORS.bgWhite, // 배경색 보정으로 카드 부각
   },
   headerContainer: {
     paddingHorizontal: SPACING.layout,
@@ -240,17 +241,11 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: 'row',
-    backgroundColor: COLORS.white,
     paddingVertical: SPACING.xl,
     paddingHorizontal: SPACING.xs,
     borderRadius: 22,
     marginBottom: 20,
     alignItems: 'center',
-    elevation: 3,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
   },
   statBox: {
     flex: 1,
@@ -322,15 +317,10 @@ const styles = StyleSheet.create({
   },
   storyCard: {
     width: columnWidth,
-    backgroundColor: COLORS.white,
     borderRadius: 20,
     marginBottom: 16,
     overflow: 'hidden',
-    elevation: 3,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
+    padding: 0,
   },
   imageContainer: {
     width: '100%',
