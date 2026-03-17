@@ -1,46 +1,39 @@
 import { useRef, useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Platform,
-  ActivityIndicator,
-  Linking,
-} from 'react-native';
-import { MapPin, ChevronDown, ChevronUp, Search } from 'lucide-react-native';
+import { View, StyleSheet, ScrollView, Linking } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import MapView from 'react-native-maps';
+
+import { NAV_ROUTES } from '@/constants/navigation';
 import { MainMap } from '@/components/map/MainMap';
 
-import {
-  APP_COLORS,
-  THEME_COLORS,
-  SPACING,
-  TYPOGRAPHY,
-} from '@/constants/theme';
+import { APP_COLORS } from '@/constants/theme';
 import { MAP_CONFIG } from '@/constants/map';
-import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { BottomDrawer } from '@/components/common/BottomDrawer';
-import { ProfileAvatar } from '@/components/common/ProfileAvatar';
+import { MapHeader } from '@/components/map/MapHeader';
+import { MapEmptyState } from '@/components/map/MapEmptyState';
 import { MapStoryInfo } from '@/components/map/MapStoryInfo';
 import { MapPartnerInfo } from '@/components/map/MapPartnerInfo';
+import { MapLoadingOverlay } from '@/components/map/MapLoadingOverlay';
 import { useGeolocation } from '@/businesses/geolocation/useGeolocation';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { useStoryStore, storyActions } from '@/stores/useStoryStore';
 import { modalActions } from '@/stores/useModalStore';
+import { toastActions } from '@/stores/useToastStore';
 
 const MapScreen = () => {
+  const navigation = useNavigation<StackNavigationProp<any>>();
   const mapRef = useRef<MapView>(null);
   const currentDeltaRef = useRef(MAP_CONFIG.CLOSE_DELTA);
   const { loading: myLocationLoading, location: myLocation } = useGeolocation();
   const { currentWorkspace } = useWorkspaceStore();
 
-  const { stories, selectedStoryId } = useStoryStore();
-  const { setSelectedStoryId } = storyActions;
+  const { stories, selectedStoryId, isRecording, recordingPath } =
+    useStoryStore();
+  const { setSelectedStoryId, startRecording, stopRecording, saveStory } =
+    storyActions;
   const { showModal } = modalActions;
-
-  const [isHeaderMinimized, setIsHeaderMinimized] = useState(false);
+  const { showToast } = toastActions;
 
   // 현재 바텀시트에서 보여줄 선택된 유저 ID
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -80,18 +73,24 @@ const MapScreen = () => {
       if (story && story.path.length > 0) {
         const { latitude, longitude } = story.path[0];
         setSelectedUserId(null); // 유저 정보 창 닫기
+        // 지도 뷰포트 이동 애니메이션 실행
         mapRef.current?.animateToRegion(
           {
+            // 대상 위도 및 경도 (스토리 시작 지점)
             latitude,
             longitude,
+            // 현재 지도의 줌 레벨(확대/축소 상태)을 그대로 유지
+            // 사용자가 지도를 확대/축소해놓은 상태가 초기화되지 않게 하기 위함
             ...currentDeltaRef.current,
           },
+          // 500ms 동안 부드럽게 화면 이동 (애니메이션 지속 시간)
           500,
         );
       }
     }
   }, [selectedStoryId, stories]);
 
+  // 특정 유저의 마커를 클릭했을 때 지도를 해당 위치로 이동
   const moveToUser = (id: string, lat: number, lng: number) => {
     setSelectedUserId(id);
     setSelectedStoryId(null); // 유저 선택 시 스토리 선택 해제
@@ -105,6 +104,44 @@ const MapScreen = () => {
     );
   };
 
+  // 실시간 위치 기록을 시작하거나 종료(저장)하는 토글 함수
+  const toggleRecording = () => {
+    if (!isRecording) {
+      // 기록 시작
+      startRecording();
+      showToast(
+        '실시간 위치 기록을 시작합니다.\n이동하신 경로는 스토리로 저장됩니다.',
+        'info',
+      );
+      return;
+    }
+    console.log(recordingPath);
+
+    // 기록 종료 시 바로 저장
+    if (recordingPath.length < 2) {
+      showToast('기록된 경로가 너무 짧아 저장할 수 없습니다.', 'error');
+      stopRecording();
+      return;
+    }
+
+    // 실시간 위치 기록을 종료하고 저장
+    const newStoryId = `story-${Date.now()}`;
+
+    saveStory({
+      id: newStoryId,
+      title: `${new Date().toLocaleDateString()} 산책`,
+      userId: 'user-1',
+      workspaceId: currentWorkspace?.id || 'ws-1',
+      pathColor: APP_COLORS.primary,
+    });
+
+    showToast('새로운 스토리가 지도에 기록되었습니다!', 'success');
+
+    // 기록된 스토리 수정 화면으로 이동
+    navigation.navigate(NAV_ROUTES.STORY_EDIT.NAME, { storyId: newStoryId });
+  };
+
+  // 파트너의 위치로 가는 길찾기(구글 맵) 외부 앱 실행 함수
   const openDirections = async () => {
     const partner = membersWithLocation.find(m => m.id === 'user-2');
     if (!partner) return;
@@ -135,12 +172,15 @@ const MapScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/* 1. 메인 지도 렌더링 영역 */}
       {myLocation && (
         <MainMap
           mapRef={mapRef}
           myLocation={myLocation}
           currentDelta={currentDeltaRef.current}
           stories={stories}
+          recordingPath={recordingPath}
+          isRecording={isRecording}
           selectedStoryId={selectedStoryId}
           membersWithLocation={membersWithLocation}
           onMarkerPress={moveToUser}
@@ -156,84 +196,18 @@ const MapScreen = () => {
           }}
         />
       )}
-      {myLocationLoading && (
-        <View style={styles.mapLoadingContainer}>
-          <ActivityIndicator size="large" color={APP_COLORS.primary} />
-          <Text style={styles.loadingText}>위치 정보를 불러오는 중...</Text>
-        </View>
-      )}
+      {/* 로딩 표시 바 (위치 정보 획득 전) */}
+      {myLocationLoading && <MapLoadingOverlay />}
 
-      {/* Floating Header UI */}
-      <AppSafeAreaView
-        style={styles.floatingHeader}
-        edges={['top']}
-        headerShown={false}
-      >
-        <View style={styles.headerContent}>
-          <View style={styles.headerTopRow}>
-            <View style={styles.statusBadge}>
-              <MapPin
-                size={10}
-                color={APP_COLORS.success}
-                fill={APP_COLORS.success}
-              />
-              <Text style={styles.statusBadgeText}>실시간 업데이트 중</Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => setIsHeaderMinimized(!isHeaderMinimized)}
-              style={styles.minimizeBtn}
-              activeOpacity={0.7}
-            >
-              {isHeaderMinimized ? (
-                <ChevronDown size={18} color={APP_COLORS.textTertiary} />
-              ) : (
-                <ChevronUp size={18} color={APP_COLORS.textTertiary} />
-              )}
-            </TouchableOpacity>
-          </View>
+      {/* 2. 상단 헤더 영역 (프로필 목록 및 위치 기록 토글) */}
+      <MapHeader
+        isRecording={isRecording}
+        toggleRecording={toggleRecording}
+        membersWithLocation={membersWithLocation}
+        moveToUser={moveToUser}
+      />
 
-          {!isHeaderMinimized && (
-            <>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.userListScroll}
-              >
-                {membersWithLocation.map(member => (
-                  <TouchableOpacity
-                    key={member.id}
-                    style={styles.userItem}
-                    onPress={() =>
-                      moveToUser(
-                        member.id,
-                        member.location.latitude,
-                        member.location.longitude,
-                      )
-                    }
-                  >
-                    <View style={styles.avatarContainer}>
-                      <ProfileAvatar
-                        uri={member.avatar}
-                        name={member.name}
-                        size={44}
-                      />
-                      <View style={styles.locateIconContainer}>
-                        <Search
-                          size={10}
-                          color={THEME_COLORS.white}
-                          strokeWidth={3}
-                        />
-                      </View>
-                    </View>
-                    <Text style={styles.userNameText}>{member.name}</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </>
-          )}
-        </View>
-      </AppSafeAreaView>
-
+      {/* 3. 하단 상세 정보 드로어 (스토리/파트너 정보 표시) */}
       <BottomDrawer snapPoints={[0.15, 0.55, 0.87]}>
         <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
           {selectedStoryId ? (
@@ -249,14 +223,7 @@ const MapScreen = () => {
               recentPlaces={recentPlaces}
             />
           ) : (
-            <View style={styles.emptyDrawerContent}>
-              <View style={styles.emptyInfoCard}>
-                <MapPin size={24} color={APP_COLORS.textTertiary} />
-                <Text style={styles.emptyInfoText}>
-                  위의 멤버 아이콘이나 경로를 눌러{'\n'}상세 정보를 확인해보세요
-                </Text>
-              </View>
-            </View>
+            <MapEmptyState />
           )}
         </ScrollView>
       </BottomDrawer>
@@ -266,172 +233,6 @@ const MapScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: APP_COLORS.bgGray },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: THEME_COLORS.white,
-  },
-  mapLoadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: APP_COLORS.skeleton,
-  },
-  loadingText: {
-    marginTop: 12,
-    ...TYPOGRAPHY.body2,
-  },
-  floatingHeader: {
-    position: 'absolute',
-    top: 10,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-  },
-  headerContent: {
-    marginHorizontal: SPACING.layout,
-    paddingVertical: SPACING.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: 24,
-    ...Platform.select({
-      ios: {
-        shadowColor: THEME_COLORS.black,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-      },
-      android: { elevation: 6 },
-    }),
-  },
-  headerTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 4,
-    marginBottom: 4,
-  },
-  minimizeBtn: {
-    padding: 4,
-  },
-  headerActionBar: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    gap: 8,
-    marginTop: 4,
-  },
-  headerActionPill: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: APP_COLORS.bgGray,
-    paddingVertical: 8,
-    borderRadius: 12,
-    gap: 6,
-  },
-  headerActionText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: APP_COLORS.textPrimary,
-  },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    backgroundColor: APP_COLORS.skeleton,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 12,
-  },
-  statusBadgeText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: APP_COLORS.success,
-    marginLeft: 3,
-  },
-  userListScroll: {
-    paddingHorizontal: 12,
-    gap: 16,
-    paddingBottom: 4,
-  },
-  userItem: {
-    alignItems: 'center',
-    width: 60,
-  },
-  userAvatarContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: APP_COLORS.skeleton,
-    marginBottom: 4,
-    padding: 2,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  userAvatar: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 22,
-  },
-  userAvatarFallback: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: APP_COLORS.skeleton,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  userInitialText: {
-    ...TYPOGRAPHY.caption,
-    fontWeight: '700',
-    color: APP_COLORS.textSecondary,
-  },
-  userNameText: {
-    marginTop: 4,
-    fontSize: 12,
-    fontWeight: '600',
-    color: APP_COLORS.textPrimary,
-  },
-  avatarContainer: {
-    position: 'relative',
-  },
-  locateIconContainer: {
-    position: 'absolute',
-    bottom: -2,
-    right: -2,
-    backgroundColor: APP_COLORS.primary,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: THEME_COLORS.white,
-  },
-  markerAvatarImg: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 22,
-  },
-  emptyDrawerContent: {
-    padding: SPACING.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 200,
-  },
-  emptyInfoCard: {
-    alignItems: 'center',
-    gap: 12,
-  },
-  emptyInfoText: {
-    ...TYPOGRAPHY.body2,
-    color: APP_COLORS.textTertiary,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
 });
 
 export default MapScreen;

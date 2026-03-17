@@ -1,4 +1,10 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  ImageBackground,
+} from 'react-native';
 import { Calendar } from 'lucide-react-native';
 
 import {
@@ -31,10 +37,22 @@ const AnniversaryScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.header}>
-          <Text style={styles.title}>우리의 특별한 날</Text>
-          <Text style={styles.subtitle}>함께한 모든 순간이 소중해요</Text>
-        </View>
+        <Card style={styles.heroCard}>
+          <ImageBackground
+            source={{
+              uri: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800',
+            }}
+            style={styles.heroBackground}
+            imageStyle={styles.heroImage}
+          >
+            <View style={styles.heroOverlay}>
+              <Text style={styles.heroTitle}>우리의 특별한 날</Text>
+              <Text style={styles.heroSubtitle}>
+                함께한 모든 순간이 소중해요
+              </Text>
+            </View>
+          </ImageBackground>
+        </Card>
 
         <View style={styles.list}>
           {anniversaries.map((item, index) => (
@@ -112,16 +130,43 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: SPACING.layout,
   },
-  header: {
-    marginBottom: SPACING.layout,
+  heroCard: {
+    padding: 0,
+    borderRadius: 24,
+    overflow: 'hidden',
+    marginBottom: SPACING.xl,
+    elevation: 4,
+    shadowColor: THEME_COLORS.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
   },
-  title: {
+  heroBackground: {
+    width: '100%',
+    height: 180,
+    justifyContent: 'flex-end',
+  },
+  heroImage: {
+    borderRadius: 24,
+  },
+  heroOverlay: {
+    padding: 24,
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-end',
+  },
+  heroTitle: {
     ...TYPOGRAPHY.header1,
-    marginBottom: SPACING.layout,
+    color: THEME_COLORS.white,
+    marginBottom: 4,
+    fontSize: 24,
   },
-  subtitle: {
+  heroSubtitle: {
     ...TYPOGRAPHY.body1,
-    color: APP_COLORS.textSecondary,
+    color: 'rgba(255,255,255,0.9)',
+    fontWeight: '600',
+    fontSize: 15,
   },
   list: {
     gap: 12,

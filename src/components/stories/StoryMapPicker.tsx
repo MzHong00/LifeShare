@@ -6,7 +6,6 @@ import {
   Text,
   Platform,
 } from 'react-native';
-import { Radio } from 'lucide-react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 
 import { APP_COLORS, THEME_COLORS } from '@/constants/theme';
@@ -85,11 +84,6 @@ const StoryMapPicker = ({
     onClose();
   };
 
-  const toggleRecording = () => {
-    // 실시간 기록 기능은 추후 구현 예정
-    console.log('Real-time recording feature button pressed.');
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.mapWrapper}>
@@ -130,15 +124,6 @@ const StoryMapPicker = ({
         </View>
 
         <View style={styles.bottomActions}>
-          <TouchableOpacity
-            style={styles.recordButton}
-            onPress={toggleRecording}
-            activeOpacity={0.8}
-          >
-            <Radio size={20} color={THEME_COLORS.white} />
-            <Text style={styles.recordButtonText}>실시간 기록</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity
             style={styles.mapSubmitButton}
             onPress={handleComplete}
@@ -186,33 +171,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
   },
-  recordButton: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: APP_COLORS.textPrimary, // 검은색 계열로 차별화
-    height: 56,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
-    elevation: 4,
-    shadowColor: THEME_COLORS.black,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-  },
-  recordingActiveButton: {
-    backgroundColor: THEME_COLORS.white,
-    borderWidth: 2,
-    borderColor: APP_COLORS.error,
-  },
-  recordButtonText: {
-    color: THEME_COLORS.white,
-    fontSize: 15,
-    fontWeight: '700',
-  },
   mapSubmitButton: {
-    flex: 1.5,
+    flex: 1,
     backgroundColor: APP_COLORS.primary,
     height: 56,
     borderRadius: 16,

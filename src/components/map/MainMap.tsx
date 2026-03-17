@@ -9,7 +9,7 @@ import MapView, {
 
 import { APP_COLORS, THEME_COLORS } from '@/constants/theme';
 import { ProfileAvatar } from '@/components/common/ProfileAvatar';
-import type { Story } from '@/types';
+import type { Story, LocationPoint } from '@/types';
 
 interface MainMapProps {
   /** 지도 인스턴스에 접근하기 위한 Ref (애니메이션, 영역 이동 등에 사용) */
@@ -20,6 +20,10 @@ interface MainMapProps {
   currentDelta: { latitudeDelta: number; longitudeDelta: number };
   /** 지도에 표시할 스토리 목록 (각 스토리의 이동 경로 포함, 선택 사항) */
   stories?: Story[];
+  /** 실시간으로 기록 중인 위치 포인트 목록 */
+  recordingPath?: LocationPoint[];
+  /** 현재 기록 중인지 여부 */
+  isRecording?: boolean;
   /** 현재 선택된 스토리의 ID (강조 표시 및 상세 정보 로드용, 선택 사항) */
   selectedStoryId?: string | null;
   /** 위치 정보를 포함한 워크스페이스 멤버 목록 (마커 표시용, 선택 사항) */
@@ -67,6 +71,8 @@ export const MainMap = ({
   myLocation,
   currentDelta,
   stories,
+  recordingPath,
+  isRecording,
   selectedStoryId,
   membersWithLocation,
   onMarkerPress,
@@ -77,6 +83,7 @@ export const MainMap = ({
   minimalist,
 }: MainMapProps) => {
   return (
+    // 1. 구글 맵 전체 화면 구성 (옵션에 따라 미니멀 스타일 적용 가능)
     <MapView
       ref={mapRef}
       provider={PROVIDER_GOOGLE}
@@ -93,7 +100,7 @@ export const MainMap = ({
       onRegionChangeComplete={onRegionChangeComplete}
       onPress={onPress}
     >
-      {/* All Story Paths */}
+      {/* 2. 기존 사용자들이 남긴 과거 이동 경로(스토리) 렌더링 */}
       {stories?.map(story => {
         const isSelected = selectedStoryId === story.id;
         return (
@@ -108,6 +115,17 @@ export const MainMap = ({
         );
       })}
 
+      {/* 3. 현재 사용자가 실시간으로 기록 중인 위치 포인트(점선 경로) 렌더링 */}
+      {isRecording && recordingPath && recordingPath.length > 0 && (
+        <Polyline
+          coordinates={recordingPath}
+          strokeColor={APP_COLORS.primary}
+          strokeWidth={6}
+          lineDashPattern={[1, 10]} // 기록 중임을 알리기 위한 점선 효과 (선택 사항)
+        />
+      )}
+
+      {/* 4. 워크스페이스 멤버들의 현재 위치를 나타내는 맞춤형 아바타 마커 */}
       {membersWithLocation?.map(member => (
         <Marker
           key={member.id}
@@ -121,7 +139,10 @@ export const MainMap = ({
           }
         >
           <View style={styles.markerContainer}>
+            {/* 타 멤버일 경우 위치 주변 펄스(물결) 애니메이션/효과 표시 */}
             {member.id !== 'user-1' && <View style={styles.pulseEffect} />}
+
+            {/* 실제 유저 프로필 아바타 마커 */}
             <View
               style={[
                 styles.avatarMarker,

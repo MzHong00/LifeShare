@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
   toast: {
-    backgroundColor: 'rgba(25, 31, 40, 0.5)', // 투명도가 적용된 Toss-style 다크 그레이
+    backgroundColor: 'rgba(25, 31, 40, 0.75)', // 투명도가 조절된 Toss-style 다크 그레이
     borderRadius: 16,
     paddingHorizontal: 20,
     paddingVertical: 14,
