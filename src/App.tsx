@@ -1,6 +1,8 @@
-import { StatusBar, useColorScheme } from 'react-native';
+import React, { useEffect } from 'react';
+import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import SystemNavigationBar from 'react-native-system-navigation-bar';
 
 import '@/lib/reactNativeCalendars';
 import { sentry } from '@/lib/sentry';
@@ -15,6 +17,13 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
+
+  useEffect(() => {
+    // 앱 시작 시 Android 시스템 내비게이션 바 투명화 (Edge-to-Edge)
+    if (Platform.OS === 'android') {
+      SystemNavigationBar.setNavigationColor('transparent', 'dark');
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
