@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,14 +9,21 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Map, Edit3 } from 'lucide-react-native';
+import { Map, Edit3, Trash2 } from 'lucide-react-native';
 
-import { APP_COLORS, THEME_COLORS, SPACING } from '@/constants/theme';
+import type { Story } from '@/types';
 import { NAV_ROUTES } from '@/constants/navigation';
-import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import {
+  APP_COLORS,
+  THEME_COLORS,
+  SPACING,
+  TYPOGRAPHY,
+} from '@/constants/theme';
+import { modalActions } from '@/stores/useModalStore';
 import { useStoryStore, storyActions } from '@/stores/useStoryStore';
 import { StoryBriefInfo } from '@/components/stories/StoryBriefInfo';
 import { HeaderButton } from '@/components/common/HeaderButton';
+import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 
 type StoryDetailRouteProp = RouteProp<
   { params: { storyId: string } },
@@ -29,8 +36,9 @@ const StoryDetailScreen = () => {
   const { storyId } = route.params;
 
   const { stories } = useStoryStore();
-  const { setSelectedStoryId } = storyActions;
-  const [story, setStory] = useState<any>(null);
+  const { setSelectedStoryId, deleteStory } = storyActions;
+  const { showModal } = modalActions;
+  const [story, setStory] = useState<Story | null>(null);
 
   useEffect(() => {
     const found = stories.find(s => s.id === storyId);
@@ -40,7 +48,7 @@ const StoryDetailScreen = () => {
   }, [storyId, stories]);
 
   const handleShowOnMap = useCallback(() => {
-    setSelectedStoryId(story?.id);
+    setSelectedStoryId(story?.id ?? null);
     navigation.navigate(NAV_ROUTES.MAIN_TABS.NAME, {
       screen: NAV_ROUTES.LOCATION.NAME,
     });
@@ -50,14 +58,43 @@ const StoryDetailScreen = () => {
     navigation.navigate(NAV_ROUTES.STORY_EDIT.NAME, { storyId: story?.id });
   }, [story?.id, navigation]);
 
+  const handleDelete = useCallback(() => {
+    if (!story?.id) return;
+
+    showModal({
+      type: 'confirm',
+      title: '스토리 삭제',
+      message:
+        '정말로 이 스토리를 삭제하시겠습니까? 삭제된 스토리는 복구할 수 없습니다.',
+      confirmText: '삭제',
+      cancelText: '취소',
+      onConfirm: () => {
+        deleteStory(story.id);
+        setSelectedStoryId(null);
+        showModal({
+          type: 'alert',
+          title: '완료',
+          message: '스토리가 삭제되었습니다.',
+          onConfirm: () => navigation.navigate(NAV_ROUTES.MAIN_TABS.NAME),
+        });
+      },
+    });
+  }, [story?.id, deleteStory, setSelectedStoryId, showModal, navigation]);
+
   const renderHeaderRight = useCallback(
     () => (
-      <HeaderButton
-        onPress={handleEdit}
-        icon={<Edit3 size={20} color={APP_COLORS.textPrimary} />}
-      />
+      <View style={styles.headerRight}>
+        <HeaderButton
+          onPress={handleDelete}
+          icon={<Trash2 size={20} color={APP_COLORS.error} />}
+        />
+        <HeaderButton
+          onPress={handleEdit}
+          icon={<Edit3 size={20} color={APP_COLORS.textPrimary} />}
+        />
+      </View>
     ),
-    [handleEdit],
+    [handleEdit, handleDelete],
   );
 
   if (!story) return null;
@@ -110,43 +147,47 @@ const styles = StyleSheet.create({
   content: {
     padding: SPACING.layout,
   },
+  headerRight: {
+    flexDirection: 'row',
+    gap: SPACING.xs,
+    marginRight: SPACING.sm,
+  },
   descriptionSection: {
     backgroundColor: APP_COLORS.bgGray,
-    padding: 16,
+    padding: SPACING.lg,
     borderRadius: 16,
-    marginVertical: 24,
+    marginVertical: SPACING.xxl,
   },
   detailImage: {
     width: '100%',
     aspectRatio: 1,
     borderRadius: 24,
-    marginTop: 16,
+    marginTop: SPACING.lg,
     backgroundColor: APP_COLORS.bgGray,
   },
   descriptionText: {
-    fontSize: 15,
-    lineHeight: 24,
+    ...TYPOGRAPHY.body1,
     color: APP_COLORS.textSecondary,
   },
   mapActionCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: APP_COLORS.primary,
-    padding: 20,
+    padding: SPACING.layout,
     borderRadius: 20,
-    gap: 16,
+    gap: SPACING.lg,
     elevation: 4,
     shadowColor: THEME_COLORS.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
-    marginTop: 8,
+    marginTop: SPACING.sm,
   },
   mapActionIcon: {
     width: 48,
     height: 48,
     borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: APP_COLORS.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -154,14 +195,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mapActionTitle: {
-    fontSize: 16,
+    ...TYPOGRAPHY.body1,
     fontWeight: '700',
     color: THEME_COLORS.white,
     marginBottom: 2,
   },
   mapActionSubtitle: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.8)',
+    ...TYPOGRAPHY.caption,
+    color: 'rgba(255, 255, 255, 0.8)',
   },
 });
 
