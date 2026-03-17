@@ -3,170 +3,54 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
-  Image,
+  ScrollView,
+  TextInput,
 } from 'react-native';
-import {
-  Heart,
-  Calendar,
-  Filter,
-  Plus,
-  Camera,
-  Route,
-} from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Search, Plus } from 'lucide-react-native';
 
+import { NAV_ROUTES } from '@/constants/navigation';
 import {
   APP_COLORS,
   THEME_COLORS,
   SPACING,
   TYPOGRAPHY,
 } from '@/constants/theme';
-import { NAV_ROUTES } from '@/constants/navigation';
-import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
-import { Card } from '@/components/common/Card';
 import { useStoryStore } from '@/stores/useStoryStore';
-import { formatDate } from '@/utils/date';
-import type { Story } from '@/types';
+import { getDynamicImageHeight } from '@/utils/image';
+import { MasonryList } from '@/components/common/MasonryList';
+import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import { StoryItem } from '@/components/stories/StoryItem';
 
 const { width } = Dimensions.get('window');
 const columnWidth = (width - SPACING.layout * 2 - SPACING.md) / 2;
-
-interface StoryItemProps {
-  item: Story;
-  onPress: (id: string) => void;
-}
-
-/**
- * [StoryItem] 프리미엄 카드 컴포넌트
- */
-const StoryItem = ({ item, onPress }: StoryItemProps) => {
-  return (
-    <Card
-      style={styles.storyCard}
-      onPress={() => onPress(item.id)}
-      activeOpacity={0.9}
-    >
-      <View style={styles.imageContainer}>
-        {item.thumbnailUrl ? (
-          <Image
-            source={{ uri: item.thumbnailUrl }}
-            style={styles.cardImage}
-            resizeMode="cover"
-          />
-        ) : (
-          <View style={styles.placeholderContainer}>
-            <Camera
-              size={28}
-              color={APP_COLORS.textTertiary}
-              strokeWidth={1.5}
-            />
-          </View>
-        )}
-      </View>
-      <View style={styles.storyInfo}>
-        <Text style={styles.storyTitle} numberOfLines={1}>
-          {item.title}
-        </Text>
-        <Text style={styles.storyDate}>{formatDate(item.date)}</Text>
-      </View>
-    </Card>
-  );
-};
-
-/**
- * [StoriesHeader] 통계 및 필터가 포함된 헤더
- */
-const StoriesHeader = ({
-  storyCount,
-  pathStoryCount,
-  onAddPress,
-}: {
-  storyCount: number;
-  pathStoryCount: number;
-  onAddPress: () => void;
-}) => (
-  <View style={styles.headerContainer}>
-    <View style={styles.headerTop}>
-      <View>
-        <Text style={TYPOGRAPHY.header1}>스토리</Text>
-        <Text style={styles.subtitle}>소중한 순간들을 기록해요</Text>
-      </View>
-      <TouchableOpacity
-        style={styles.profileButton}
-        onPress={onAddPress}
-        activeOpacity={0.7}
-      >
-        <View style={styles.avatarPlaceholder}>
-          <Plus size={24} color={APP_COLORS.primary} strokeWidth={2.5} />
-        </View>
-      </TouchableOpacity>
-    </View>
-
-    <Card style={styles.statsContainer}>
-      <View style={styles.statBox}>
-        <View style={[styles.statIconWrapper, styles.pinkIconWrapper]}>
-          <Heart size={16} color={THEME_COLORS.red} />
-        </View>
-        <View style={styles.statTextContainer}>
-          <Text style={styles.statLabel}>{storyCount}개</Text>
-          <Text style={styles.statSubLabel}>전체 스토리</Text>
-        </View>
-      </View>
-      <View style={styles.statDivider} />
-      <View style={styles.statBox}>
-        <View style={[styles.statIconWrapper, styles.greenIconWrapper]}>
-          <Route size={16} color={THEME_COLORS.green} />
-        </View>
-        <View style={styles.statTextContainer}>
-          <Text style={styles.statLabel}>{pathStoryCount}곳</Text>
-          <Text style={styles.statSubLabel}>경로 기록</Text>
-        </View>
-      </View>
-    </Card>
-
-    <View style={styles.filterBar}>
-      <TouchableOpacity style={styles.filterChip}>
-        <Calendar size={14} color={APP_COLORS.textSecondary} />
-        <Text style={styles.filterText}>최신순</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.filterChip}>
-        <Filter size={14} color={APP_COLORS.textSecondary} />
-        <Text style={styles.filterText}>카테고리</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-);
-
-const StoriesFooter = ({ loading }: { loading: boolean }) => {
-  if (!loading) return <View style={styles.footerSpacer} />;
-  return (
-    <View style={styles.loaderContainer}>
-      <ActivityIndicator size="small" color={APP_COLORS.primary} />
-    </View>
-  );
-};
 
 const StoriesScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
   const { stories } = useStoryStore();
   const [loading] = useState(false);
-
-  const pathStoryCount = useMemo(() => {
-    return stories.filter(story => story.path && story.path.length > 0).length;
-  }, [stories]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleAddStory = useCallback(() => {
     navigation.navigate(NAV_ROUTES.STORY_EDIT.NAME);
   }, [navigation]);
 
-  const loadMoreStories = useCallback(() => {
-    // API 연동용
-  }, []);
+  const handleStoryPress = useCallback(
+    (id: string) => {
+      navigation.navigate(NAV_ROUTES.STORY_DETAIL.NAME, { storyId: id });
+    },
+    [navigation],
+  );
+
+  const filteredStories = useMemo(() => {
+    return stories.filter(story =>
+      story.title.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  }, [stories, searchQuery]);
 
   return (
     <AppSafeAreaView
@@ -174,34 +58,54 @@ const StoriesScreen = () => {
       headerShown={false}
       edges={['top']}
     >
-      <FlatList
-        data={stories}
-        renderItem={({ item }) => (
-          <StoryItem
-            item={item}
-            onPress={id =>
-              navigation.navigate(NAV_ROUTES.STORY_DETAIL.NAME, {
-                storyId: id,
-              })
-            }
+      {/* 최상단 검색 & 액션 바 */}
+      <View style={styles.topBar}>
+        <View style={styles.searchContainer}>
+          <Search
+            size={20}
+            color={APP_COLORS.textTertiary}
+            style={styles.searchIcon}
           />
-        )}
-        keyExtractor={item => item.id}
-        numColumns={2}
-        columnWrapperStyle={styles.columnWrapper}
-        ListHeaderComponent={
-          <StoriesHeader
-            storyCount={stories.length}
-            pathStoryCount={pathStoryCount}
-            onAddPress={handleAddStory}
+          <TextInput
+            style={styles.searchInput}
+            placeholder="추억을 검색해보세요"
+            placeholderTextColor={APP_COLORS.textTertiary}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            returnKeyType="search"
           />
-        }
-        ListFooterComponent={<StoriesFooter loading={loading} />}
-        onEndReached={loadMoreStories}
-        onEndReachedThreshold={0.5}
+        </View>
+        <TouchableOpacity style={styles.rightButton} onPress={handleAddStory}>
+          <Plus size={24} color={APP_COLORS.primary} strokeWidth={2.5} />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.flatListContent}
-      />
+        contentContainerStyle={styles.scrollContent}
+      >
+        <MasonryList
+          data={filteredStories}
+          numColumns={2}
+          getItemHeight={story => getDynamicImageHeight(story.id, story.thumbnailUrl) + 60}
+          columnStyle={styles.column}
+          containerStyle={styles.masonryContainer}
+        >
+          {item => <StoryItem item={item} onPress={handleStoryPress} />}
+        </MasonryList>
+
+        {filteredStories.length === 0 && (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>검색 결과나 스토리가 없습니다.</Text>
+          </View>
+        )}
+
+        {loading && (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="small" color={APP_COLORS.primary} />
+          </View>
+        )}
+      </ScrollView>
     </AppSafeAreaView>
   );
 };
@@ -209,166 +113,69 @@ const StoriesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: APP_COLORS.bgWhite, // 배경색 보정으로 카드 부각
+    backgroundColor: APP_COLORS.bgWhite,
   },
-  headerContainer: {
-    paddingHorizontal: SPACING.layout,
-    paddingTop: SPACING.xl,
-    marginBottom: SPACING.md,
-  },
-  headerTop: {
+  topBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
+    paddingHorizontal: SPACING.layout,
+    paddingTop: SPACING.sm,
+    paddingBottom: SPACING.md,
+    gap: SPACING.sm,
   },
-  subtitle: {
-    ...TYPOGRAPHY.body2,
-    color: APP_COLORS.textSecondary,
-    marginTop: 4,
+  searchContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: THEME_COLORS.grey100,
+    borderRadius: 16,
+    paddingHorizontal: SPACING.lg,
+    height: 48,
   },
-  profileButton: {
+  searchIcon: {
+    marginRight: SPACING.sm,
+  },
+  searchInput: {
+    flex: 1,
+    ...TYPOGRAPHY.body1,
+    color: APP_COLORS.textPrimary,
+    paddingVertical: 0,
+  },
+  rightButton: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: THEME_COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4,
-    shadowColor: THEME_COLORS.black,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-  },
-  avatarPlaceholder: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
     backgroundColor: APP_COLORS.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderRadius: 24,
   },
-  statsContainer: {
+  scrollContent: {
+    paddingHorizontal: SPACING.layout,
+    paddingTop: SPACING.xs,
+    paddingBottom: 100,
+  },
+  masonryContainer: {
     flexDirection: 'row',
-    paddingVertical: SPACING.xl,
-    paddingHorizontal: SPACING.xs,
-    borderRadius: 22,
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  statBox: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-  },
-  statTextContainer: {
+    justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
-  statLabel: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: APP_COLORS.textPrimary,
-  },
-  statSubLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: APP_COLORS.textTertiary,
-    marginTop: 2,
-  },
-  statDivider: {
-    width: 1,
-    height: 24,
-    backgroundColor: APP_COLORS.border,
-    opacity: 0.6,
-  },
-  statIconWrapper: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  pinkIconWrapper: {
-    backgroundColor: THEME_COLORS.pinkLight,
-  },
-  greenIconWrapper: {
-    backgroundColor: THEME_COLORS.greenLight,
-  },
-  filterBar: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  filterChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: THEME_COLORS.white,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 12,
-    gap: 6,
-    borderWidth: 1,
-    borderColor: APP_COLORS.border,
-  },
-  filterText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: APP_COLORS.textSecondary,
-  },
-  flatListContent: {
-    paddingBottom: 40,
-  },
-  columnWrapper: {
-    paddingHorizontal: SPACING.layout,
-    justifyContent: 'space-between',
-  },
-  storyCard: {
+  column: {
     width: columnWidth,
-    borderRadius: 20,
-    marginBottom: 16,
-    overflow: 'hidden',
-    padding: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: SPACING.md,
   },
-  imageContainer: {
-    width: '100%',
-    height: columnWidth * 1.1,
-    backgroundColor: APP_COLORS.skeleton,
-    position: 'relative',
-  },
-  cardImage: {
-    width: '100%',
-    height: '100%',
-  },
-  placeholderContainer: {
-    flex: 1,
+  emptyContainer: {
+    paddingVertical: 60,
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: THEME_COLORS.grey100,
   },
-
-  storyInfo: {
-    padding: 14,
-  },
-  storyTitle: {
+  emptyText: {
     ...TYPOGRAPHY.body1,
-    fontSize: 15,
-    fontWeight: '700',
-    color: APP_COLORS.textPrimary,
-    marginBottom: 4,
-  },
-  storyDate: {
-    ...TYPOGRAPHY.caption,
     color: APP_COLORS.textTertiary,
-    fontWeight: '500',
   },
   loaderContainer: {
-    paddingVertical: 20,
+    paddingVertical: SPACING.layout,
     alignItems: 'center',
-  },
-  footerSpacer: {
-    height: 40,
   },
 });
 
