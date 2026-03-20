@@ -3,7 +3,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +14,7 @@ import { NAV_ROUTES } from '@/constants/navigation';
 import { useStoryStore } from '@/stores/useStoryStore';
 import { formatDate } from '@/utils/date';
 import { Card } from '@/components/common/Card';
+import { AppPressable } from '@/components/common/AppPressable';
 
 export const RecentStories = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
@@ -28,13 +28,13 @@ export const RecentStories = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>최근 스토리</Text>
-        <TouchableOpacity
+        <AppPressable
           style={styles.moreBtn}
           onPress={() => navigation.navigate(NAV_ROUTES.STORIES.NAME)}
         >
           <Text style={styles.moreText}>더보기</Text>
           <ChevronRight size={14} color={APP_COLORS.textSecondary} />
-        </TouchableOpacity>
+        </AppPressable>
       </View>
 
       <ScrollView
@@ -43,9 +43,8 @@ export const RecentStories = () => {
         contentContainerStyle={styles.scrollContent}
       >
         {recentStories.map(story => (
-          <TouchableOpacity
+          <AppPressable
             key={story.id}
-            activeOpacity={0.9}
             style={styles.storyWrapper}
             onPress={() =>
               navigation.navigate(NAV_ROUTES.STORY_DETAIL.NAME, {
@@ -78,7 +77,7 @@ export const RecentStories = () => {
                 </Text>
               </View>
             </Card>
-          </TouchableOpacity>
+          </AppPressable>
         ))}
       </ScrollView>
     </View>

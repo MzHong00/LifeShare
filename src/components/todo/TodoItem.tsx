@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import {
   CheckCircle2,
   Circle,
@@ -10,6 +10,7 @@ import { Todo } from '@/types/todo';
 import { APP_COLORS, TYPOGRAPHY, THEME_COLORS } from '@/constants/theme';
 import { isPastDate, getRelativeDateLabel } from '@/utils/date';
 import { Card } from '@/components/common/Card';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface TodoItemProps {
   item: Todo;
@@ -38,9 +39,8 @@ export const TodoItem = ({
         },
       ]}
       onPress={() => onPress(item.id)}
-      activeOpacity={0.7}
     >
-      <TouchableOpacity
+      <AppPressable
         style={styles.checkboxArea}
         onPress={() => onToggle(item.id)}
       >
@@ -53,7 +53,7 @@ export const TodoItem = ({
         ) : (
           <Circle size={24} color={APP_COLORS.textTertiary} />
         )}
-      </TouchableOpacity>
+      </AppPressable>
 
       <View style={styles.todoTextContainer}>
         <Text

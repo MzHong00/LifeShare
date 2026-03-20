@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
   Image,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -24,6 +23,7 @@ import { useStoryStore, storyActions } from '@/stores/useStoryStore';
 import { StoryBriefInfo } from '@/components/stories/StoryBriefInfo';
 import { HeaderButton } from '@/components/common/HeaderButton';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import { AppPressable } from '@/components/common/AppPressable';
 
 type StoryDetailRouteProp = RouteProp<
   { params: { storyId: string } },
@@ -119,7 +119,7 @@ const StoryDetailScreen = () => {
             </View>
           )}
 
-          <TouchableOpacity
+          <AppPressable
             style={styles.mapActionCard}
             onPress={handleShowOnMap}
           >
@@ -132,7 +132,7 @@ const StoryDetailScreen = () => {
                 그날 우리의 이동 동선을 확인해보세요
               </Text>
             </View>
-          </TouchableOpacity>
+          </AppPressable>
         </View>
       </ScrollView>
     </AppSafeAreaView>

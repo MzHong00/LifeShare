@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -29,6 +28,7 @@ import {
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { Card } from '@/components/common/Card';
 import { TodoItem } from '@/components/todo/TodoItem';
+import { AppPressable } from '@/components/common/AppPressable';
 
 const CalendarScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
@@ -109,13 +109,12 @@ const CalendarScreen = () => {
     <AppSafeAreaView>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>{formatHeaderDate(currentMonth)}</Text>
-        <TouchableOpacity
+        <AppPressable
           style={styles.addIconBtn}
-          activeOpacity={0.7}
           onPress={handleAdd}
         >
           <Plus size={24} color={APP_COLORS.textPrimary} />
-        </TouchableOpacity>
+        </AppPressable>
       </View>
       <ScrollView
         style={styles.flex1}

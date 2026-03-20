@@ -2,7 +2,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Modal,
   TouchableWithoutFeedback,
 } from 'react-native';
@@ -14,6 +13,7 @@ import {
 } from '@/constants/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useModalStore, modalActions } from '@/stores/useModalStore';
+import { AppPressable } from '@/components/common/AppPressable';
 
 const CustomModal = () => {
   const { isVisible, options } = useModalStore();
@@ -68,27 +68,27 @@ const CustomModal = () => {
                   <View style={styles.buttonContainer}>
                     {/* Confirm 타입인 경우 취소 버튼 표시 */}
                     {options.type === 'confirm' && (
-                      <TouchableOpacity
+                      <AppPressable
                         style={[styles.button, styles.cancelButton]}
                         onPress={handleCancel}
-                        activeOpacity={0.7}
                       >
                         <Text style={styles.cancelButtonText}>
                           {options.cancelText || '취소'}
                         </Text>
-                      </TouchableOpacity>
+                      </AppPressable>
                     )}
 
                     {/* 확인 버튼 (Alert/Confirm 공통) */}
-                    <TouchableOpacity
+                    <AppPressable
                       style={[
                         styles.button,
                         styles.confirmButton,
                         options.confirmDisabled && styles.disabledButton,
                       ]}
                       onPress={handleConfirm}
-                      activeOpacity={options.confirmDisabled ? 1 : 0.8}
                       disabled={options.confirmDisabled}
+                      activeScale={options.confirmDisabled ? 1 : 0.98}
+                      activeOpacity={options.confirmDisabled ? 1 : 0.7}
                     >
                       <Text
                         style={[
@@ -98,7 +98,7 @@ const CustomModal = () => {
                       >
                         {options.confirmText || '확인'}
                       </Text>
-                    </TouchableOpacity>
+                    </AppPressable>
                   </View>
                 )}
               </View>

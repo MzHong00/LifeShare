@@ -3,7 +3,6 @@ import {
   Text,
   StyleSheet,
   ImageBackground,
-  TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -11,6 +10,7 @@ import { Image as ImageIcon, Heart, Users } from 'lucide-react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 import { Card } from '@/components/common/Card';
+import { AppPressable } from '@/components/common/AppPressable';
 import {
   useWorkspaceStore,
   workspaceActions,
@@ -99,9 +99,8 @@ export const DDayHero = () => {
             {partnerName} · {myName}
           </Text>
         </View>
-        <TouchableOpacity
+        <AppPressable
           onPress={handleBackgroundChange}
-          activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           style={[
             styles.editIconWrapper,
@@ -114,7 +113,7 @@ export const DDayHero = () => {
               backgroundImage ? THEME_COLORS.white : APP_COLORS.textTertiary
             }
           />
-        </TouchableOpacity>
+        </AppPressable>
       </View>
 
       <View style={styles.main}>
@@ -129,8 +128,7 @@ export const DDayHero = () => {
       </View>
 
       <View style={styles.footer}>
-        <TouchableOpacity
-          activeOpacity={0.7}
+        <AppPressable
           onPress={handleNextEventPress}
           style={[
             styles.nextEventBadge,
@@ -150,7 +148,7 @@ export const DDayHero = () => {
               D-{nextDDay}
             </Text>
           </Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
     </View>
   );

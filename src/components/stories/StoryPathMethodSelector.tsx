@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { MapPin, Route } from 'lucide-react-native';
 
 import { APP_COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
@@ -8,6 +8,7 @@ import { toastActions } from '@/stores/useToastStore';
 import { NAV_ROUTES } from '@/constants/navigation';
 import StoryMapPicker from '@/components/stories/StoryMapPicker';
 import type { LocationPoint } from '@/types';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface StoryPathMethodSelectorProps {
   path: LocationPoint[]; // 선택된 경로 포인트 목록
@@ -65,7 +66,7 @@ export const StoryPathMethodSelector = ({
     <View style={styles.inputGroup}>
       <Text style={styles.label}>경로 저장 방식</Text>
       <View style={styles.methodContainer}>
-        <TouchableOpacity
+        <AppPressable
           style={[styles.input, styles.methodButton]}
           onPress={handleManualSelect}
         >
@@ -79,9 +80,9 @@ export const StoryPathMethodSelector = ({
           >
             직접 선택
           </Text>
-        </TouchableOpacity>
+        </AppPressable>
 
-        <TouchableOpacity
+        <AppPressable
           style={[styles.input, styles.methodButton]}
           onPress={handleRealtimeRecording}
         >
@@ -95,7 +96,7 @@ export const StoryPathMethodSelector = ({
           >
             실시간 기록
           </Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
     </View>
   );

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Heart } from 'lucide-react-native';
 
 import { APP_BRAND_NAME } from '@/constants/config';
@@ -11,6 +11,7 @@ import {
 import { googleOAuthService } from '@/businesses/oauth/google/googleOAuthService';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { GoogleIcon, KakaoIcon } from '@/components/common/SocialIcons';
+import { AppPressable } from '@/components/common/AppPressable';
 
 const LoginScreen = () => {
   return (
@@ -31,23 +32,21 @@ const LoginScreen = () => {
         </View>
 
         <View style={styles.buttonSection}>
-          <TouchableOpacity
+          <AppPressable
             style={[styles.socialButton, styles.kakaoButton]}
-            activeOpacity={0.8}
             onPress={() => {}}
           >
             <KakaoIcon size={24} />
             <Text style={styles.kakaoButtonText}>카카오톡으로 시작하기</Text>
-          </TouchableOpacity>
+          </AppPressable>
 
-          <TouchableOpacity
+          <AppPressable
             style={[styles.socialButton, styles.googleButton]}
-            activeOpacity={0.8}
             onPress={() => googleOAuthService.loginGoogleOAuth()}
           >
             <GoogleIcon size={22} />
             <Text style={styles.googleButtonText}>Google로 시작하기</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </View>
 
         <View style={styles.footer}>

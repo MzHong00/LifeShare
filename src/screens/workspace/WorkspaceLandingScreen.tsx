@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Heart, User } from 'lucide-react-native';
@@ -12,6 +12,7 @@ import {
   TYPOGRAPHY,
 } from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import { AppPressable } from '@/components/common/AppPressable';
 
 type RootStackParamList = {
   [NAV_ROUTES.PROFILE.NAME]: undefined;
@@ -28,14 +29,14 @@ const WorkspaceLandingScreen = () => {
       headerShown={false}
     >
       <View style={styles.header}>
-        <TouchableOpacity
+        <AppPressable
           style={styles.profileButton}
           onPress={() => navigation.navigate(NAV_ROUTES.PROFILE.NAME)}
         >
           <View style={styles.avatarPlaceholder}>
             <User size={24} color={APP_COLORS.primary} />
           </View>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
 
       <View style={styles.content}>
@@ -59,15 +60,14 @@ const WorkspaceLandingScreen = () => {
           </Text>
         </View>
 
-        <TouchableOpacity
+        <AppPressable
           style={styles.actionButton}
-          activeOpacity={0.8}
           onPress={() => navigation.navigate(NAV_ROUTES.WORKSPACE_SETUP.NAME)}
         >
           <Text style={styles.actionButtonText}>
             새로운 {APP_WORKSPACE.KR} 만들기
           </Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
     </AppSafeAreaView>
   );

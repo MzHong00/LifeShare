@@ -4,35 +4,27 @@ import {
   View,
   ViewStyle,
   StyleProp,
-  TouchableOpacity,
 } from 'react-native';
 
 import { THEME_COLORS } from '@/constants/theme';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface CardProps {
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
-  activeOpacity?: number;
 }
 
-export const Card = ({
-  children,
-  style,
-  onPress,
-  activeOpacity = 0.9,
-}: CardProps) => {
-  const Container = onPress ? TouchableOpacity : View;
+export const Card = ({ children, style, onPress }: CardProps) => {
+  if (onPress) {
+    return (
+      <AppPressable style={[styles.card, style]} onPress={onPress}>
+        {children}
+      </AppPressable>
+    );
+  }
 
-  return (
-    <Container
-      style={[styles.card, style]}
-      onPress={onPress}
-      activeOpacity={activeOpacity}
-    >
-      {children}
-    </Container>
-  );
+  return <View style={[styles.card, style]}>{children}</View>;
 };
 
 const styles = StyleSheet.create({

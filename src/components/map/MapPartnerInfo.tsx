@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import {
   Battery,
   MapPin,
@@ -7,6 +7,7 @@ import {
   ChevronRight,
 } from 'lucide-react-native';
 import { APP_COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface MapPartnerInfoProps {
   selectedUser: {
@@ -48,19 +49,19 @@ export const MapPartnerInfo = ({
       </View>
 
       <View style={styles.buttonRow}>
-        <TouchableOpacity
+        <AppPressable
           style={styles.actionButton}
           onPress={onOpenDirections}
         >
           <Navigation size={20} color={APP_COLORS.primary} />
           <Text style={styles.actionButtonText}>경로 찾기</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
 
       <View style={styles.recentSection}>
         <Text style={styles.sectionTitle}>최근 함께한 장소</Text>
         {recentPlaces.map(place => (
-          <TouchableOpacity key={place.id} style={styles.placeItem}>
+          <AppPressable key={place.id} style={styles.placeItem}>
             <View style={styles.placeIcon}>
               <MapPin size={20} color={APP_COLORS.textSecondary} />
             </View>
@@ -69,7 +70,7 @@ export const MapPartnerInfo = ({
               <Text style={TYPOGRAPHY.caption}>{place.date}</Text>
             </View>
             <ChevronRight size={18} color={APP_COLORS.textTertiary} />
-          </TouchableOpacity>
+          </AppPressable>
         ))}
       </View>
     </>

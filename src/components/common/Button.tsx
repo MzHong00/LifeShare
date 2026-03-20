@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  TouchableOpacity,
   Text,
   StyleSheet,
   ActivityIndicator,
@@ -8,6 +7,7 @@ import {
   TextStyle,
 } from 'react-native';
 import { APP_COLORS, THEME_COLORS, TYPOGRAPHY } from '@/constants/theme';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface ButtonProps {
   title: string;
@@ -37,7 +37,7 @@ export const Button = ({
   const isError = variant === 'error';
 
   return (
-    <TouchableOpacity
+    <AppPressable
       style={[
         styles.base,
         styles[variant],
@@ -47,7 +47,6 @@ export const Button = ({
       ]}
       onPress={onPress}
       disabled={disabled || loading}
-      activeOpacity={0.8}
     >
       {loading ? (
         <ActivityIndicator
@@ -58,7 +57,7 @@ export const Button = ({
           {title}
         </Text>
       )}
-    </TouchableOpacity>
+    </AppPressable>
   );
 };
 

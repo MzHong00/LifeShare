@@ -7,7 +7,6 @@ import {
   Platform,
   View,
   Text,
-  TouchableOpacity,
 } from 'react-native';
 import { Image as ImageIcon, Video } from 'lucide-react-native';
 
@@ -24,6 +23,7 @@ import { ChatInput } from '@/components/chat/ChatInput';
 import { ProfileAvatar } from '@/components/common/ProfileAvatar';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { formatChatTime } from '@/utils/date';
+import { AppPressable } from '@/components/common/AppPressable';
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -156,10 +156,9 @@ const ChatScreen = () => {
         {isActionMenuVisible && (
           <View style={styles.actionMenu}>
             {actionItems.map(item => (
-              <TouchableOpacity
+              <AppPressable
                 key={item.id}
                 style={styles.actionItem}
-                activeOpacity={0.7}
               >
                 <View
                   style={[styles.actionIcon, { backgroundColor: item.bgColor }]}
@@ -167,7 +166,7 @@ const ChatScreen = () => {
                   {item.icon}
                 </View>
                 <Text style={styles.actionLabel}>{item.label}</Text>
-              </TouchableOpacity>
+              </AppPressable>
             ))}
           </View>
         )}

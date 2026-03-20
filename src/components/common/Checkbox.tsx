@@ -1,5 +1,4 @@
 import {
-  TouchableOpacity,
   View,
   Text,
   StyleSheet,
@@ -7,6 +6,7 @@ import {
 } from 'react-native';
 import { Check } from 'lucide-react-native';
 import { APP_COLORS, THEME_COLORS, TYPOGRAPHY } from '@/constants/theme';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface CheckboxProps {
   label: string;
@@ -24,11 +24,10 @@ const Checkbox = ({
   style,
 }: CheckboxProps) => {
   return (
-    <TouchableOpacity
+    <AppPressable
       style={[styles.container, style]}
       onPress={onPress}
       disabled={disabled}
-      activeOpacity={0.7}
     >
       <View
         style={[
@@ -44,7 +43,7 @@ const Checkbox = ({
       <Text style={[styles.label, disabled && styles.labelDisabled]}>
         {label}
       </Text>
-    </TouchableOpacity>
+    </AppPressable>
   );
 };
 

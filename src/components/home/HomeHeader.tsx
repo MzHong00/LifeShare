@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
@@ -13,6 +13,7 @@ import { calculateDDay } from '@/utils/date';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { useUserStore } from '@/stores/useUserStore';
 import { ProfileAvatar } from '@/components/common/ProfileAvatar';
+import { AppPressable } from '@/components/common/AppPressable';
 
 export const HomeHeader = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
@@ -33,12 +34,12 @@ export const HomeHeader = () => {
             : '소중한 일상을 기록해보세요'}
         </Text>
       </View>
-      <TouchableOpacity
+      <AppPressable
         style={styles.profileButton}
         onPress={() => navigation.navigate(NAV_ROUTES.PROFILE.NAME)}
       >
         <ProfileAvatar uri={user.profileImage} name={user.name} size={40} />
-      </TouchableOpacity>
+      </AppPressable>
     </View>
   );
 };

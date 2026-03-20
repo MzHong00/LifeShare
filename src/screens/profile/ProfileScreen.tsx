@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
   TextInput,
 } from 'react-native';
@@ -37,6 +36,7 @@ import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { ProfileAvatar } from '@/components/common/ProfileAvatar';
 import { Card } from '@/components/common/Card';
 import { APP_WORKSPACE } from '@/constants/config';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface MenuItem {
   id: string;
@@ -191,10 +191,9 @@ const ProfileScreen = () => {
         {/* Profile Section (Flat) */}
         <View style={styles.profileSection}>
           <View style={styles.profileHeader}>
-            <TouchableOpacity
+            <AppPressable
               style={styles.avatarContainer}
               onPress={handleEditPhoto}
-              activeOpacity={0.8}
             >
               <View style={styles.avatar}>
                 <ProfileAvatar
@@ -210,10 +209,10 @@ const ProfileScreen = () => {
                   strokeWidth={2.5}
                 />
               </View>
-            </TouchableOpacity>
+            </AppPressable>
 
             <View style={styles.profileInfo}>
-              <TouchableOpacity
+              <AppPressable
                 style={styles.nameRow}
                 onPress={handleEditName}
                 activeOpacity={0.6}
@@ -224,7 +223,7 @@ const ProfileScreen = () => {
                   color={APP_COLORS.textTertiary}
                   style={styles.pencilIcon}
                 />
-              </TouchableOpacity>
+              </AppPressable>
               <Text style={styles.userEmail}>{userEmail}</Text>
             </View>
           </View>
@@ -238,7 +237,6 @@ const ProfileScreen = () => {
               <Card
                 key={inv.id}
                 style={styles.invitationCard}
-                activeOpacity={1}
               >
                 <View style={styles.invitationInfo}>
                   <View style={styles.invitationIcon}>
@@ -255,7 +253,7 @@ const ProfileScreen = () => {
                   </View>
                 </View>
                 <View style={styles.invitationActions}>
-                  <TouchableOpacity
+                  <AppPressable
                     style={[styles.actionBtn, styles.declineBtn]}
                     onPress={() =>
                       handleInvitationResponse(
@@ -266,8 +264,8 @@ const ProfileScreen = () => {
                     }
                   >
                     <X size={18} color={APP_COLORS.textSecondary} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
+                  </AppPressable>
+                  <AppPressable
                     style={[styles.actionBtn, styles.acceptBtn]}
                     onPress={() =>
                       handleInvitationResponse(
@@ -278,7 +276,7 @@ const ProfileScreen = () => {
                     }
                   >
                     <Check size={18} color={THEME_COLORS.white} />
-                  </TouchableOpacity>
+                  </AppPressable>
                 </View>
               </Card>
             ))}
@@ -290,7 +288,7 @@ const ProfileScreen = () => {
           <Card style={styles.menuCard}>
             {menuItems.map((item, index) => (
               <View key={item.id}>
-                <TouchableOpacity
+                <AppPressable
                   style={styles.menuItem}
                   activeOpacity={0.6}
                   onPress={item.onPress}
@@ -310,7 +308,7 @@ const ProfileScreen = () => {
                     {item.badge}
                     <ChevronRight size={18} color={APP_COLORS.textTertiary} />
                   </View>
-                </TouchableOpacity>
+                </AppPressable>
                 {index < menuItems.length - 1 && (
                   <View style={styles.menuDivider} />
                 )}

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import {
@@ -14,6 +14,7 @@ import { useTodoStore, todoActions } from '@/stores/useTodoStore';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { getTodayDateString } from '@/utils/date';
 import { Card } from '@/components/common/Card';
+import { AppPressable } from '@/components/common/AppPressable';
 
 export const RecentCalendar = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
@@ -49,13 +50,13 @@ export const RecentCalendar = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>오늘의 일정</Text>
-        <TouchableOpacity
+        <AppPressable
           style={styles.moreBtn}
           onPress={() => navigation.navigate(NAV_ROUTES.CALENDAR.NAME)}
         >
           <Text style={styles.moreText}>전체보기</Text>
           <ChevronRight size={14} color={APP_COLORS.textSecondary} />
-        </TouchableOpacity>
+        </AppPressable>
       </View>
 
       {!hasData ? (
@@ -74,10 +75,9 @@ export const RecentCalendar = () => {
       ) : (
         <View style={styles.content}>
           {todayEvents.map(event => (
-            <TouchableOpacity
+            <AppPressable
               key={event.id}
               onPress={() => navigation.navigate(NAV_ROUTES.CALENDAR.NAME)}
-              activeOpacity={0.7}
             >
               <Card style={styles.eventCard}>
                 <View
@@ -91,12 +91,12 @@ export const RecentCalendar = () => {
                   <Text style={styles.cardTime}>종일</Text>
                 </View>
               </Card>
-            </TouchableOpacity>
+            </AppPressable>
           ))}
 
           {todayTodos.map(todo => (
             <Card key={todo.id} style={styles.todoCard}>
-              <TouchableOpacity
+              <AppPressable
                 style={styles.checkbox}
                 onPress={() => toggleTodo(todo.id)}
               >
@@ -114,8 +114,8 @@ export const RecentCalendar = () => {
                     ]}
                   />
                 )}
-              </TouchableOpacity>
-              <TouchableOpacity
+              </AppPressable>
+              <AppPressable
                 style={styles.todoInfo}
                 onPress={() =>
                   navigation.navigate(NAV_ROUTES.TODO_CREATE.NAME, {
@@ -131,7 +131,7 @@ export const RecentCalendar = () => {
                 >
                   {todo.title}
                 </Text>
-              </TouchableOpacity>
+              </AppPressable>
             </Card>
           ))}
         </View>

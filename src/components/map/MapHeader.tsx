@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
   Platform,
 } from 'react-native';
 import {
@@ -19,6 +18,7 @@ import {
 import { APP_COLORS, THEME_COLORS, SPACING } from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { ProfileAvatar } from '@/components/common/ProfileAvatar';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface MapHeaderProps {
   isRecording: boolean;
@@ -52,17 +52,16 @@ export const MapHeader = ({
             />
             <Text style={styles.statusBadgeText}>실시간 업데이트 중</Text>
           </View>
-          <TouchableOpacity
+          <AppPressable
             onPress={() => setIsHeaderMinimized(!isHeaderMinimized)}
             style={styles.minimizeBtn}
-            activeOpacity={0.7}
           >
             {isHeaderMinimized ? (
               <ChevronDown size={18} color={APP_COLORS.textTertiary} />
             ) : (
               <ChevronUp size={18} color={APP_COLORS.textTertiary} />
             )}
-          </TouchableOpacity>
+          </AppPressable>
         </View>
 
         {!isHeaderMinimized && (
@@ -74,7 +73,7 @@ export const MapHeader = ({
               contentContainerStyle={styles.userListScroll}
             >
               {membersWithLocation.map(member => (
-                <TouchableOpacity
+                <AppPressable
                   key={member.id}
                   style={styles.userItem}
                   onPress={() =>
@@ -100,18 +99,17 @@ export const MapHeader = ({
                     </View>
                   </View>
                   <Text style={styles.userNameText}>{member.name}</Text>
-                </TouchableOpacity>
+                </AppPressable>
               ))}
             </ScrollView>
 
             {/* 3. 실시간 스토리 기록 제어 버튼 영역 */}
             <View style={styles.headerActionBar}>
-              <TouchableOpacity
+              <AppPressable
                 style={[
                   styles.headerActionPill,
                   isRecording && { backgroundColor: THEME_COLORS.red + '15' },
                 ]}
-                activeOpacity={0.7}
                 onPress={toggleRecording}
               >
                 {isRecording ? (
@@ -143,7 +141,7 @@ export const MapHeader = ({
                     </Text>
                   </>
                 )}
-              </TouchableOpacity>
+              </AppPressable>
             </View>
           </>
         )}

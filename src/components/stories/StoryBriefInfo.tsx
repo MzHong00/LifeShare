@@ -1,10 +1,11 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Route, Calendar, MapPin, Paintbrush } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { APP_COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
 import { NAV_ROUTES } from '@/constants/navigation';
 import type { Story } from '@/types';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface StoryBriefInfoProps {
   story: Story;
@@ -26,7 +27,7 @@ export const StoryBriefInfo = ({
         </View>
 
         {showDecorateBtn && (
-          <TouchableOpacity
+          <AppPressable
             style={styles.decorateBtn}
             onPress={() =>
               navigation.navigate(NAV_ROUTES.STORY_EDIT.NAME, {
@@ -36,7 +37,7 @@ export const StoryBriefInfo = ({
           >
             <Paintbrush size={14} color={APP_COLORS.primary} />
             <Text style={styles.decorateBtnText}>스토리 꾸미기</Text>
-          </TouchableOpacity>
+          </AppPressable>
         )}
       </View>
 

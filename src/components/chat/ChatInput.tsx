@@ -1,7 +1,6 @@
 import {
   View,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
   Platform,
 } from 'react-native';
@@ -12,6 +11,7 @@ import {
   SPACING,
   TYPOGRAPHY,
 } from '@/constants/theme';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface ChatInputProps {
   value: string;
@@ -30,13 +30,13 @@ export const ChatInput = ({
 }: ChatInputProps) => {
   return (
     <View style={styles.inputWrapper}>
-      <TouchableOpacity style={styles.plusButton} onPress={onPlusPress}>
+      <AppPressable style={styles.plusButton} onPress={onPlusPress}>
         {isActionMenuVisible ? (
           <X size={24} color={APP_COLORS.textSecondary} />
         ) : (
           <Plus size={24} color={APP_COLORS.textSecondary} />
         )}
-      </TouchableOpacity>
+      </AppPressable>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -45,7 +45,7 @@ export const ChatInput = ({
           onChangeText={onChangeText}
           multiline
         />
-        <TouchableOpacity
+        <AppPressable
           style={[
             styles.sendButton,
             !value.trim() && styles.sendButtonDisabled,
@@ -54,7 +54,7 @@ export const ChatInput = ({
           disabled={!value.trim()}
         >
           <Send size={20} color={THEME_COLORS.white} />
-        </TouchableOpacity>
+        </AppPressable>
       </View>
     </View>
   );

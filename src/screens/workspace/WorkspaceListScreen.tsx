@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
   Image,
   Platform,
@@ -36,6 +35,7 @@ import { userActions } from '@/stores/useUserStore';
 import { modalActions } from '@/stores/useModalStore';
 import { calculateDDay } from '@/utils/date';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import { AppPressable } from '@/components/common/AppPressable';
 
 type RootStackParamList = {
   [NAV_ROUTES.WORKSPACE_SETUP.NAME]: any;
@@ -90,7 +90,7 @@ const WorkspaceListScreen = () => {
         <View style={styles.header}>
           <View style={styles.titleRow}>
             <Text style={styles.title}>내 {APP_WORKSPACE.KR} 목록</Text>
-            <TouchableOpacity
+            <AppPressable
               onPress={() => {
                 userActions.initMockData();
                 initMockData();
@@ -102,7 +102,7 @@ const WorkspaceListScreen = () => {
               }}
             >
               <Text style={styles.resetText}>목업 초기화</Text>
-            </TouchableOpacity>
+            </AppPressable>
           </View>
           <Text style={styles.description}>
             참여 중인 라이프룸을 전환하거나 관리할 수 있습니다.
@@ -118,11 +118,10 @@ const WorkspaceListScreen = () => {
                 : null;
 
             return (
-              <TouchableOpacity
+              <AppPressable
                 key={ws.id}
                 style={[styles.workspaceCard]}
                 onPress={() => handleSwitch(ws)}
-                activeOpacity={0.8}
               >
                 <View style={styles.cardTop}>
                   <View style={styles.iconWrapper}>
@@ -176,17 +175,17 @@ const WorkspaceListScreen = () => {
                     </View>
                   </View>
 
-                  <TouchableOpacity
+                  <AppPressable
                     style={styles.manageBtn}
                     onPress={() => handleEditWorkspace(ws.id)}
                   >
                     <Settings size={18} color={APP_COLORS.textTertiary} />
                     <Text style={styles.manageBtnText}>관리</Text>
-                  </TouchableOpacity>
+                  </AppPressable>
                 </View>
 
                 {/* 멤버 요약 섹션 */}
-                <TouchableOpacity
+                <AppPressable
                   style={styles.cardBottom}
                   onPress={() => handleViewMembers(ws)}
                   activeOpacity={0.7}
@@ -252,22 +251,21 @@ const WorkspaceListScreen = () => {
                     {ws.members?.length || 1}명의 멤버가 함께 기록 중
                   </Text>
                   <ChevronRight size={16} color={APP_COLORS.border} />
-                </TouchableOpacity>
-              </TouchableOpacity>
+                </AppPressable>
+              </AppPressable>
             );
           })}
         </View>
 
-        <TouchableOpacity
+        <AppPressable
           style={styles.addButton}
-          activeOpacity={0.8}
           onPress={() => navigation.navigate(NAV_ROUTES.WORKSPACE_SETUP.NAME)}
         >
           <Plus size={24} color={THEME_COLORS.white} />
           <Text style={styles.addButtonText}>
             새로운 {APP_WORKSPACE.KR} 생성
           </Text>
-        </TouchableOpacity>
+        </AppPressable>
       </ScrollView>
 
       {/* 전체 멤버 보기 모달 */}
@@ -277,7 +275,7 @@ const WorkspaceListScreen = () => {
         animationType="fade"
         onRequestClose={() => setMemberModalVisible(false)}
       >
-        <TouchableOpacity
+        <AppPressable
           style={styles.modalOverlay}
           activeOpacity={1}
           onPress={() => setMemberModalVisible(false)}
@@ -320,15 +318,15 @@ const WorkspaceListScreen = () => {
                 ))}
               </ScrollView>
 
-              <TouchableOpacity
+              <AppPressable
                 style={styles.closeButton}
                 onPress={() => setMemberModalVisible(false)}
               >
                 <Text style={styles.closeButtonText}>닫기</Text>
-              </TouchableOpacity>
+              </AppPressable>
             </View>
           </TouchableWithoutFeedback>
-        </TouchableOpacity>
+        </AppPressable>
       </Modal>
     </AppSafeAreaView>
   );

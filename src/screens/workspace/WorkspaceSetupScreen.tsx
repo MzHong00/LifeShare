@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   TextInput,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -26,6 +25,7 @@ import { modalActions } from '@/stores/useModalStore';
 import { getTodayDateString } from '@/utils/date';
 import Checkbox from '@/components/common/Checkbox';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
+import { AppPressable } from '@/components/common/AppPressable';
 
 type RootStackParamList = {
   [NAV_ROUTES.MAIN_TABS.NAME]: undefined;
@@ -60,12 +60,12 @@ const InitialStage = ({ onNext }: InitialStageProps) => (
     </View>
 
     <View style={styles.footer}>
-      <TouchableOpacity style={styles.mainButton} onPress={onNext}>
+      <AppPressable style={styles.mainButton} onPress={onNext}>
         <Plus size={20} color={THEME_COLORS.white} style={styles.buttonIcon} />
         <Text style={styles.mainButtonText}>
           새로운 {APP_WORKSPACE.KR} 만들기
         </Text>
-      </TouchableOpacity>
+      </AppPressable>
     </View>
   </View>
 );
@@ -112,14 +112,13 @@ const CreateStage = ({
           </Text>
 
           <View style={styles.typeSelector}>
-            <TouchableOpacity
+            <AppPressable
               style={[
                 styles.typeButton,
                 roomType === 'couple' && styles.typeButtonActive,
                 styles.typeButtonFirst,
               ]}
               onPress={() => setRoomType('couple')}
-              activeOpacity={0.8}
             >
               <Heart
                 size={24}
@@ -140,14 +139,13 @@ const CreateStage = ({
               >
                 커플 라이프룸
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </AppPressable>
+            <AppPressable
               style={[
                 styles.typeButton,
                 roomType === 'group' && styles.typeButtonActive,
               ]}
               onPress={() => setRoomType('group')}
-              activeOpacity={0.8}
             >
               <Users
                 size={24}
@@ -165,7 +163,7 @@ const CreateStage = ({
               >
                 단체 라이프룸
               </Text>
-            </TouchableOpacity>
+            </AppPressable>
           </View>
         </>
       ) : (
@@ -208,18 +206,18 @@ const CreateStage = ({
     </View>
 
     <View style={styles.footer}>
-      <TouchableOpacity
+      <AppPressable
         style={styles.mainButton}
         onPress={createSubStep === 'type' ? onNext : onComplete}
       >
         <Text style={styles.mainButtonText}>
           {createSubStep === 'type' ? '다음' : '시작하기'}
         </Text>
-      </TouchableOpacity>
+      </AppPressable>
 
-      <TouchableOpacity style={styles.backButton} onPress={onBack}>
+      <AppPressable style={styles.backButton} onPress={onBack}>
         <Text style={styles.backButtonText}>이전으로</Text>
-      </TouchableOpacity>
+      </AppPressable>
     </View>
   </View>
 );
@@ -269,14 +267,14 @@ const InviteStage = ({
     </View>
 
     <View style={styles.footer}>
-      <TouchableOpacity style={styles.mainButton} onPress={onSendInvite}>
+      <AppPressable style={styles.mainButton} onPress={onSendInvite}>
         <Send size={20} color={THEME_COLORS.white} style={styles.buttonIcon} />
         <Text style={styles.mainButtonText}>초대 이메일 보내기</Text>
-      </TouchableOpacity>
+      </AppPressable>
 
-      <TouchableOpacity style={styles.backButton} onPress={onLater}>
+      <AppPressable style={styles.backButton} onPress={onLater}>
         <Text style={styles.backButtonText}>나중에 하기</Text>
-      </TouchableOpacity>
+      </AppPressable>
     </View>
   </View>
 );

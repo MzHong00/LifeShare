@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { Camera, Plus } from 'lucide-react-native';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 
 import { APP_COLORS, THEME_COLORS, TYPOGRAPHY } from '@/constants/theme';
 import { modalActions } from '@/stores/useModalStore';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface StoryImageSelectorProps {
   thumbnailUrl?: string; // 선택된 이미지 URI
@@ -24,7 +25,7 @@ export const StoryImageSelector = ({
       message: '사진을 가져올 방법을 선택해주세요.',
       content: (
         <View style={styles.modalContent}>
-          <TouchableOpacity
+          <AppPressable
             style={[
               styles.modalButton,
               { backgroundColor: APP_COLORS.primary },
@@ -39,8 +40,8 @@ export const StoryImageSelector = ({
             }}
           >
             <Text style={styles.modalButtonText}>카메라</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </AppPressable>
+          <AppPressable
             style={[
               styles.modalButton,
               { backgroundColor: APP_COLORS.primary },
@@ -58,8 +59,8 @@ export const StoryImageSelector = ({
             }}
           >
             <Text style={styles.modalButtonText}>갤러리</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </AppPressable>
+          <AppPressable
             style={[styles.modalButton, { backgroundColor: APP_COLORS.bgGray }]}
             onPress={() => modalActions.hideModal()}
           >
@@ -71,14 +72,14 @@ export const StoryImageSelector = ({
             >
               취소
             </Text>
-          </TouchableOpacity>
+          </AppPressable>
         </View>
       ),
     });
   };
 
   return (
-    <TouchableOpacity style={styles.photoContainer} onPress={handleSelectImage}>
+    <AppPressable style={styles.photoContainer} onPress={handleSelectImage}>
       {thumbnailUrl ? (
         <Image source={{ uri: thumbnailUrl }} style={styles.selectedImage} />
       ) : (
@@ -90,7 +91,7 @@ export const StoryImageSelector = ({
       <View style={styles.addIconBadge}>
         <Plus size={16} color={THEME_COLORS.white} />
       </View>
-    </TouchableOpacity>
+    </AppPressable>
   );
 };
 

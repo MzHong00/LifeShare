@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
@@ -36,6 +35,7 @@ import { HeaderButton } from '@/components/common/HeaderButton';
 import { FormField } from '@/components/common/FormField';
 import { Button } from '@/components/common/Button';
 import { FormLabel } from '@/components/common/FormLabel';
+import { AppPressable } from '@/components/common/AppPressable';
 
 type TodoCreateRouteProp = RouteProp<
   { TodoCreate: { todoId?: string; initialDate?: string } },
@@ -243,12 +243,11 @@ const TodoCreateScreen = () => {
 
           <View style={styles.section}>
             <FormLabel>시작일</FormLabel>
-            <TouchableOpacity
+            <AppPressable
               style={[
                 styles.dateButton,
                 activeDateField === 'start' && styles.dateButtonActive,
               ]}
-              activeOpacity={0.7}
               onPress={() => {
                 setActiveDateField('start');
                 setIsCalendarVisible(true);
@@ -260,28 +259,27 @@ const TodoCreateScreen = () => {
                 style={styles.dateIcon}
               />
               <Text style={styles.dateValue}>{startDate}</Text>
-            </TouchableOpacity>
+            </AppPressable>
           </View>
 
           <View style={styles.section}>
             <FormLabel>종료일</FormLabel>
             <View style={styles.quickDateRow}>
               {QUICK_DATES.map(item => (
-                <TouchableOpacity
+                <AppPressable
                   key={item.label}
                   style={styles.quickDateBtn}
                   onPress={() => setQuickDate(item.offset)}
                 >
                   <Text style={styles.quickDateText}>{item.label}</Text>
-                </TouchableOpacity>
+                </AppPressable>
               ))}
             </View>
-            <TouchableOpacity
+            <AppPressable
               style={[
                 styles.dateButton,
                 activeDateField === 'end' && styles.dateButtonActive,
               ]}
-              activeOpacity={0.7}
               onPress={() => {
                 setActiveDateField('end');
                 setIsCalendarVisible(true);
@@ -293,14 +291,14 @@ const TodoCreateScreen = () => {
                 style={styles.dateIcon}
               />
               <Text style={styles.dateValue}>{endDate}</Text>
-            </TouchableOpacity>
+            </AppPressable>
           </View>
 
           <View style={styles.section}>
             <FormLabel>색상 선택</FormLabel>
             <View style={styles.colorRow}>
               {TODO_COLORS.map(color => (
-                <TouchableOpacity
+                <AppPressable
                   key={color}
                   style={[
                     styles.colorCircle,
@@ -320,7 +318,7 @@ const TodoCreateScreen = () => {
               showsHorizontalScrollIndicator={false}
               style={styles.memberList}
             >
-              <TouchableOpacity
+              <AppPressable
                 style={[
                   styles.memberItem,
                   assigneeId === undefined && styles.memberItemActive,
@@ -350,10 +348,10 @@ const TodoCreateScreen = () => {
                 >
                   공통
                 </Text>
-              </TouchableOpacity>
+              </AppPressable>
 
               {members.map(member => (
-                <TouchableOpacity
+                <AppPressable
                   key={member.id}
                   style={[
                     styles.memberItem,
@@ -398,7 +396,7 @@ const TodoCreateScreen = () => {
                       <Check size={10} color={THEME_COLORS.white} />
                     </View>
                   )}
-                </TouchableOpacity>
+                </AppPressable>
               ))}
             </ScrollView>
           </View>
@@ -417,7 +415,7 @@ const TodoCreateScreen = () => {
         animationType="fade"
         onRequestClose={() => setIsCalendarVisible(false)}
       >
-        <TouchableOpacity
+        <AppPressable
           style={styles.modalOverlay}
           activeOpacity={1}
           onPress={() => setIsCalendarVisible(false)}
@@ -425,9 +423,9 @@ const TodoCreateScreen = () => {
           <View style={styles.calendarModalContent}>
             <View style={styles.calendarModalHeader}>
               <Text style={styles.calendarModalTitle}>날짜 선택</Text>
-              <TouchableOpacity onPress={() => setIsCalendarVisible(false)}>
+              <AppPressable onPress={() => setIsCalendarVisible(false)}>
                 <Text style={styles.closeText}>닫기</Text>
-              </TouchableOpacity>
+              </AppPressable>
             </View>
 
             <Calendar
@@ -446,7 +444,7 @@ const TodoCreateScreen = () => {
               }}
             />
           </View>
-        </TouchableOpacity>
+        </AppPressable>
       </Modal>
     </AppSafeAreaView>
   );

@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Dimensions,
   ActivityIndicator,
   ScrollView,
@@ -25,6 +24,7 @@ import { getDynamicImageHeight } from '@/utils/image';
 import { MasonryList } from '@/components/common/MasonryList';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { StoryItem } from '@/components/stories/StoryItem';
+import { AppPressable } from '@/components/common/AppPressable';
 
 const { width } = Dimensions.get('window');
 const columnWidth = (width - SPACING.layout * 2 - SPACING.md) / 2;
@@ -75,9 +75,9 @@ const StoriesScreen = () => {
             returnKeyType="search"
           />
         </View>
-        <TouchableOpacity style={styles.rightButton} onPress={handleAddStory}>
+        <AppPressable style={styles.rightButton} onPress={handleAddStory}>
           <Plus size={24} color={APP_COLORS.primary} strokeWidth={2.5} />
-        </TouchableOpacity>
+        </AppPressable>
       </View>
 
       <ScrollView

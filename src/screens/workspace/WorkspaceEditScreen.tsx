@@ -2,7 +2,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
   TextInput,
   Platform,
@@ -27,6 +26,7 @@ import {
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { Section } from '@/components/common/Section';
 import { modalActions } from '@/stores/useModalStore';
+import { AppPressable } from '@/components/common/AppPressable';
 
 type WorkspaceEditRouteProp = RouteProp<
   { params: { workspaceId: string } },
@@ -264,20 +264,18 @@ const WorkspaceEditScreen = () => {
                 {APP_WORKSPACE.KR}
               </Text>
             </View>
-            <TouchableOpacity
+            <AppPressable
               onPress={openWorkspaceNameEditModal}
-              activeOpacity={0.7}
             >
               <Text style={styles.headerMainTitle}>{workspace?.name}</Text>
-            </TouchableOpacity>
+            </AppPressable>
           </View>
 
           {/* 기본 정보 설정 */}
           <Section title="기본 설정" style={styles.sectionOverride}>
             <View style={styles.card}>
-              <TouchableOpacity
+              <AppPressable
                 style={styles.inputRow}
-                activeOpacity={0.6}
                 onPress={openWorkspaceNameEditModal}
               >
                 <Text style={styles.inputLabel}>라이프룸 제목</Text>
@@ -289,11 +287,10 @@ const WorkspaceEditScreen = () => {
                 >
                   {currentName || '제목 입력'}
                 </Text>
-              </TouchableOpacity>
+              </AppPressable>
               <View style={styles.divider} />
-              <TouchableOpacity
+              <AppPressable
                 style={styles.inputRow}
-                activeOpacity={0.6}
                 onPress={() => openCalendarModal()}
               >
                 <Text style={styles.inputLabel}>함께한 날</Text>
@@ -305,16 +302,15 @@ const WorkspaceEditScreen = () => {
                 >
                   {currentStartDate || '날짜 선택'}
                 </Text>
-              </TouchableOpacity>
+              </AppPressable>
             </View>
           </Section>
 
           {/* 멤버 및 도구 */}
           <Section title="멤버 및 도구" style={styles.sectionOverride}>
             <View style={styles.card}>
-              <TouchableOpacity
+              <AppPressable
                 style={styles.menuItem}
-                activeOpacity={0.6}
                 onPress={openProfileEditModal}
               >
                 <View style={[styles.menuIcon, styles.menuIconProfile]}>
@@ -322,11 +318,10 @@ const WorkspaceEditScreen = () => {
                 </View>
                 <Text style={styles.menuText}>내 활동 프로필 설정</Text>
                 <ChevronRight size={18} color={APP_COLORS.border} />
-              </TouchableOpacity>
+              </AppPressable>
               <View style={styles.divider} />
-              <TouchableOpacity
+              <AppPressable
                 style={styles.menuItem}
-                activeOpacity={0.6}
                 onPress={openInvitePartnerModal}
               >
                 <View style={[styles.menuIcon, styles.menuIconInvite]}>
@@ -337,16 +332,15 @@ const WorkspaceEditScreen = () => {
                   {workspace?.members?.length || 0}명 참여 중
                 </Text>
                 <ChevronRight size={18} color={APP_COLORS.border} />
-              </TouchableOpacity>
+              </AppPressable>
             </View>
           </Section>
 
           {/* 위험 구역 */}
           <Section title="위험 구역" style={styles.sectionOverride}>
             <View style={styles.dangerCard}>
-              <TouchableOpacity
+              <AppPressable
                 style={styles.dangerItem}
-                activeOpacity={0.6}
                 onPress={handleDelete}
               >
                 <View style={styles.dangerTextContent}>
@@ -358,7 +352,7 @@ const WorkspaceEditScreen = () => {
                   </Text>
                 </View>
                 <Trash2 size={18} color={APP_COLORS.error} />
-              </TouchableOpacity>
+              </AppPressable>
             </View>
           </Section>
 

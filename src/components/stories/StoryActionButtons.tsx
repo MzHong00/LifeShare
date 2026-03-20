@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Trash2 } from 'lucide-react-native';
 
 import { APP_COLORS, THEME_COLORS, SPACING } from '@/constants/theme';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface StoryActionButtonsProps {
   isEditMode: boolean; // 수정 모드 여부
@@ -20,15 +21,15 @@ export const StoryActionButtons = ({
   return (
     <View style={styles.footer}>
       {isEditMode && onDelete && (
-        <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
+        <AppPressable style={styles.deleteButton} onPress={onDelete}>
           <Trash2 size={20} color={APP_COLORS.error} />
-        </TouchableOpacity>
+        </AppPressable>
       )}
-      <TouchableOpacity style={styles.saveButton} onPress={onSave}>
+      <AppPressable style={styles.saveButton} onPress={onSave}>
         <Text style={styles.saveButtonText}>
           {isEditMode ? '수정하기' : '기록하기'}
         </Text>
-      </TouchableOpacity>
+      </AppPressable>
     </View>
   );
 };

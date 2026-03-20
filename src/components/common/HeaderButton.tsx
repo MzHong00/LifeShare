@@ -1,6 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 import { APP_COLORS, SPACING, TYPOGRAPHY } from '@/constants/theme';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface HeaderButtonProps {
   label?: string;
@@ -19,12 +20,12 @@ export const HeaderButton = ({
   icon,
 }: HeaderButtonProps) => {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
+    <AppPressable onPress={onPress} style={styles.container}>
       {icon}
       {label && (
         <Text style={[styles.text, color ? { color } : {}]}>{label}</Text>
       )}
-    </TouchableOpacity>
+    </AppPressable>
   );
 };
 

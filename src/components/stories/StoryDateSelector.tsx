@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Calendar as CalendarIcon } from 'lucide-react-native';
 import { Calendar } from 'react-native-calendars';
 
@@ -9,6 +9,7 @@ import {
   SPACING,
 } from '@/constants/theme';
 import { modalActions } from '@/stores/useModalStore';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface StoryDateSelectorProps {
   date: string; // 선택된 날짜 (YYYY-MM-DD)
@@ -30,9 +31,9 @@ export const StoryDateSelector = ({
         <View style={styles.calendarContainer}>
           <View style={styles.calendarHeader}>
             <Text style={styles.calendarTitle}>날짜 선택</Text>
-            <TouchableOpacity onPress={() => modalActions.hideModal()}>
+            <AppPressable onPress={() => modalActions.hideModal()}>
               <Text style={styles.closeText}>닫기</Text>
-            </TouchableOpacity>
+            </AppPressable>
           </View>
           <Calendar
             current={date}
@@ -62,7 +63,7 @@ export const StoryDateSelector = ({
   return (
     <View style={styles.inputGroup}>
       <Text style={styles.label}>날짜</Text>
-      <TouchableOpacity
+      <AppPressable
         style={[styles.input, styles.dateInput]}
         onPress={handleOpenCalendar}
       >
@@ -70,7 +71,7 @@ export const StoryDateSelector = ({
         <Text style={[styles.dateText, { color: APP_COLORS.textPrimary }]}>
           {date}
         </Text>
-      </TouchableOpacity>
+      </AppPressable>
     </View>
   );
 };

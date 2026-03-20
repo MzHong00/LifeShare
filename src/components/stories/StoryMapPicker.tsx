@@ -2,7 +2,6 @@ import { useRef, useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
-  TouchableOpacity,
   Text,
   Platform,
 } from 'react-native';
@@ -13,6 +12,7 @@ import { MAP_CONFIG } from '@/constants/map';
 import { MainMap } from '@/components/map/MainMap';
 import { useGeolocation } from '@/businesses/geolocation/useGeolocation';
 import type { LocationPoint } from '@/types';
+import { AppPressable } from '@/components/common/AppPressable';
 
 interface StoryMapPickerProps {
   path?: LocationPoint[];
@@ -124,13 +124,12 @@ const StoryMapPicker = ({
         </View>
 
         <View style={styles.bottomActions}>
-          <TouchableOpacity
+          <AppPressable
             style={styles.mapSubmitButton}
             onPress={handleComplete}
-            activeOpacity={0.8}
           >
             <Text style={styles.mapSubmitButtonText}>선택 완료</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </View>
       </View>
     </View>
