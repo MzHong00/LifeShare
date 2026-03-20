@@ -1,19 +1,6 @@
 import { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Platform,
-} from 'react-native';
-import {
-  MapPin,
-  ChevronDown,
-  ChevronUp,
-  Search,
-  Route,
-  Square,
-} from 'lucide-react-native';
+import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
+import { Search, Minimize2, Maximize2 } from 'lucide-react-native';
 
 import { APP_COLORS, THEME_COLORS, SPACING } from '@/constants/theme';
 import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
@@ -21,15 +8,11 @@ import { ProfileAvatar } from '@/components/common/ProfileAvatar';
 import { AppPressable } from '@/components/common/AppPressable';
 
 interface MapHeaderProps {
-  isRecording: boolean;
-  toggleRecording: () => void;
   membersWithLocation: any[];
   moveToUser: (id: string, lat: number, lng: number) => void;
 }
 
 export const MapHeader = ({
-  isRecording,
-  toggleRecording,
   membersWithLocation,
   moveToUser,
 }: MapHeaderProps) => {
@@ -40,33 +23,31 @@ export const MapHeader = ({
       style={styles.floatingHeader}
       edges={['top']}
       headerShown={false}
+      pointerEvents="box-none"
     >
-      <View style={styles.headerContent}>
-        {/* 1. 최상단 상태 뱃지 및 헤더 축소/확장 토글 버튼 */}
-        <View style={styles.headerTopRow}>
-          <View style={styles.statusBadge}>
-            <MapPin
-              size={10}
-              color={APP_COLORS.success}
-              fill={APP_COLORS.success}
-            />
-            <Text style={styles.statusBadgeText}>실시간 업데이트 중</Text>
-          </View>
-          <AppPressable
-            onPress={() => setIsHeaderMinimized(!isHeaderMinimized)}
-            style={styles.minimizeBtn}
-          >
-            {isHeaderMinimized ? (
-              <ChevronDown size={18} color={APP_COLORS.textTertiary} />
-            ) : (
-              <ChevronUp size={18} color={APP_COLORS.textTertiary} />
-            )}
-          </AppPressable>
-        </View>
+      {/* SafeAreaView가 만들어낸 Notch/상태바 패딩(Top) 아래쪽 영역을 기준으로 삼기 위한 래퍼 */}
+      <View style={styles.relativeWrapper} pointerEvents="box-none">
+        {/* 상태와 관계없이 항상 동일한 절대 위치에 떠있는 버튼 */}
+        <AppPressable
+          onPress={() => setIsHeaderMinimized(!isHeaderMinimized)}
+          style={[
+            styles.absoluteToggleBtn,
+            isHeaderMinimized && styles.iconOnlyBtnBg,
+          ]}
+        >
+          {isHeaderMinimized ? (
+            <Maximize2 size={24} color={APP_COLORS.textSecondary} />
+          ) : (
+            <Minimize2 size={24} color={APP_COLORS.textSecondary} />
+          )}
+        </AppPressable>
 
+        {/* 펼쳐졌을 때만 렌더링되는 백그라운드와 콘텐츠 */}
         {!isHeaderMinimized && (
-          <>
-            {/* 2. 워크스페이스 멤버 목록 (좌우 스크롤) */}
+          <View style={styles.headerContent}>
+            {/* 절대 위치 버튼과 겹치지 않도록 높이를 잡아주는 투명한 더미 헤더 */}
+            <View style={styles.headerTopSpace} />
+
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -88,7 +69,8 @@ export const MapHeader = ({
                     <ProfileAvatar
                       uri={member.avatar}
                       name={member.name}
-                      size={44}
+                      size={40}
+                      variant="elevated"
                     />
                     <View style={styles.locateIconContainer}>
                       <Search
@@ -102,48 +84,7 @@ export const MapHeader = ({
                 </AppPressable>
               ))}
             </ScrollView>
-
-            {/* 3. 실시간 스토리 기록 제어 버튼 영역 */}
-            <View style={styles.headerActionBar}>
-              <AppPressable
-                style={[
-                  styles.headerActionPill,
-                  isRecording && { backgroundColor: THEME_COLORS.red + '15' },
-                ]}
-                onPress={toggleRecording}
-              >
-                {isRecording ? (
-                  <>
-                    <Square
-                      size={14}
-                      color={THEME_COLORS.red}
-                      fill={THEME_COLORS.red}
-                    />
-                    <Text
-                      style={[
-                        styles.headerActionText,
-                        { color: THEME_COLORS.red },
-                      ]}
-                    >
-                      스토리 기록 종료
-                    </Text>
-                  </>
-                ) : (
-                  <>
-                    <Route size={14} color={APP_COLORS.primary} />
-                    <Text
-                      style={[
-                        styles.headerActionText,
-                        { color: APP_COLORS.primary },
-                      ]}
-                    >
-                      실시간 스토리 기록
-                    </Text>
-                  </>
-                )}
-              </AppPressable>
-            </View>
-          </>
+          </View>
         )}
       </View>
     </AppSafeAreaView>
@@ -158,10 +99,39 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
   },
+  relativeWrapper: {
+    position: 'relative',
+  },
+  // 버튼 위치와 크기를 고정시켜 눌러도 아이콘이 절대 움직이지 않도록 함
+  absoluteToggleBtn: {
+    position: 'absolute',
+    // marginHorizontal: SPACING.layout과 내부 패딩 등을 고려한 절대 우측 여백 계산
+    right: SPACING.layout + 12,
+    top: SPACING.sm + 2,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 20,
+  },
+  // 최소화 상태일 때만 들어가는 하얀 배경과 그림자
+  iconOnlyBtnBg: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    ...Platform.select({
+      ios: {
+        shadowColor: THEME_COLORS.black,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+      },
+      android: { elevation: 4 },
+    }),
+  },
   headerContent: {
     marginHorizontal: SPACING.layout,
     paddingVertical: SPACING.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderRadius: 24,
     ...Platform.select({
       ios: {
@@ -173,53 +143,9 @@ const styles = StyleSheet.create({
       android: { elevation: 6 },
     }),
   },
-  headerTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 4,
+  headerTopSpace: {
+    height: 40,
     marginBottom: 4,
-  },
-  minimizeBtn: {
-    padding: 4,
-  },
-  headerActionBar: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    gap: 8,
-    marginTop: 4,
-  },
-  headerActionPill: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: APP_COLORS.bgGray,
-    paddingVertical: 8,
-    borderRadius: 12,
-    gap: 6,
-  },
-  headerActionText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: APP_COLORS.textPrimary,
-  },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    backgroundColor: APP_COLORS.skeleton,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 12,
-  },
-  statusBadgeText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: APP_COLORS.success,
-    marginLeft: 3,
   },
   userListScroll: {
     paddingHorizontal: 12,

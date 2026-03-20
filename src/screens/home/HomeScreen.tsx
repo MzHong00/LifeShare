@@ -1,33 +1,30 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, StatusBar } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 
 import { APP_COLORS } from '@/constants/theme';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { AppSafeAreaView } from '@/components/common/AppSafeAreaView';
 import { DDayHero } from '@/components/home/DDayHero';
-import { HomeHeader } from '@/components/home/HomeHeader';
 import { RecentCalendar } from '@/components/home/RecentCalendar';
 import { RecentStories } from '@/components/home/RecentStories';
 
 const HomeScreen = () => {
   const { currentWorkspace } = useWorkspaceStore();
+  const isFocused = useIsFocused();
 
   // currentWorkspace는 AppNavigator에서 보장됨
   if (!currentWorkspace) return null;
 
   return (
-    <AppSafeAreaView
-      style={styles.container}
-      edges={['top']}
-      headerShown={false}
-    >
+    <View style={styles.container}>
+      {isFocused && (
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      )}
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        bounces={false}
       >
-        {/* Header Section */}
-        <HomeHeader />
-
-        {/* D-Day Section */}
+        {/* D-Day / Header Section */}
         <DDayHero />
 
         {/* Today's Agenda */}
@@ -36,7 +33,7 @@ const HomeScreen = () => {
         {/* Recent Stories */}
         <RecentStories />
       </ScrollView>
-    </AppSafeAreaView>
+    </View>
   );
 };
 

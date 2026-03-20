@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Linking } from 'react-native';
+import { View, StyleSheet, ScrollView, Linking, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import MapView from 'react-native-maps';
@@ -7,7 +7,9 @@ import MapView from 'react-native-maps';
 import { NAV_ROUTES } from '@/constants/navigation';
 import { MainMap } from '@/components/map/MainMap';
 
-import { APP_COLORS } from '@/constants/theme';
+import { APP_COLORS, THEME_COLORS } from '@/constants/theme';
+import { AppPressable } from '@/components/common/AppPressable';
+import { Route, Square } from 'lucide-react-native';
 import { MAP_CONFIG } from '@/constants/map';
 import { BottomDrawer } from '@/components/common/BottomDrawer';
 import { MapHeader } from '@/components/map/MapHeader';
@@ -201,11 +203,36 @@ const MapScreen = () => {
 
       {/* 2. 상단 헤더 영역 (프로필 목록 및 위치 기록 토글) */}
       <MapHeader
-        isRecording={isRecording}
-        toggleRecording={toggleRecording}
         membersWithLocation={membersWithLocation}
         moveToUser={moveToUser}
       />
+
+      {/* 실시간 스토리 기록 제어 플로팅 버튼 */}
+      <View style={styles.floatingActionContainer} pointerEvents="box-none">
+        <AppPressable
+          style={[
+            styles.floatingActionBtn,
+            isRecording && styles.floatingActionBtnRecording,
+          ]}
+          onPress={toggleRecording}
+        >
+          {isRecording ? (
+            <>
+              <Square size={16} color={THEME_COLORS.white} fill={THEME_COLORS.white} />
+              <Text style={[styles.floatingActionText, { color: THEME_COLORS.white }]}>
+                스토리 기록 종료
+              </Text>
+            </>
+          ) : (
+            <>
+              <Route size={16} color={APP_COLORS.primary} />
+              <Text style={[styles.floatingActionText, { color: APP_COLORS.primary }]}>
+                스토리 기록 시작
+              </Text>
+            </>
+          )}
+        </AppPressable>
+      </View>
 
       {/* 3. 하단 상세 정보 드로어 (스토리/파트너 정보 표시) */}
       <BottomDrawer snapPoints={[0.15, 0.55, 0.87]}>
@@ -233,6 +260,39 @@ const MapScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: APP_COLORS.bgGray },
+  floatingActionContainer: {
+    position: 'absolute',
+    bottom: 44, // 요구하신 대로 20픽셀 위로 올림
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  floatingActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 24,
+    gap: 8,
+    shadowColor: THEME_COLORS.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  floatingActionBtnRecording: {
+    backgroundColor: THEME_COLORS.red,
+    shadowColor: THEME_COLORS.red,
+    shadowOpacity: 0.3,
+  },
+  floatingActionText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: APP_COLORS.textPrimary,
+  },
 });
 
 export default MapScreen;
