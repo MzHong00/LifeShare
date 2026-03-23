@@ -24,11 +24,7 @@ export const StoryItem = ({ item, onPress }: StoryItemProps) => {
   );
 
   return (
-    <Card
-      style={styles.storyCard}
-      onPress={() => onPress(item.id)}
-      activeOpacity={0.9}
-    >
+    <Card style={styles.storyCard} onPress={() => onPress(item.id)}>
       <View style={[styles.imageContainer, { height: imageHeight }]}>
         {item.thumbnailUrl ? (
           <Image
